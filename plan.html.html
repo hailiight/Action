@@ -1,0 +1,1544 @@
+<html lang="vi"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <title>KHSX v15 — Lifes Food</title>
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  :root{
+    --navy:#0B1E3D;--navy2:#112649;--navy3:#1a3360;
+    --amber:#F59E0B;--amber2:#D97706;--amber3:#FCD34D;
+    --green:#059669;--green2:#D1FAE5;
+    --red:#DC2626;--red2:#FEE2E2;
+    --yellow:#D97706;--yellow2:#FEF3C7;
+    --purple:#7C3AED;--purple2:#EDE9FE;
+    --teal:#0891B2;--teal2:#CFFAFE;
+    --white:#FFFFFF;--off:#F8FAFC;--gray1:#F1F5F9;--gray2:#E2E8F0;
+    --gray3:#CBD5E1;--gray4:#94A3B8;--gray5:#64748B;--gray6:#475569;
+    --text:#0F172A;--text2:#334155;--text3:#64748B;
+    --r:14px;--r2:10px;--r3:7px;
+    --s1:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+    --s2:0 4px 16px rgba(0,0,0,.08);
+    --s3:0 20px 40px rgba(0,0,0,.12);
+    --font:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{-webkit-font-smoothing:antialiased}
+  body{background:var(--off);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh}
+  input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;appearance:none}
+  input[type=number]{-moz-appearance:textfield;appearance:textfield}
+  button,select,input,textarea{font-family:var(--font)}
+  
+  /* HERO */
+  .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,var(--navy3) 100%);padding:0 20px;position:sticky;top:0;z-index:200}
+  .hero-top{display:flex;align-items:center;gap:10px;height:56px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .logo-mark{width:36px;height:36px;border-radius:10px;background:var(--amber);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .logo-mark svg{width:20px;height:20px;fill:var(--navy)}
+  .logo-text{font-size:16px;font-weight:900;color:var(--white);letter-spacing:-.04em;flex:1}
+  .logo-text span{color:var(--amber3);font-weight:400}
+  .hero-meta{font-size:11px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:8px}
+  .live-dot{width:6px;height:6px;border-radius:50%;background:#34D399;box-shadow:0 0 0 3px rgba(52,211,153,.25);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(52,211,153,.25)}50%{box-shadow:0 0 0 6px rgba(52,211,153,.1)}}
+  .rt-clock{font-size:12px;font-weight:700;color:var(--amber3);font-variant-numeric:tabular-nums;letter-spacing:.02em;white-space:nowrap}
+  .view-toggle{display:flex;background:rgba(255,255,255,.1);border-radius:8px;padding:3px;gap:2px}
+  .vt{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:none;color:rgba(255,255,255,.6);background:transparent;cursor:pointer;transition:.15s}
+  .vt.on{background:var(--amber);color:var(--navy);font-weight:700}
+  .btn-new{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;background:var(--amber);color:var(--navy);border:none;cursor:pointer;transition:.15s;display:none;white-space:nowrap}
+  .btn-new:hover{background:var(--amber3)}
+  @media(min-width:640px){.btn-new{display:block}}
+  
+  /* KPI BAND */
+  .kpi-band{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:1px solid rgba(255,255,255,.06)}
+  @media(max-width:639px){.kpi-band{grid-template-columns:repeat(3,1fr)}}
+  .kband-item{padding:12px 16px;border-right:1px solid rgba(255,255,255,.06)}
+  .kband-item:last-child{border-right:none}
+  .kb-l{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.45);margin-bottom:3px}
+  .kb-v{font-size:22px;font-weight:800;line-height:1;color:var(--kbc,var(--white))}
+  .kb-s{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px}
+  @media(max-width:639px){.kband-item:nth-child(n+4){display:none}}
+  
+  /* CONTENT */
+  .wrap{padding:14px 16px 88px}
+  @media(min-width:900px){.wrap{max-width:900px;margin:0 auto;padding:16px 0 40px}}
+  
+  /* ALERT */
+  .alert{background:var(--red2);border:1px solid #FCA5A5;border-radius:var(--r2);padding:10px 14px;display:none;gap:8px;align-items:center;font-size:12px;color:var(--red);margin-bottom:12px;font-weight:500}
+  .alert.on{display:flex}
+  
+  /* SECTION */
+  .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:4px}
+  .sec-title{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+  .sec-count{font-size:11px;color:var(--gray4);background:var(--gray1);padding:2px 8px;border-radius:20px}
+  
+  /* FILTERS */
+  .filters{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+  .fsel{padding:7px 10px;border-radius:var(--r3);border:1.5px solid var(--gray2);background:var(--white);font-size:12px;color:var(--text2);font-weight:500;outline:none;cursor:pointer;flex:1;min-width:80px}
+  .fsel:focus{border-color:var(--navy)}
+
+  /* ORDERS TABLE (desktop-friendly) */
+  .ot-card{background:var(--white);border:1.5px solid var(--gray2);border-radius:var(--r);box-shadow:var(--s1);overflow:hidden}
+  .ot-scroll{overflow:auto}
+  .ot{width:100%;border-collapse:separate;border-spacing:0;min-width:820px;font-size:12px}
+  .ot thead th{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 70%,var(--navy3) 100%);color:rgba(255,255,255,.88);padding:10px 12px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+  .ot thead th.r{text-align:right}
+  .ot tbody td{padding:10px 12px;border-bottom:1px solid var(--gray1);vertical-align:middle}
+  .ot tbody tr:nth-child(even) td{background:#FBFDFF}
+  .ot tbody tr:hover td{background:var(--gray1)}
+  .ot tfoot td{padding:10px 12px;background:var(--gray1);font-weight:800;border-top:1.5px solid var(--gray2)}
+  .ot tfoot td.r{text-align:right}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}
+  .pill .dot{width:7px;height:7px;border-radius:50%}
+  .pill.plan{background:#EFF6FF;color:#1E3A8A;border:1px solid #BFDBFE}
+  .pill.partial{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE}
+  .pill.done-good{background:#ECFDF5;color:#065F46;border:1px solid #6EE7B7}
+  .pill.done-warn{background:#FFFBEB;color:#92400E;border:1px solid #FCD34D}
+  .pill.done-bad{background:#FEF2F2;color:#991B1B;border:1px solid #FCA5A5}
+  .act-mini{padding:7px 10px;border-radius:8px;border:1.5px solid var(--gray2);background:var(--white);cursor:pointer;font-size:11px;font-weight:800;color:var(--text3);transition:.15s;white-space:nowrap}
+  .act-mini:hover{border-color:var(--navy);color:var(--navy);background:var(--gray1)}
+  .act-mini.danger:hover{border-color:var(--red);color:var(--red);background:var(--red2)}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+  
+  /* EMPTY */
+  .empty{text-align:center;padding:56px 24px;background:var(--white);border-radius:var(--r);border:2px dashed var(--gray2)}
+  .empty-ico{font-size:48px;margin-bottom:12px;filter:grayscale(1);opacity:.3}
+  .empty-t{font-size:15px;font-weight:600;color:var(--text3);margin-bottom:6px}
+  .empty-s{font-size:13px;color:var(--gray4);margin-bottom:20px}
+  .empty-btn{padding:12px 24px;border-radius:var(--r2);font-size:13px;font-weight:700;background:var(--navy);color:var(--white);border:none;cursor:pointer}
+  
+  /* ORDER CARD */
+  .ocard{background:var(--white);border-radius:var(--r);box-shadow:var(--s1);margin-bottom:10px;overflow:hidden;border:1.5px solid var(--gray2);transition:box-shadow .2s}
+  .ocard:hover{box-shadow:var(--s2)}
+  .ocard.s-plan{border-left:4px solid var(--navy)}
+  .ocard.s-partial{border-left:4px solid var(--teal)}
+  .ocard.s-done-good{border-left:4px solid var(--green)}
+  .ocard.s-done-warn{border-left:4px solid var(--yellow)}
+  .ocard.s-done-bad{border-left:4px solid var(--red)}
+  .card-hd{padding:14px 14px 0}
+  .card-row1{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .card-left{flex:1;min-width:0}
+  .card-badges{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:5px}
+  .tag-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap}
+  .tag-group{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px}
+  .sku-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px}
+  .sku-chip{font-size:9px;font-weight:700;color:var(--navy);background:#EFF6FF;padding:2px 6px;border-radius:4px;border:1px solid #BFDBFE;font-family:monospace}
+  .card-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:4px}
+  .card-sub{font-size:11px;color:var(--text3);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .card-metric{flex-shrink:0;text-align:right;min-width:70px}
+  .metric-big{font-size:26px;font-weight:900;line-height:1;letter-spacing:-.03em}
+  .metric-sub{font-size:10px;color:var(--text3);margin-top:2px}
+  .pbar-wrap{padding:0 14px 10px;margin-top:2px}
+  .pbar-track{height:6px;background:var(--gray1);border-radius:3px;overflow:hidden}
+  .pbar-fill{height:100%;border-radius:3px;transition:width .5s}
+  .pbar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:3px}
+  
+  /* card actions */
+  .card-actions{display:flex;gap:6px;padding:8px 14px 12px;border-top:1px solid var(--gray1);margin-top:4px;flex-wrap:wrap}
+  .act-btn{padding:9px 12px;border-radius:var(--r3);font-size:12px;font-weight:700;border:none;cursor:pointer;transition:.15s;text-align:center;white-space:nowrap}
+  .act-enter{background:var(--navy);color:var(--white);flex:1}
+  .act-enter:hover{background:var(--navy2)}
+  .act-print{border:1.5px solid var(--gray2);background:var(--white);color:var(--text3)}
+  .act-print:hover{border-color:var(--navy)!important;color:var(--navy);background:var(--gray1)}
+  .act-del{padding:9px 12px;border-radius:var(--r3);border:1.5px solid var(--gray2);background:var(--white);color:var(--gray4);cursor:pointer;transition:.15s}
+  .act-del:hover{border-color:var(--red);color:var(--red);background:var(--red2)}
+  
+  /* expand */
+  .expand-btn{width:100%;padding:8px;border:none;background:transparent;cursor:pointer;font-size:11px;font-weight:600;color:var(--gray4);display:flex;align-items:center;justify-content:center;gap:4px;border-top:1px solid var(--gray1)}
+  .expand-btn:hover{color:var(--navy);background:var(--gray1)}
+  .chev{display:inline-block;transition:transform .25s}
+  .ocard.open .chev{transform:rotate(180deg)}
+  .card-body{display:none;border-top:1px solid var(--gray1)}
+  .ocard.open .card-body{display:block}
+  
+  /* STAGE BLOCKS */
+  .stage-area{padding:12px;display:flex;flex-direction:column;gap:8px}
+  .sblock{border:1.5px solid var(--gray2);border-radius:var(--r2);overflow:hidden}
+  .sblock-hd{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--gray1);border-bottom:1px solid var(--gray2)}
+  .sblock-name{font-size:11px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:6px}
+  .sblock-pct{font-size:13px;font-weight:800}
+  .unit-badge{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;background:#DBEAFE;color:#1E3A8A}
+  .scols{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--gray1)}
+  .scol{padding:10px 12px}
+  .scol+.scol{border-left:1px solid var(--gray1)}
+  .scol-hd{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+  .scol-hd.p{color:var(--navy)}.scol-hd.a{color:var(--green)}
+  .srow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;font-size:12px;gap:4px}
+  .srow:last-child{margin-bottom:0}
+  .srow-l{color:var(--text3);flex-shrink:0}
+  .srow-v{font-weight:600;text-align:right}
+  .no-result{font-size:11px;color:var(--gray4);font-style:italic;padding:8px 0;text-align:center}
+  .sderived{display:grid;grid-template-columns:repeat(3,1fr);background:#F0FDF4}
+  @media(min-width:440px){.sderived{grid-template-columns:repeat(4,1fr)}}
+  .sd{padding:7px 8px;text-align:center;border-right:1px solid #D1FAE5}
+  .sd:last-child{border-right:none}
+  .sd-l{font-size:8px;text-transform:uppercase;letter-spacing:.05em;color:var(--green);margin-bottom:1px;font-weight:700}
+  .sd-v{font-size:12px;font-weight:800}
+  
+  /* SUMMARY */
+  .sum-card{background:var(--white);border-radius:var(--r);border:1.5px solid var(--gray2);overflow:hidden;box-shadow:var(--s1)}
+  .sum-scroll{overflow-x:auto}
+  .sum-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:480px}
+  .sum-tbl th{background:var(--navy);color:rgba(255,255,255,.85);padding:9px 12px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;font-weight:600}
+  .sum-tbl th.r{text-align:right}
+  .sum-tbl td{padding:9px 12px;border-bottom:1px solid var(--gray1);vertical-align:middle}
+  .sum-tbl tr:last-child td{border-bottom:none}
+  .sum-tbl tr:hover td{background:var(--gray1)}
+  .sum-tbl .tot td{background:var(--gray1)!important;font-weight:700}
+  
+  /* group chips */
+  .g0{background:#FEF3C7;color:#92400E}.g1{background:#DBEAFE;color:#1E3A8A}
+  .g2{background:#FCE7F3;color:#9D174D}.g3{background:#FFEDD5;color:#7C2D12}
+  .g4{background:#D1FAE5;color:#065F46}.g5{background:#EDE9FE;color:#4C1D95}
+  
+  /* FAB */
+  .fab{position:fixed;bottom:24px;right:20px;z-index:150;width:56px;height:56px;border-radius:50%;background:var(--navy);color:var(--white);font-size:28px;font-weight:200;border:none;cursor:pointer;box-shadow:var(--s3);display:flex;align-items:center;justify-content:center;transition:.2s}
+  .fab:hover{background:var(--navy2);transform:scale(1.06)}
+  @media(min-width:640px){.fab{display:none}}
+  
+  /* MODAL */
+  .overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(15,23,42,.6);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
+  .overlay.on{display:flex}
+  @media(min-width:600px){.overlay{align-items:center;padding:20px}}
+  .modal{background:var(--white);width:100%;max-width:660px;border-radius:20px 20px 0 0;max-height:92vh;overflow-y:auto;box-shadow:var(--s3)}
+  @media(min-width:600px){.modal{border-radius:var(--r);max-height:88vh}}
+  .drag-pill{width:36px;height:4px;background:var(--gray2);border-radius:2px;margin:12px auto 0}
+  @media(min-width:600px){.drag-pill{display:none}}
+  .modal-hd{padding:16px 18px 12px;border-bottom:1px solid var(--gray1);position:sticky;top:0;background:var(--white);z-index:10}
+  .modal-title{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.02em}
+  .modal-sub{font-size:11px;color:var(--text3);margin-top:2px}
+  .modal-body{padding:16px 18px}
+  .modal-foot{padding:12px 18px;border-top:1px solid var(--gray1);display:flex;gap:8px;position:sticky;bottom:0;background:var(--white)}
+  
+  /* form elements */
+  .msteps{display:flex;gap:4px;margin-bottom:16px}
+  .mstep{flex:1;height:4px;border-radius:2px;background:var(--gray2);transition:.25s}
+  .mstep.done{background:var(--green)}.mstep.active{background:var(--navy)}
+  .fg{margin-bottom:12px}
+  .fg:last-child{margin-bottom:0}
+  .fg label{display:block;font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em}
+  .fg select,.fg input,.fg textarea{width:100%;background:var(--gray1);border:1.5px solid var(--gray2);border-radius:10px;color:var(--text);padding:12px 14px;font-size:15px;outline:none;transition:.15s}
+  .fg select:focus,.fg input:focus,.fg textarea:focus{border-color:var(--navy)!important;background:var(--white)!important;box-shadow:0 0 0 3px rgba(11,30,61,.08)!important}
+  .fg input::placeholder,.fg textarea::placeholder{color:var(--gray4)}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  @media(max-width:420px){.frow3{grid-template-columns:1fr 1fr}}
+  /* make 2-col blocks stack on phones */
+  @media(max-width:560px){
+    .mc-grid2{grid-template-columns:1fr!important}
+  }
+  .fdiv{height:1px;background:var(--gray1);margin:12px 0}
+  
+  /* stage label */
+  .slabel{font-size:11px;font-weight:700;padding:7px 10px;border-radius:6px;border-left:3px solid;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .slabel.blue{background:#EFF6FF;border-color:#3B82F6;color:#1E3A8A}
+  .slabel.green{background:#ECFDF5;border-color:var(--green);color:#065F46}
+  .slabel.warn{background:#FFFBEB;border-color:var(--amber);color:#92400E}
+  
+  /* downtime */
+  .dt-reasons{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+  .dt-reason-btn{padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1.5px solid var(--gray2);background:var(--white);color:var(--text3);cursor:pointer;transition:.15s}
+  .dt-reason-btn.on{border-color:var(--red);background:var(--red2);color:var(--red)}
+  
+  /* callout */
+  .callout{padding:9px 12px;border-radius:var(--r3);font-size:11px;line-height:1.5;margin-bottom:10px;display:flex;gap:8px}
+  .callout.blue{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E40AF}
+  .callout.green{background:#ECFDF5;border:1px solid #6EE7B7;color:#065F46}
+  .callout.yellow{background:#FFFBEB;border:1px solid #FCD34D;color:#92400E}
+  
+  /* buttons */
+  .mbtn{flex:1;padding:13px;border-radius:var(--r3);font-size:13px;font-weight:700;border:none;cursor:pointer;transition:.15s}
+  .mbtn-cancel{background:var(--gray1);color:var(--text3);border:1.5px solid var(--gray2)}
+  .mbtn-cancel:hover{background:var(--gray2)}
+  .mbtn-ok{background:var(--navy);color:var(--white)}
+  .mbtn-ok:hover{background:var(--navy2)}
+  .mbtn-ok.g{background:var(--green)}.mbtn-ok.g:hover{background:#047857}
+  
+  /* sign grid */
+  .sign-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  @media(max-width:500px){.sign-grid{grid-template-columns:1fr}}
+  .sign-field{background:var(--gray1);border-radius:var(--r3);padding:10px}
+  .sign-role{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);margin-bottom:5px}
+  .sign-input{width:100%;background:var(--white);border:1.5px solid var(--gray2);border-radius:6px;color:var(--text);padding:8px 10px;font-size:12px;outline:none}
+  .sign-input:focus{border-color:var(--navy)!important;box-shadow:0 0 0 3px rgba(11,30,61,.12)!important}
+  
+  /* stage row editor */
+  .stage-row{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--gray1);background:var(--white)}
+  .stage-row:last-child{border-bottom:none}
+  .stage-drag{color:var(--gray4);cursor:grab;font-size:14px;flex-shrink:0}
+  .stage-inp{flex:1;padding:6px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;background:var(--gray1);color:var(--text);outline:none}
+  .stage-inp:focus{border-color:var(--navy);background:var(--white)}
+  .stage-unit-inp{width:70px;padding:6px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;background:var(--gray1);color:var(--text);outline:none}
+  .stage-unit-inp:focus{border-color:var(--navy);background:var(--white)}
+  .stage-del{padding:4px 8px;border-radius:4px;border:1px solid var(--gray2);background:transparent;color:var(--gray4);cursor:pointer;font-size:12px}
+  .stage-del:hover{border-color:var(--red);color:var(--red);background:var(--red2)}
+  
+  /* PRINT */
+  #pa{display:none}
+  @media print{
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+    body>*:not(#pa){display:none!important}
+    #pa{display:block!important}
+    .pa-page{page-break-after:always}
+    .pa-page:last-child{page-break-after:auto}
+  }
+  .pa-page{font-family:'Times New Roman',Times,serif;color:#000;background:#fff;font-size:10pt;line-height:1.5;padding:14pt 18pt;max-width:210mm}
+  .pa-top{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:3px double #0B1E3D;padding-bottom:8pt;margin-bottom:10pt}
+  .pa-company-name{font-size:9pt;font-weight:bold;text-transform:uppercase;letter-spacing:.04em;color:#0B1E3D}
+  .pa-company-sub{font-size:7.5pt;color:#475569}
+  .pa-doc-box{text-align:right}
+  .pa-doc-title{font-size:12pt;font-weight:bold;color:#0B1E3D}
+  .pa-doc-no{font-size:8pt;color:#475569;margin-top:2pt}
+  .pa-doc-dt{font-size:8pt;color:#0B1E3D;font-weight:bold}
+  .pa-sign{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10pt;margin-top:14pt}
+  .pa-sb{border:1.5px solid #CBD5E1;border-radius:4pt;padding:7pt;text-align:center;background:#F8FAFC}
+  .pa-sr{font-size:8.5pt;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;color:#0B1E3D;margin-bottom:2pt}
+  .pa-sn{font-size:7.5pt;color:#94A3B8;font-style:italic;margin-bottom:4pt}
+  .pa-sname{font-size:8.5pt;font-weight:bold;color:#0B1E3D;margin-bottom:36pt;min-height:10pt}
+  .pa-sl{border-top:1px solid #94A3B8;padding-top:3pt;font-size:7.5pt;color:#64748B;font-style:italic}
+  .pa-sign-dt{font-size:7pt;color:#94A3B8;margin-top:2pt}
+  .pa-ft{text-align:center;font-size:7pt;color:#94A3B8;border-top:1px solid #E2E8F0;padding-top:4pt;margin-top:10pt}
+  </style>
+  </head>
+  <body>
+  <div id="pa"></div>
+  
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-top">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+      </div>
+      <div class="logo-text">Lifes<span>Food</span> · KHSX</div>
+      <div class="hero-meta">
+        <div class="live-dot"></div>
+        <span id="top-shift">Ca 2</span>
+        <span id="top-date">T2 06/04</span>
+      </div>
+      <div class="rt-clock" id="rt-clock">14:41:57</div>
+      <div class="view-toggle">
+        <button class="vt" id="vt-m" onclick="setView('m')">📱</button>
+        <button class="vt on" id="vt-d" onclick="setView('d')">🖥</button>
+      </div>
+      <button class="btn-new" onclick="openCreate()">+ Tạo lệnh</button>
+    </div>
+    <div class="kpi-band" id="kpi-band" style="max-width: 900px; margin: 0px auto;">
+      <div class="kband-item"><div class="kb-l">% Đạt KH</div>
+      <div class="kb-v" style="--kbc:rgba(255,255,255,.5)">—</div>
+      <div class="kb-s">0 / 0 sp</div></div>
+      <div class="kband-item"><div class="kb-l">Tổng lệnh</div>
+      <div class="kb-v" style="--kbc:rgba(255,255,255,.5)">0</div>
+      <div class="kb-s">0 hoàn thành</div></div>
+      <div class="kband-item"><div class="kb-l">Downtime</div>
+      <div class="kb-v" style="--kbc:rgba(255,255,255,.5)">0ph</div>
+      <div class="kb-s">Tổng dừng máy</div></div>
+      <div class="kband-item"><div class="kb-l">Đang SX</div>
+      <div class="kb-v" style="--kbc:rgba(255,255,255,.5)">0</div>
+      <div class="kb-s">Chưa xong CĐ</div></div>
+      <div class="kband-item"><div class="kb-l">Chưa đạt 70%</div>
+      <div class="kb-v" style="--kbc:#6EE7B7">0</div>
+      <div class="kb-s">Tất cả ổn</div></div></div>
+  </div>
+  
+  <!-- MAIN -->
+  <div class="wrap" id="wrap" style="max-width: 900px; margin: 0px auto; padding: 16px 0px 40px;">
+    <div class="alert" id="alert"><span>⚠</span><span id="alert-txt"></span></div>
+    <div class="filters">
+      <select class="fsel" id="ff-sh" onchange="renderOrders()">
+        <option value="">Tất cả ca</option>
+        <option>Ca 1</option><option>Ca 2</option><option>Ca 3</option>
+      </select>
+      <select class="fsel" id="ff-gr" onchange="renderOrders()">
+        <option value="">Tất cả nhóm</option>
+        <option>NutriLifes</option><option>LifesNest Yến</option><option>BeautyNest</option>
+        <option>Lifes Chef</option><option>Cháo</option><option>Sữa gạo</option>
+      </select>
+      <select class="fsel" id="ff-st" onchange="renderOrders()">
+        <option value="">Tất cả</option>
+        <option value="plan">Chờ kết quả</option>
+        <option value="done">Đã hoàn thành</option>
+      </select>
+    </div>
+    <div class="sec-hdr">
+      <span class="sec-title">Lệnh sản xuất</span>
+      <span class="sec-count" id="fcount">0 lệnh</span>
+    </div>
+    <div id="order-list"></div>
+    <div class="sec-hdr" style="margin-top:20px">
+      <span class="sec-title">Tổng hợp theo nhóm</span>
+    </div>
+    <div class="sum-card">
+      <div class="sum-scroll">
+        <table class="sum-tbl">
+          <thead><tr>
+            <th>Nhóm SP</th><th class="r">Lệnh</th>
+            <th class="r">Plan (sp)</th><th class="r">Thực tế (sp)</th>
+            <th class="r">% Đạt</th><th class="r">Downtime</th>
+          </tr></thead>
+          <tbody id="sum-body"><tr><td colspan="6" style="text-align:center;color:var(--gray4);padding:16px">Chưa có dữ liệu</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <button class="fab" onclick="openCreate()">+</button>
+  
+  <!-- MODAL TẠO LỆNH -->
+  <div class="overlay" id="m-create">
+  <div class="modal">
+    <div class="drag-pill"></div>
+    <div class="modal-hd">
+      <div class="modal-title" id="mc-title">Tạo lệnh sản xuất</div>
+      <div class="modal-sub" id="mc-sub"></div>
+    </div>
+    <div class="modal-body" id="mc-body"></div>
+    <div class="modal-foot">
+      <button class="mbtn mbtn-cancel" id="mc-back" onclick="mcBack()" style="display:none;flex:0 0 auto;padding:13px 16px">← Lại</button>
+    <button class="mbtn mbtn-cancel" id="mc-print" onclick="printDraft()" style="display:none;flex:0 0 auto;padding:13px 16px">In nháp</button>
+      <button class="mbtn mbtn-cancel" onclick="closeM('m-create')" style="flex:0 0 auto;padding:13px 16px">Hủy</button>
+      <button class="mbtn mbtn-ok" id="mc-next" onclick="mcNext()">Tiếp →</button>
+    </div>
+  </div>
+  </div>
+  
+  <!-- MODAL NHẬP KẾT QUẢ -->
+  <div class="overlay" id="m-result">
+  <div class="modal">
+    <div class="drag-pill"></div>
+    <div class="modal-hd">
+      <div class="modal-title" id="mr-title">Nhập kết quả</div>
+      <div class="modal-sub" id="mr-sub"></div>
+    </div>
+    <div class="modal-body" id="mr-body"></div>
+    <div class="modal-foot">
+      <button class="mbtn mbtn-cancel" onclick="closeM('m-result')" style="flex:0 0 auto;padding:13px 16px">Hủy</button>
+      <button class="mbtn mbtn-ok g" onclick="saveResult()">✓ Lưu kết quả</button>
+    </div>
+  </div>
+  </div>
+  
+  <script>
+  /* ══════════════════════════════
+     MASTER DATA
+  ══════════════════════════════ */
+  const SKUS=[
+    {code:'NCTP001',name:'NutriLifes-Ngũ cốc dinh dưỡng',group:'NutriLifes'},
+    {code:'NCTP003',name:'NutriLifes-Bột ngũ cốc gạo lứt',group:'NutriLifes'},
+    {code:'NCTP005',name:'NutriLifes-Ngũ cốc hạt sen ý dĩ',group:'NutriLifes'},
+    {code:'NCTP007',name:'NutriLifes-Ngũ cốc mầm gạo lứt',group:'NutriLifes'},
+    {code:'NCTP009',name:'NutriLifes-Ngũ cốc mè đen đậu đỏ',group:'NutriLifes'},
+    {code:'NCTP037',name:'NutriLifes-Ngũ cốc Yến mạch & Cacao',group:'NutriLifes'},
+    {code:'NCTP039',name:'NutriLifes-Ngũ cốc Gạo lứt & Mè đen',group:'NutriLifes'},
+    {code:'NCTP041',name:'NutriLifes-Ngũ cốc 9 hạt',group:'NutriLifes'},
+    {code:'NCTP043',name:'NutriLifes-Ngũ cốc 9 loại hạt',group:'NutriLifes'},
+    {code:'NCTP011',name:'NutriLifes-Bột ngũ cốc 5 thứ đậu',group:'NutriLifes'},
+    {code:'NCTP013',name:'NutriLifes-Bột đậu nành hạt sen',group:'NutriLifes'},
+    {code:'NCTP015',name:'NutriLifes-Bột đậu xanh hạt sen',group:'NutriLifes'},
+    {code:'NCTP031',name:'NutriLifes-Yến mạch nguyên chất 400g',group:'NutriLifes'},
+    {code:'YSTP001',name:'LifesNest-Yến 200mg Đường phèn (Hộp)',group:'LifesNest Yến'},
+    {code:'YSTP004',name:'LifesNest-Yến 200mg Đường phèn (Lọ)',group:'LifesNest Yến'},
+    {code:'YSTP006',name:'LifesNest-Yến 200mg Không đường (Hộp)',group:'LifesNest Yến'},
+    {code:'YSTP210',name:'LifesNest-Yến 300mg Đường phèn (Hộp)',group:'LifesNest Yến'},
+    {code:'YSTP218',name:'LifesNest-Yến 300mg Isomalt (Hộp)',group:'LifesNest Yến'},
+    {code:'YSTP202',name:'LifesNest-Yến 300mg Tam vị (Hộp)',group:'LifesNest Yến'},
+    {code:'YSTP022',name:'LifesNest-Yến 300mg Đông trùng (Hộp)',group:'LifesNest Yến'},
+    {code:'YSTP027',name:'LifesNest-Yến 1000mg Đông trùng (Hộp)',group:'LifesNest Yến'},
+    {code:'YSTP117',name:'BeautyNest-Nước yến Nguyên bản (Khay)',group:'BeautyNest'},
+    {code:'YSTP119',name:'BeautyNest-Nước yến Hạt chia (Khay)',group:'BeautyNest'},
+    {code:'YSTP155',name:'BeautyNest-Nước yến Đông trùng (Khay)',group:'BeautyNest'},
+    {code:'YSTP137',name:'BeautyNest-Nước yến Ngũ vị (Khay)',group:'BeautyNest'},
+    {code:'YSTP139',name:'BeautyNest-Nước yến Nha đam (Khay)',group:'BeautyNest'},
+    {code:'GVSC001',name:'Lifes Chef-Sa tế Chay',group:'Lifes Chef'},
+    {code:'GVST001',name:'Lifes Chef-Sa tế Tôm',group:'Lifes Chef'},
+    {code:'GVXC001',name:'Lifes Chef-Xốt kho thịt',group:'Lifes Chef'},
+    {code:'GVXC002',name:'Lifes Chef-Xốt kho cá',group:'Lifes Chef'},
+    {code:'GVXC003',name:'Lifes Chef-Xốt ướp nướng BBQ',group:'Lifes Chef'},
+    {code:'GVXC006',name:'Lifes Chef-GVHC Bò kho',group:'Lifes Chef'},
+    {code:'GVXC007',name:'Lifes Chef-GVHC Bún Bò Huế',group:'Lifes Chef'},
+    {code:'GVHL001',name:'Lifes Chef-GVHC Lẩu Thái',group:'Lifes Chef'},
+    {code:'GVHL002',name:'Lifes Chef-GVHC Lẩu Chua Cay',group:'Lifes Chef'},
+    {code:'GVHL003',name:'Lifes Chef-GVHC Lẩu Hải Sản',group:'Lifes Chef'},
+    {code:'CHTP001',name:'LifesNest-Cháo yến thịt bằm (Gói)',group:'Cháo'},
+    {code:'CHTP003',name:'LifesNest-Cháo yến thịt bằm (Ly)',group:'Cháo'},
+    {code:'CHTP029',name:'LifesNest-Cháo tươi thịt bằm bí đỏ',group:'Cháo'},
+    {code:'CHTP041',name:'Cháo tươi GOLD Thịt thăn rau củ',group:'Cháo'},
+    {code:'CHTP043',name:'Cháo tươi GOLD Thịt gà cà rốt',group:'Cháo'},
+    {code:'CHTP045',name:'Cháo tươi GOLD Thịt bò đậu đỏ',group:'Cháo'},
+    {code:'CHTP047',name:'Cháo tươi GOLD Cá hồi đậu hà lan',group:'Cháo'},
+    {code:'YSTP192',name:'Lifes Food-Sữa gạo rang (Khay)',group:'Sữa gạo'},
+    {code:'YSTP194',name:'Lifes Food-Sữa gạo lứt (Khay)',group:'Sữa gạo'},
+    {code:'YSTP196',name:'Lifes Food-Sữa gạo lứt đậu đỏ (Khay)',group:'Sữa gạo'},
+    {code:'YSTP198',name:'Lifes Food-Sữa đậu nành (Khay)',group:'Sữa gạo'},
+    {code:'YSTP200',name:'Lifes Food-Sữa 9 loại hạt (Khay)',group:'Sữa gạo'},
+    {code:'YSTP231',name:'Lifes Food-Sữa bắp non (Khay)',group:'Sữa gạo'},
+  ];
+  
+  const GLIST=['NutriLifes','LifesNest Yến','BeautyNest','Lifes Chef','Cháo','Sữa gạo'];
+  const GC=['g0','g1','g2','g3','g4','g5'];
+  const gc=g=>GC[GLIST.indexOf(g)]||'g0';
+  
+  /* Template công đoạn theo nhóm */
+  const STAGE_TEMPLATES={
+    'NutriLifes':[{name:'Sản xuất',unit:'sp'}],
+    'Lifes Chef':[{name:'Sản xuất',unit:'sp'}],
+    'LifesNest Yến':[{name:'Nấu',unit:'lít'},{name:'Chiết rót',unit:'lọ'},{name:'Đóng gói',unit:'thùng'}],
+    'BeautyNest':[{name:'Nấu',unit:'lít'},{name:'Chiết rót',unit:'lon'},{name:'Đóng gói',unit:'khay'}],
+    'Sữa gạo':[{name:'Nấu',unit:'lít'},{name:'Chiết rót',unit:'lon'},{name:'Đóng gói',unit:'khay'}],
+    'Cháo':[{name:'Nấu',unit:'lít'},{name:'Chiết rót',unit:'gói'},{name:'Đóng gói',unit:'thùng'}],
+  };
+  
+  const CA_PRESETS=[
+    {label:'Ca 1',name:'Ca 1',from:'06:00',to:'14:00'},
+    {label:'Ca 2',name:'Ca 2',from:'14:00',to:'22:00'},
+    {label:'Ca 3',name:'Ca 3',from:'22:00',to:'06:00'},
+  ];
+  const DT_REASONS=['Máy hỏng','Thiếu NVL','Chờ QC','Setup/changeover','Điện/nước','Khác'];
+  
+  /* ══ STATE ══ */
+  let orders=[],nid=1,openIds=new Set();
+  let mcStep=1,mcD={};
+  let mcSkuEditIdx=null; // edit one SKU row in temp list
+  let mrId=null;
+  
+  /* ══ PERSIST ══ */
+  function saveState(){
+    try{localStorage.setItem('khsx_v15_orders',JSON.stringify(orders));
+        localStorage.setItem('khsx_v15_nid',String(nid));}catch(e){}
+  }
+  function loadState(){
+    try{
+      const raw=localStorage.getItem('khsx_v15_orders');
+      if(raw) orders=JSON.parse(raw);
+      const nidRaw=localStorage.getItem('khsx_v15_nid');
+      if(nidRaw) nid=parseInt(nidRaw)||1;
+      // Backward compatibility: add governance fields for legacy orders
+      orders=(orders||[]).map(o=>{
+        const old=o.signers||{};
+        const normalizedSigners={
+          creator:old.creator||'',
+          checker:old.checker||old.supervisor||'',
+          approver:old.approver||old.director||'Nguyễn Văn Hải'
+        };
+        return{
+          ...o,
+          signers:normalizedSigners,
+          approval:o.approval||{approvedAt:null,approvedBy:''}
+        };
+      });
+    }catch(e){orders=[];nid=1;}
+  }
+  
+  /* ══ HELPERS ══ */
+  const pv=(a,p)=>p?a/p:null;
+  const ps=(a,p)=>!p?'—':(a/p*100).toFixed(1)+'%';
+  const fn=n=>(+n||0).toLocaleString('vi-VN');
+  const fc=v=>v===null?'var(--gray4)':v>=.85?'var(--green)':v>=.7?'var(--yellow)':'var(--red)';
+  const pad2=n=>String(n).padStart(2,'0');
+  const fmtDate=d=>`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`;
+  const fmtTime=d=>`${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  const fmtFull=d=>`${fmtDate(d)} ${fmtTime(d)}`;
+  const isApproved=o=>Boolean(o?.approval?.approvedAt);
+  const deriveOrderGroup=skuItems=>{
+    const groups=[...new Set((skuItems||[]).map(sk=>sk.group).filter(Boolean))];
+    if(groups.length===0) return '';
+    if(groups.length===1) return groups[0];
+    return 'Đa nhóm';
+  };
+  
+  function calcHoursFromShift(from,to){
+    if(!from||!to) return 0;
+    const[fh,fm]=from.split(':').map(Number);
+    const[th,tm]=to.split(':').map(Number);
+    let mins=(th*60+tm)-(fh*60+fm);
+    if(mins<=0) mins+=24*60;
+    return+(mins/60).toFixed(2);
+  }
+  
+  /* Tổng plan (sp) = tổng SKU */
+  const totalPlan=o=>o.skuItems.reduce((s,sk)=>s+sk.qty,0);
+  
+  /* Actual = kết quả công đoạn cuối có dữ liệu */
+  function orderActual(o){
+    if(!o.stages||!o.stages.length) return 0;
+    for(let i=o.stages.length-1;i>=0;i--){
+      if(o.stages[i].actual?.qty>0) return o.stages[i].actual.qty;
+    }
+    return 0;
+  }
+  
+  /* % hoàn thành = actual CĐ cuối / plan tổng */
+  function orderPct(o){
+    const a=orderActual(o);
+    const p=totalPlan(o);
+    return p?a/p:null;
+  }
+  
+  /* Số CĐ đã có kết quả */
+  function stagesDone(o){
+    return(o.stages||[]).filter(s=>s.actual?.qty>0).length;
+  }
+  
+  function orderStatus(o){
+    const done=stagesDone(o);
+    const total=(o.stages||[]).length;
+    if(done===0) return 'plan';
+    if(done<total) return 'partial';
+    const v=orderPct(o);
+    return v>=.85?'done-good':v>=.7?'done-warn':'done-bad';
+  }
+  
+  function statusTag(st){
+    const m={
+      plan:{bg:'#EFF6FF',col:'#1E3A8A',txt:'Chờ sản xuất'},
+      partial:{bg:'#EFF6FF',col:'#1D4ED8',txt:'Đang sản xuất'},
+      'done-good':{bg:'#D1FAE5',col:'#065F46',txt:'✓ Đạt KH'},
+      'done-warn':{bg:'#FEF3C7',col:'#92400E',txt:'Gần đạt'},
+      'done-bad':{bg:'#FEE2E2',col:'#991B1B',txt:'Chưa đạt'},
+    };
+    return m[st]||m.plan;
+  }
+  
+  function totalDT(o){
+    return(o.stages||[]).reduce((s,st)=>s+(st.actual?.downtime||0),0);
+  }
+  
+  function orderLabor(o){
+    let qty=0,sh=0;
+    (o.stages||[]).forEach(st=>{
+      const a=st.actual;
+      if(a?.qty&&a?.staff&&a?.hours){qty+=a.qty;sh+=a.staff*a.hours;}
+    });
+    return sh>0?+(qty/sh).toFixed(1):null;
+  }
+  
+  /* ══ CLOCK ══ */
+  function tickClock(){
+    const now=new Date();
+    document.getElementById('rt-clock').textContent=`${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
+    const h=now.getHours();
+    document.getElementById('top-shift').textContent=h>=6&&h<14?'Ca 1':h>=14&&h<22?'Ca 2':'Ca 3';
+    const days=['CN','T2','T3','T4','T5','T6','T7'];
+    document.getElementById('top-date').textContent=`${days[now.getDay()]} ${pad2(now.getDate())}/${pad2(now.getMonth()+1)}`;
+  }
+  tickClock();setInterval(tickClock,1000);
+  
+  /* ══ VIEW ══ */
+  let curView=window.innerWidth>=768?'d':'m';
+  function setView(v){
+    curView=v;
+    ['m','d'].forEach(x=>document.getElementById('vt-'+x).classList.toggle('on',v===x));
+    const w=document.getElementById('wrap'),kb=document.querySelector('.kpi-band');
+    if(v==='d'){w.style.cssText='max-width:900px;margin:0 auto;padding:16px 0 40px';kb.style.cssText='max-width:900px;margin:0 auto';}
+    else{w.style.cssText='';kb.style.cssText='';}
+  }
+  
+  /* ══ MODAL HELPERS ══ */
+  function openCreate(){
+    mcStep=1;
+    mcD={skuItems:[],g:'',shift:{name:'Ca 1',from:'06:00',to:'14:00'},stages:[],signers:{creator:'',checker:'',approver:'Nguyễn Văn Hải'}};
+    mcSkuEditIdx=null;
+    renderMC();
+    document.getElementById('m-create').classList.add('on');
+  }
+  function closeM(id){document.getElementById(id).classList.remove('on')}
+  document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)closeM(el.id)}));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape')['m-create','m-result'].forEach(id=>{
+      if(document.getElementById(id)?.classList.contains('on'))closeM(id);
+    });
+  });
+  
+  /* ══ CREATE MODAL — 2 bước ══ */
+  function renderMC(){
+    const TOTAL=2;
+    document.getElementById('mc-sub').textContent=`Bước ${mcStep} / ${TOTAL}`;
+    document.getElementById('mc-back').style.display=mcStep>1?'inline-block':'none';
+    document.getElementById('mc-print').style.display=mcStep>1?'inline-block':'none';
+    const nb=document.getElementById('mc-next');
+    if(mcStep===1){nb.textContent='Kiểm tra →';nb.className='mbtn mbtn-ok';}
+    else{nb.textContent='✓ Tạo lệnh';nb.className='mbtn mbtn-ok g';}
+    mcStep===1?renderMC1():renderMC2();
+  }
+  
+  function renderMC1(){
+    const g=mcD.g||'';
+    const sh=mcD.shift||{name:'Ca 1',from:'06:00',to:'14:00'};
+    const hrs=calcHoursFromShift(sh.from,sh.to);
+    const skuList=g?SKUS.filter(s=>s.group===g):[];
+    document.getElementById('mc-title').textContent='Tạo lệnh sản xuất';
+    const addLabel=mcSkuEditIdx===null?'+ Thêm':'✓ Cập nhật';
+    document.getElementById('mc-body').innerHTML=`
+    <div class="msteps"><div class="mstep active"></div><div class="mstep"></div></div>
+  
+    <div class="mc-grid2" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div class="fg" style="margin:0"><label>Nhóm sản phẩm</label>
+        <select id="mc-g" onchange="mcGch()">
+          <option value="">-- Chọn nhóm --</option>
+          ${GLIST.map(g2=>`<option${g===g2?' selected':''}>${g2}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg" style="margin:0">
+        <label>Ca sản xuất</label>
+        <div style="display:flex;gap:4px;margin-bottom:5px">
+          ${CA_PRESETS.map(p=>`<button type="button" onclick="applyShiftPreset('${p.name}','${p.from}','${p.to}')" style="flex:1;padding:6px 2px;border-radius:5px;font-size:11px;font-weight:700;border:1.5px solid ${sh.name===p.name?'var(--navy)':'var(--gray2)'};background:${sh.name===p.name?'var(--navy)':'var(--white)'};color:${sh.name===p.name?'var(--white)':'var(--text3)'};cursor:pointer">${p.label}</button>`).join('')}
+        </div>
+        <div class="mc-grid2" style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px">
+          <input type="time" id="sh-from" value="${sh.from}" oninput="mcShiftChange()" style="padding:10px 12px;font-size:14px;border:1.5px solid var(--gray2);border-radius:10px;background:var(--gray1);color:var(--text);outline:none">
+          <input type="time" id="sh-to" value="${sh.to}" oninput="mcShiftChange()" style="padding:10px 12px;font-size:14px;border:1.5px solid var(--gray2);border-radius:10px;background:var(--gray1);color:var(--text);outline:none">
+          <div id="sh-hrs" style="padding:10px 12px;font-size:14px;font-weight:900;color:var(--navy);background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:10px;text-align:center;white-space:nowrap">${hrs}h</div>
+        </div>
+      </div>
+    </div>
+  
+    ${g?`
+    <!-- CÔNG ĐOẠN -->
+    <div style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3)">Công đoạn sản xuất</div>
+        <button onclick="addStage()" style="padding:4px 10px;border-radius:5px;font-size:11px;font-weight:700;background:var(--navy);color:var(--white);border:none;cursor:pointer">+ Thêm CĐ</button>
+      </div>
+      <div id="stage-list" style="border:1.5px solid var(--gray2);border-radius:8px;overflow:hidden;background:var(--white)">
+        ${renderStageRows()}
+      </div>
+    </div>
+  
+    <!-- THÔNG SỐ CA CHUNG -->
+    <div style="background:var(--gray1);border-radius:var(--r3);padding:10px 12px;margin-bottom:12px;border:1.5px solid var(--gray2)">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Thông số kế hoạch (cho toàn ca)</div>
+      <div class="frow3">
+        <div><label style="font-size:9px;color:var(--text3);display:block;margin-bottom:2px">Nhân sự (người)</label>
+          <input type="number" id="ca-staff" value="${mcD.caParams?.staff||''}" min="0" inputmode="numeric" placeholder="người" style="width:100%;padding:7px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;background:var(--white);outline:none"></div>
+        <div><label style="font-size:9px;color:var(--text3);display:block;margin-bottom:2px">Giờ công / ca</label>
+          <input type="number" id="ca-hours" value="${mcD.caParams?.hours||hrs||''}" min="0" step="0.5" inputmode="decimal" placeholder="${hrs}h" style="width:100%;padding:7px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;background:var(--white);outline:none"></div>
+        <div><label style="font-size:9px;color:var(--text3);display:block;margin-bottom:2px">Ghi chú lệnh</label>
+          <input type="text" id="ca-note" value="${mcD.caParams?.note||''}" placeholder="Tuỳ chọn..." style="width:100%;padding:7px 8px;font-size:13px;border:1.5px solid var(--gray2);border-radius:5px;background:var(--white);outline:none"></div>
+      </div>
+    </div>`:''}
+  
+    <!-- DANH SÁCH SKU -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px">Danh sách SKU</div>
+    <div class="mc-grid2" style="display:grid;grid-template-columns:2fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end">
+      <select id="mc-sku" ${!g?'disabled':''} style="width:100%;background:var(--gray1);border:1.5px solid var(--gray2);border-radius:10px;color:var(--text);padding:12px 14px;font-size:14px;outline:none">
+        ${!g?'<option>-- Chọn nhóm trước --</option>':skuList.map(s=>`<option value="${s.code}" data-n="${s.name}">${s.code} · ${s.name.slice(0,30)}</option>`).join('')}
+      </select>
+      <input type="number" id="mc-skuqty" value="500" min="1" inputmode="numeric" placeholder="SL" style="width:100%;background:var(--gray1);border:1.5px solid var(--gray2);border-radius:10px;color:var(--text);padding:12px 14px;font-size:15px;outline:none">
+      <div style="display:flex;gap:6px;justify-content:flex-end">
+        ${mcSkuEditIdx===null?'':`<button type="button" onclick="mcCancelSkuEdit()" style="padding:12px 14px;border-radius:10px;font-size:13px;font-weight:900;background:var(--gray1);color:var(--text3);border:1.5px solid var(--gray2);cursor:pointer;white-space:nowrap">Hủy</button>`}
+        <button type="button" onclick="mcAddSku()" ${!g?'disabled':''} style="padding:12px 16px;border-radius:10px;font-size:13px;font-weight:900;background:var(--navy);color:var(--white);border:none;cursor:pointer;white-space:nowrap">${addLabel}</button>
+      </div>
+    </div>
+    <div id="mc-skulist">${renderSkuList()}</div>`;
+  }
+  
+  function renderStageRows(){
+    if(!mcD.stages||!mcD.stages.length) return`<div style="text-align:center;padding:12px;font-size:12px;color:var(--gray4)">Chưa có công đoạn</div>`;
+    return mcD.stages.map((st,i)=>`
+      <div class="stage-row">
+        <span class="stage-drag" title="Kéo để sắp xếp">⠿</span>
+        <span style="font-size:11px;font-weight:700;color:var(--gray4);width:20px;text-align:center">${i+1}</span>
+        <input class="stage-inp" value="${st.name}" placeholder="Tên công đoạn" oninput="updateStageName(${i},this.value)">
+        <input class="stage-unit-inp" value="${st.unit}" placeholder="ĐVT" oninput="updateStageUnit(${i},this.value)">
+        <button class="stage-del" onclick="delStage(${i})">✕</button>
+      </div>`).join('');
+  }
+  
+  function renderSkuList(){
+    if(!mcD.skuItems?.length) return`<div style="text-align:center;font-size:12px;color:var(--gray4);padding:12px;background:var(--gray1);border-radius:8px;border:2px dashed var(--gray2)">Chưa có SKU — thêm bên trên</div>`;
+    const total=mcD.skuItems.reduce((s,sk)=>s+sk.qty,0);
+    return`<div style="border:1.5px solid var(--gray2);border-radius:8px;overflow:hidden">
+      ${mcD.skuItems.map((sk,i)=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;${i>0?'border-top:1px solid var(--gray1)':''}">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:10px;font-weight:800;color:var(--navy);font-family:monospace">${sk.code}</div>
+          <div style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sk.name}</div>
+        </div>
+        <input type="number" value="${sk.qty}" min="1" inputmode="numeric"
+          onchange="mcUpdateQty(${i},this.value)"
+          style="width:82px;text-align:right;padding:5px 7px;font-size:13px;font-weight:700;border:1.5px solid var(--gray2);border-radius:5px;background:var(--gray1);color:var(--navy);outline:none">
+        <span style="font-size:11px;color:var(--text3)">sp</span>
+        <button type="button" onclick="mcEditSku(${i})" style="padding:4px 8px;border-radius:6px;font-size:11px;font-weight:900;border:1px solid var(--gray2);background:var(--white);color:var(--navy);cursor:pointer">Sửa</button>
+        <button type="button" onclick="mcDelSku(${i})" style="padding:4px 8px;border-radius:6px;font-size:12px;border:1px solid var(--gray2);background:transparent;color:var(--gray4);cursor:pointer">✕</button>
+      </div>`).join('')}
+      <div style="padding:7px 12px;background:var(--gray1);border-top:1.5px solid var(--gray2);display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:var(--text3)">${mcD.skuItems.length} SKU</span>
+        <span style="font-size:13px;font-weight:800;color:var(--navy)">${fn(total)} sp tổng KH</span>
+      </div>
+    </div>`;
+  }
+  
+  function mcGch(){
+    const g=document.getElementById('mc-g').value;
+    // Switch group only for SKU picker/template view; do not drop temp SKU rows.
+    mcD.g=g;
+    mcD.stages=(STAGE_TEMPLATES[g]||[]).map(s=>({...s}));
+    mcD.caParams={};
+    mcSkuEditIdx=null;
+    renderMC1();
+  }
+  
+  function applyShiftPreset(name,from,to){
+    mcD.shift={name,from,to};
+    renderMC1();
+  }
+  
+  function mcShiftChange(){
+    const from=document.getElementById('sh-from')?.value||'';
+    const to=document.getElementById('sh-to')?.value||'';
+    mcD.shift={name:mcD.shift?.name||'Ca 1',from,to};
+    const hrs=calcHoursFromShift(from,to);
+    const el=document.getElementById('sh-hrs');
+    if(el) el.textContent=hrs+'h';
+  }
+  
+  function addStage(){
+    collectStep1Inputs();
+    mcD.stages.push({name:'Công đoạn mới',unit:'sp'});
+    document.getElementById('stage-list').innerHTML=renderStageRows();
+  }
+  function delStage(i){
+    collectStep1Inputs();
+    mcD.stages.splice(i,1);
+    document.getElementById('stage-list').innerHTML=renderStageRows();
+  }
+  function updateStageName(i,v){mcD.stages[i].name=v;}
+  function updateStageUnit(i,v){mcD.stages[i].unit=v;}
+  
+  function mcAddSku(){
+    const g=document.getElementById('mc-g').value;if(!g){alert('Chọn nhóm trước');return;}
+    const sel=document.getElementById('mc-sku'),opt=sel.options[sel.selectedIndex];
+    if(!opt?.value) return;
+    const qty=parseInt(document.getElementById('mc-skuqty').value)||0;
+    if(!qty){alert('Nhập số lượng');return;}
+    const code=opt.value,name=opt.dataset.n||opt.value;
+    // Always store to temp memory as a row; when editing, update that row
+    if(mcSkuEditIdx!==null && mcD.skuItems[mcSkuEditIdx]){
+      mcD.skuItems[mcSkuEditIdx]={code,name,group:g,qty};
+      mcSkuEditIdx=null;
+    } else {
+      if((mcD.skuItems||[]).length>0){
+        const ok=confirm('Lệnh đang có SKU tạm. OK = lưu thêm SKU mới (giữ SKU cũ). Cancel = không thêm SKU mới.');
+        if(!ok) return;
+      }
+      mcD.skuItems.push({code,name,group:g,qty});
+    }
+    document.getElementById('mc-skulist').innerHTML=renderSkuList();
+    document.getElementById('mc-skuqty').value=500;
+    setTimeout(()=>sel.focus(),30);
+    renderMC1();
+  }
+  function mcDelSku(i){
+    mcD.skuItems.splice(i,1);
+    if(mcSkuEditIdx===i) mcSkuEditIdx=null;
+    if(mcSkuEditIdx!==null && i<mcSkuEditIdx) mcSkuEditIdx--;
+    document.getElementById('mc-skulist').innerHTML=renderSkuList();
+    renderMC1();
+  }
+  function mcUpdateQty(i,val){const q=parseInt(val);if(q>0)mcD.skuItems[i].qty=q;}
+  function mcEditSku(i){
+    const sk=mcD.skuItems[i]; if(!sk) return;
+    mcSkuEditIdx=i;
+    renderMC1();
+    const sel=document.getElementById('mc-sku');
+    const qty=document.getElementById('mc-skuqty');
+    if(sel) sel.value=sk.code;
+    if(qty) qty.value=sk.qty;
+    setTimeout(()=>qty?.focus(),30);
+  }
+  function mcCancelSkuEdit(){mcSkuEditIdx=null;renderMC1();}
+  
+  function collectStep1Inputs(){
+    const from=document.getElementById('sh-from')?.value||mcD.shift?.from||'06:00';
+    const to=document.getElementById('sh-to')?.value||mcD.shift?.to||'14:00';
+    mcD.shift={name:mcD.shift?.name||'Ca 1',from,to};
+    mcD.caParams={
+      staff:document.getElementById('ca-staff')?.value||'',
+      hours:document.getElementById('ca-hours')?.value||calcHoursFromShift(from,to),
+      note:document.getElementById('ca-note')?.value||''
+    };
+    // sync stage name/unit edits
+    document.querySelectorAll('.stage-inp').forEach((inp,i)=>{if(mcD.stages[i])mcD.stages[i].name=inp.value;});
+    document.querySelectorAll('.stage-unit-inp').forEach((inp,i)=>{if(mcD.stages[i])mcD.stages[i].unit=inp.value;});
+  }
+  
+  /* Bước 2 — Review + Người ký */
+  function renderMC2(){
+    document.getElementById('mc-title').textContent='Xác nhận & Người ký';
+    const g=mcD.g,sh=mcD.shift||{},p=mcD.caParams||{};
+    const hrs=calcHoursFromShift(sh.from,sh.to);
+    const total=mcD.skuItems.reduce((s,sk)=>s+sk.qty,0);
+    const sg=mcD.signers||{};
+    document.getElementById('mc-body').innerHTML=`
+    <div class="msteps"><div class="mstep done"></div><div class="mstep active"></div></div>
+    <div style="background:var(--gray1);border-radius:var(--r3);padding:10px 12px;margin-bottom:12px;border:1.5px solid var(--gray2)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div>
+          <div style="font-size:13px;font-weight:700">${g} · ${sh.name||'Ca ?'} (${sh.from||'?'}–${sh.to||'?'}, ${hrs}h)</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${mcD.skuItems.length} SKU · Tổng <b>${fn(total)} sp</b> · ${p.staff||'?'} người · ${p.hours||hrs}h</div>
+        </div>
+        <button onclick="mcStep=1;renderMC()" style="font-size:11px;padding:5px 10px;border:1.5px solid var(--navy);border-radius:6px;background:var(--white);color:var(--navy);cursor:pointer;font-weight:700;white-space:nowrap">✎ Sửa</button>
+      </div>
+      <div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Công đoạn</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${(mcD.stages||[]).map((st,i)=>`<span style="font-size:10px;font-weight:700;background:var(--navy);color:var(--white);padding:2px 8px;border-radius:20px">${i+1}. ${st.name} (${st.unit})</span>`).join('')}
+      </div>
+      <div style="margin-top:8px;overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead><tr style="background:#EFF6FF">
+            <th style="padding:5px 8px;text-align:left;font-weight:700">SKU</th>
+            <th style="padding:5px 8px;text-align:left;font-weight:700">Tên sản phẩm</th>
+            <th style="padding:5px 8px;text-align:right;font-weight:700">KH (sp)</th>
+          </tr></thead>
+          <tbody>
+            ${mcD.skuItems.map((sk,i)=>`<tr style="${i%2===1?'background:#F8FAFC':''}">
+              <td style="padding:5px 8px;font-family:monospace;font-weight:700;color:var(--navy)">${sk.code}</td>
+              <td style="padding:5px 8px">${sk.name}</td>
+              <td style="padding:5px 8px;text-align:right;font-weight:700">${fn(sk.qty)}</td>
+            </tr>`).join('')}
+            <tr style="background:var(--gray1);font-weight:700">
+              <td colspan="2" style="padding:5px 8px;text-align:right">Tổng</td>
+              <td style="padding:5px 8px;text-align:right">${fn(total)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px">Người ký lệnh</div>
+    <div class="sign-grid">
+      <div class="sign-field"><div class="sign-role">Người tạo lệnh</div>
+        <input class="sign-input" id="sg-creator" placeholder="Họ và tên" value="${sg.creator||''}"></div>
+      <div class="sign-field"><div class="sign-role">Kiểm tra bởi Quản Lý Sản Xuất</div>
+        <input class="sign-input" id="sg-checker" placeholder="Họ và tên" value="${sg.checker||''}"></div>
+      <div class="sign-field"><div class="sign-role">Duyệt bởi Giám Đốc Nhà Máy</div>
+        <input class="sign-input" id="sg-approver" placeholder="Nguyễn Văn Hải" value="${sg.approver||'Nguyễn Văn Hải'}"></div>
+    </div>
+    <div class="callout green" style="margin-top:10px">Tên in tự động lên lệnh PDF. Để trống → ký tay sau khi in.</div>`;
+  }
+  
+  function mcBack(){mcStep--;renderMC();}
+  
+  function mcNext(){
+    if(mcStep===1){
+      const g=document.getElementById('mc-g').value;
+      if(!g){alert('Chọn nhóm sản phẩm');return;}
+      if(!mcD.skuItems?.length){alert('Thêm ít nhất 1 SKU');return;}
+      if(!mcD.stages?.length){alert('Cần ít nhất 1 công đoạn');return;}
+      collectStep1Inputs();
+      mcD.g=g;
+      mcStep=2;renderMC();
+    } else {
+      // Lưu signers
+      mcD.signers={
+        creator:document.getElementById('sg-creator')?.value||'',
+        checker:document.getElementById('sg-checker')?.value||'',
+        approver:document.getElementById('sg-approver')?.value||'Nguyễn Văn Hải'
+      };
+      const now=new Date();
+      const g=deriveOrderGroup(mcD.skuItems)||mcD.g,sh=mcD.shift,p=mcD.caParams||{};
+      const shHrs=calcHoursFromShift(sh.from,sh.to);
+      const staff=parseFloat(p.staff)||0;
+      const hours=parseFloat(p.hours)||shHrs;
+      const total=mcD.skuItems.reduce((s,sk)=>s+sk.qty,0);
+  
+      // Build stages with plan data
+      const stages=mcD.stages.map(st=>({
+        name:st.name,
+        unit:st.unit,
+        plan:{qty:total,staff,hours},
+        actual:null
+      }));
+  
+      orders.push({
+        id:nid++,
+        group:g,
+        shift:{...sh},
+        skuItems:mcD.skuItems.map(sk=>({...sk})),
+        plan:total,
+        stages,
+        note:p.note||'',
+        signers:{...mcD.signers},
+        createdAt:fmtFull(now),
+        approval:{approvedAt:null,approvedBy:''},
+      });
+      saveState();
+      closeM('m-create');
+      renderAll();
+    }
+  }
+
+  function printDraft(){
+    if(mcStep!==2) return;
+    if(!mcD?.skuItems?.length){alert('Chưa có SKU để in');return;}
+    if(!mcD?.stages?.length){alert('Chưa có công đoạn');return;}
+    collectStep1Inputs();
+    const now=new Date();
+    const g=deriveOrderGroup(mcD.skuItems)||mcD.g||document.getElementById('mc-g')?.value||'—';
+    const sh=mcD.shift||{name:'—',from:'',to:''};
+    const p=mcD.caParams||{};
+    const shHrs=calcHoursFromShift(sh.from,sh.to);
+    const staff=parseFloat(p.staff)||0;
+    const hours=parseFloat(p.hours)||shHrs;
+    const total=mcD.skuItems.reduce((s,sk)=>s+sk.qty,0);
+    const stages=mcD.stages.map(st=>({
+      name:st.name,
+      unit:st.unit,
+      plan:{qty:total,staff,hours},
+      actual:null
+    }));
+    const draftOrder={
+      id:0,
+      group:g,
+      shift:{...sh},
+      skuItems:mcD.skuItems.map(sk=>({...sk})),
+      plan:total,
+      stages,
+      note:p.note||'',
+      signers:{...(mcD.signers||{})},
+      createdAt:fmtFull(now),
+      approval:{approvedAt:null,approvedBy:''},
+    };
+    document.getElementById('pa').innerHTML=buildPrintHTML(draftOrder);
+    setTimeout(()=>window.print(),120);
+  }
+  
+  /* ══ RESULT MODAL ══ */
+  function openResult(id){
+    const o=orders.find(o=>o.id===id);if(!o) return;
+    if(!isApproved(o)){
+      alert('Lệnh chưa được duyệt điều hành. Vui lòng duyệt trước khi nhập kết quả.');
+      return;
+    }
+    mrId=id;
+    const shHrs=calcHoursFromShift(o.shift?.from,o.shift?.to)||8;
+    document.getElementById('mr-title').textContent=`Nhập kết quả · Lệnh #${id}`;
+    document.getElementById('mr-sub').textContent=`${o.group} · ${o.shift?.name||''} · ${o.skuItems.map(s=>s.code).join(', ')}`;
+  
+    const stagesHTML=(o.stages||[]).map((st,i)=>{
+      const a=st.actual||{};
+      const prev=i>0?o.stages[i-1]:null;
+      const prevDone=!prev||prev.actual?.qty>0;
+      const pct=a.qty&&st.plan?.qty?ps(a.qty,st.plan.qty):'—';
+      const pctColor=a.qty&&st.plan?.qty?fc(a.qty/st.plan.qty):'var(--gray4)';
+      return`<div style="border:1.5px solid var(--gray2);border-radius:var(--r2);overflow:hidden;margin-bottom:10px${!prevDone?' opacity:.5':''}">
+        <div style="padding:8px 12px;background:var(--gray1);border-bottom:1px solid var(--gray2);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:11px;font-weight:700;color:var(--text2)">CĐ${i+1}: ${st.name} <span class="unit-badge">${st.unit}</span></div>
+          <div style="font-size:12px;font-weight:800;color:${pctColor}">${pct}</div>
+        </div>
+        <div style="padding:10px 12px">
+          <div style="font-size:9px;font-weight:700;color:var(--navy);text-transform:uppercase;margin-bottom:6px">KH: ${fn(st.plan?.qty||0)} ${st.unit} · ${st.plan?.staff||0} người · ${st.plan?.hours||shHrs}h</div>
+        <div class="frow3" style="margin-bottom:10px">
+            <div><label style="font-size:9px;color:var(--text3);display:block;margin-bottom:2px">Thực tế (${st.unit})</label>
+            <input type="number" id="a-${i}-qty" value="${a.qty||''}" placeholder="${fn(st.plan?.qty||0)}" inputmode="numeric" style="width:100%;padding:10px 12px;font-size:14px;border:1.5px solid var(--gray2);border-radius:10px;background:var(--gray1);color:var(--text);outline:none"></div>
+            <div><label style="font-size:9px;color:var(--text3);display:block;margin-bottom:2px">Nhân sự</label>
+            <input type="number" id="a-${i}-staff" value="${a.staff||''}" placeholder="${st.plan?.staff||0}" inputmode="numeric" style="width:100%;padding:10px 12px;font-size:14px;border:1.5px solid var(--gray2);border-radius:10px;background:var(--gray1);color:var(--text);outline:none"></div>
+            <div><label style="font-size:9px;color:var(--text3);display:block;margin-bottom:2px">Giờ thực tế</label>
+            <input type="number" id="a-${i}-hours" value="${a.hours||''}" placeholder="${st.plan?.hours||shHrs}" step="0.5" inputmode="decimal" style="width:100%;padding:10px 12px;font-size:14px;border:1.5px solid var(--gray2);border-radius:10px;background:var(--gray1);color:var(--text);outline:none"></div>
+          </div>
+          <div class="frow" style="margin-bottom:8px">
+            <div><label style="font-size:9px;color:var(--text3);display:block;margin-bottom:2px">Dừng máy (phút)</label>
+            <input type="number" id="a-${i}-dt" value="${a.downtime||''}" placeholder="0" inputmode="numeric" style="width:100%;padding:10px 12px;font-size:14px;border:1.5px solid var(--gray2);border-radius:10px;background:var(--gray1);color:var(--text);outline:none"></div>
+            <div><label style="font-size:9px;color:var(--text3);display:block;margin-bottom:2px">Nguyên nhân</label>
+            <select id="a-${i}-reason" style="width:100%;padding:10px 12px;font-size:13px;border:1.5px solid var(--gray2);border-radius:10px;background:var(--gray1);color:var(--text);outline:none">
+                <option value="">— Không có sự cố —</option>
+                ${DT_REASONS.map(r=>`<option${a.dtReason===r?' selected':''}>${r}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div><label style="font-size:9px;color:var(--text3);display:block;margin-bottom:2px">Ghi chú chi tiết</label>
+          <input type="text" id="a-${i}-note" value="${a.dtNote||''}" placeholder="Ghi chú sự cố, downtime..." style="width:100%;padding:10px 12px;font-size:13px;border:1.5px solid var(--gray2);border-radius:10px;background:var(--gray1);color:var(--text);outline:none">
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  
+    document.getElementById('mr-body').innerHTML=stagesHTML;
+    document.getElementById('m-result').classList.add('on');
+    setTimeout(()=>document.getElementById('a-0-qty')?.focus(),80);
+  }
+  
+  function saveResult(){
+    const o=orders.find(o=>o.id===mrId);if(!o) return;
+    (o.stages||[]).forEach((st,i)=>{
+      const qty=parseFloat(document.getElementById(`a-${i}-qty`)?.value)||0;
+      if(qty>0){
+        st.actual={
+          qty,
+          staff:parseFloat(document.getElementById(`a-${i}-staff`)?.value)||0,
+          hours:parseFloat(document.getElementById(`a-${i}-hours`)?.value)||0,
+          downtime:parseFloat(document.getElementById(`a-${i}-dt`)?.value)||0,
+          dtReason:document.getElementById(`a-${i}-reason`)?.value||'',
+          dtNote:document.getElementById(`a-${i}-note`)?.value||'',
+        };
+      } else {
+        st.actual=null;
+      }
+    });
+    saveState();
+    closeM('m-result');
+    renderAll();
+  }
+  
+  /* ══ KPI ══ */
+  function renderKPI(){
+    const done=orders.filter(o=>orderStatus(o)!=='plan');
+    const tp=orders.reduce((s,o)=>s+totalPlan(o),0);
+    const ta=done.reduce((s,o)=>s+orderActual(o),0);
+    const dt=orders.reduce((s,o)=>s+totalDT(o),0);
+    const waitApprove=orders.filter(o=>!isApproved(o)).length;
+    const bad=orders.filter(o=>{
+      const st=orderStatus(o);
+      if(st==='plan'||st==='partial') return false;
+      const v=orderPct(o);
+      return v!==null&&v<.7;
+    }).length;
+    const partial=orders.filter(o=>orderStatus(o)==='partial').length;
+    const kpis=[
+      {l:'% Đạt KH',v:done.length?ps(ta,tp):'—',s:`${fn(ta)} / ${fn(tp)} sp`,c:done.length?fc(pv(ta,tp)):'rgba(255,255,255,.5)'},
+      {l:'Tổng lệnh',v:orders.length,s:`${done.length} hoàn thành`,c:'rgba(255,255,255,.5)'},
+      {l:'Downtime',v:dt?dt+'ph':'0ph',s:'Tổng dừng máy',c:dt>60?'#FCA5A5':dt>20?'#FCD34D':'rgba(255,255,255,.5)'},
+      {l:'Chờ duyệt',v:waitApprove,s:'GĐ nhà máy chưa duyệt',c:waitApprove?'#FCA5A5':'#6EE7B7'},
+      {l:'Chưa đạt 70%',v:bad,s:bad?'Cần xử lý':'Tất cả ổn',c:bad?'#FCA5A5':'#6EE7B7'},
+    ];
+    document.getElementById('kpi-band').innerHTML=kpis.map(k=>`
+      <div class="kband-item"><div class="kb-l">${k.l}</div>
+      <div class="kb-v" style="--kbc:${k.c}">${k.v}</div>
+      <div class="kb-s">${k.s}</div></div>`).join('');
+  }
+  
+  /* ══ ALERT ══ */
+  function renderAlert(){
+    const bad=orders.filter(o=>{
+      const st=orderStatus(o);
+      if(st==='plan'||st==='partial') return false;
+      const v=orderPct(o);
+      return v!==null&&v<.7&&v>0;
+    });
+    const el=document.getElementById('alert');
+    if(!bad.length){el.classList.remove('on');return;}
+    el.classList.add('on');
+    document.getElementById('alert-txt').innerHTML=`<b>${bad.length} lệnh chưa đạt 70%:</b> `+
+      bad.map(o=>`<b>${o.skuItems.map(s=>s.code).join('/')}</b>`).join(' · ');
+  }
+  
+  /* ══ ORDER LIST ══ */
+  function renderOrders(){
+    const fsh=document.getElementById('ff-sh').value;
+    const fgr=document.getElementById('ff-gr').value;
+    const fst=document.getElementById('ff-st').value;
+    const list=orders.filter(o=>{
+      if(fsh&&(o.shift?.name||o.shift)!==fsh) return false;
+      if(fgr&&o.group!==fgr) return false;
+      const st=orderStatus(o);
+      if(fst==='plan'&&st!=='plan') return false;
+      if(fst==='done'&&(st==='plan'||st==='partial')) return false;
+      return true;
+    });
+    document.getElementById('fcount').textContent=`${list.length} lệnh`;
+    const mount=document.getElementById('order-list');
+    if(!list.length){
+      mount.innerHTML=`<div class="empty">
+        <div class="empty-ico">📋</div>
+        <div class="empty-t">Chưa có lệnh sản xuất</div>
+        <div class="empty-s">Bấm nút bên dưới để tạo lệnh đầu tiên</div>
+        <button class="empty-btn" onclick="openCreate()">+ Tạo lệnh sản xuất</button>
+      </div>`;
+      return;
+    }
+
+    const sorted=[...list].sort((a,b)=>{
+      if(isApproved(a)!==isApproved(b)) return Number(isApproved(b))-Number(isApproved(a));
+      return b.id-a.id;
+    });
+
+    const rows=sorted.map(o=>{
+      const st=orderStatus(o);
+      const tag=statusTag(st);
+      const plan=totalPlan(o);
+      const actual=orderActual(o);
+      const pct=orderPct(o);
+      const pctTxt=pct===null?'—':Math.round(pct*100)+'%';
+      const lastStage=o.stages?.length?o.stages[o.stages.length-1].name:'—';
+      const sku=o.skuItems?.map(s=>s.code).join(', ')||'—';
+      const sh=o.shift?.name||o.shift||'—';
+      const approved=isApproved(o);
+      const approvedTxt=approved?`Đã duyệt ${o.approval.approvedAt}`:'Chờ duyệt';
+
+      const dotColor=st==='partial'?'#2563EB':st==='done-good'?'#059669':st==='done-warn'?'#D97706':st==='done-bad'?'#DC2626':'#1E3A8A';
+
+      return`<tr>
+        <td><span class="mono" style="font-weight:800;color:var(--navy)">#${String(o.id).padStart(4,'0')}</span></td>
+        <td>
+          <div style="font-weight:800;color:var(--text)">${o.skuItems.map(sk=>sk.name.split('-').pop().trim()).slice(0,2).join(' · ')}${o.skuItems.length>2?` +${o.skuItems.length-2}`:''}</div>
+          <div style="margin-top:2px;font-size:10px;color:var(--gray4)"><span class="mono">${sku}</span> · ${o.group} · ${sh}</div>
+        </td>
+        <td class="r" style="font-weight:900;color:var(--navy)">${fn(plan)}</td>
+        <td style="color:var(--text3);font-weight:700">${lastStage}</td>
+        <td>
+          <span class="pill ${st}">
+            <span class="dot" style="background:${dotColor}"></span>
+            ${tag.txt}
+          </span>
+          <span class="pill ${approved?'done-good':'done-bad'}" style="margin-left:6px">
+            <span class="dot" style="background:${approved?'#059669':'#DC2626'}"></span>
+            ${approved?'Đã duyệt':'Chờ duyệt'}
+          </span>
+          <span style="margin-left:8px;font-size:11px;font-weight:800;color:${fc(pct)}">${pctTxt}</span>
+          <span style="margin-left:6px;font-size:10px;color:var(--gray4)">${fn(actual)}/${fn(plan)} · ${approvedTxt}</span>
+        </td>
+        <td class="r" style="white-space:nowrap">
+          ${approved?'':`<button class="act-mini" onclick="approveOrder(${o.id})">Duyệt</button>`}
+          <button class="act-mini" onclick="openResult(${o.id})">Nhập</button>
+          <button class="act-mini" onclick="printOrder(${o.id})">In</button>
+          <button class="act-mini danger" onclick="deleteOrder(${o.id})">Xóa</button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    const totalQty=list.reduce((s,o)=>s+totalPlan(o),0);
+
+    mount.innerHTML=`
+      <div class="ot-card">
+        <div class="ot-scroll">
+          <table class="ot">
+            <thead>
+              <tr>
+                <th style="width:86px">Mã lệnh</th>
+                <th>Sản phẩm</th>
+                <th class="r" style="width:120px">Số lượng</th>
+                <th style="width:180px">Công đoạn</th>
+                <th style="width:260px">Trạng thái</th>
+                <th class="r" style="width:170px">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+            <tfoot>
+              <tr>
+                <td colspan="2">Tổng cộng</td>
+                <td class="r">${fn(totalQty)}</td>
+                <td colspan="3" class="r" style="font-weight:700;color:var(--gray5)">Tổng theo danh sách đang lọc</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>`;
+  }
+  
+  function renderCard(o){
+    const st=orderStatus(o),tag=statusTag(st);
+    const pct=orderPct(o);
+    const pctVal=pct!==null?Math.min(100,Math.round(pct*100)):0;
+    const pctColor=fc(pct);
+    const tp=totalPlan(o);
+    const ta=orderActual(o);
+    const done=stagesDone(o);
+    const total=(o.stages||[]).length;
+    const dt=totalDT(o);
+    const gcls=gc(o.group);
+    const shName=o.shift?.name||o.shift||'—';
+  
+    return`<div class="ocard s-${st}" id="oc-${o.id}">
+      <div class="card-hd">
+        <div class="card-row1">
+          <div class="card-left">
+            <div class="card-badges">
+              <span class="tag-status" style="background:${tag.bg};color:${tag.col}">${tag.txt}</span>
+              <span class="tag-group ${gcls}" style="padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700">${o.group}</span>
+              <span style="font-size:9px;color:var(--text3)">${shName}</span>
+              <span style="font-size:9px;color:var(--text3)">${o.shift?.from||''}–${o.shift?.to||''}</span>
+            </div>
+            <div class="sku-chips">
+              ${o.skuItems.map(sk=>`<span class="sku-chip">${sk.code}</span>`).join('')}
+            </div>
+            <div class="card-name">${o.skuItems.map(sk=>sk.name.split('-').pop().trim()).slice(0,3).join(' · ')}${o.skuItems.length>3?` +${o.skuItems.length-3}`:''}
+            </div>
+            <div class="card-sub">
+              <span>${o.skuItems.length} SKU</span>
+              <span>·</span>
+              <span>CĐ ${done}/${total}</span>
+              ${dt?`<span>·</span><span style="color:var(--red)">DT ${dt}ph</span>`:''}
+              ${o.note?`<span>·</span><span>${o.note}</span>`:''}
+            </div>
+          </div>
+          <div class="card-metric">
+            <div class="metric-big" style="color:${pctColor}">${pct!==null?pctVal+'%':'—'}</div>
+            <div class="metric-sub">${fn(ta)} / ${fn(tp)} sp</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:3px">${o.createdAt}</div>
+          </div>
+        </div>
+      </div>
+      <div class="pbar-wrap">
+        <div class="pbar-track"><div class="pbar-fill" style="width:${pctVal}%;background:${pctColor}"></div></div>
+        <div class="pbar-labels">
+          <span>0</span>
+          ${(o.stages||[]).map((st,i)=>{
+            const a=st.actual;
+            const pctSt=a?.qty&&st.plan?.qty?Math.round(a.qty/st.plan.qty*100):null;
+            return`<span style="color:${fc(pctSt?pctSt/100:null)}">${st.name}${pctSt!==null?' '+pctSt+'%':''}</span>`;
+          }).join('')}
+          <span>${fn(tp)}</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="act-btn act-enter" onclick="openResult(${o.id})">Nhập kết quả</button>
+        <button class="act-btn act-print" onclick="printOrder(${o.id})">In lệnh</button>
+        <button class="act-del" onclick="deleteOrder(${o.id})">✕</button>
+      </div>
+      <button class="expand-btn" onclick="toggleOpen(${o.id})">
+        Chi tiết công đoạn <span class="chev">▼</span>
+      </button>
+      <div class="card-body" id="cb-${o.id}">${renderStageDetail(o)}</div>
+    </div>`;
+  }
+  
+  function renderStageDetail(o){
+    if(!o.stages||!o.stages.length) return`<div style="padding:16px;text-align:center;color:var(--gray4)">Chưa có công đoạn</div>`;
+    return`<div class="stage-area">${o.stages.map((st,i)=>renderStageBlock(st,i,o)).join('')}</div>`;
+  }
+  
+  function renderStageBlock(st,i,o){
+    const a=st.actual;
+    const has=a?.qty>0;
+    const v=has&&st.plan?.qty?pv(a.qty,st.plan.qty):null;
+    const col=fc(v);
+    const labor=has&&a.staff&&a.hours?+(a.qty/(a.staff*a.hours)).toFixed(1):null;
+  
+    const colors=[
+      {bg:'#EFF6FF',border:'#BFDBFE',hd:'#1E40AF'},
+      {bg:'#ECFEFF',border:'#A5F3FC',hd:'#0E7490'},
+      {bg:'#F5F3FF',border:'#C4B5FD',hd:'#5B21B6'},
+      {bg:'#ECFDF5',border:'#6EE7B7',hd:'#065F46'},
+      {bg:'#FFFBEB',border:'#FCD34D',hd:'#92400E'},
+    ];
+    const c=colors[i%colors.length];
+  
+    return`<div class="sblock" style="border-color:${c.border}">
+      <div class="sblock-hd" style="background:${c.bg}">
+        <div class="sblock-name" style="color:${c.hd}">CĐ${i+1}: ${st.name} <span class="unit-badge" style="background:${c.border};color:${c.hd}">${st.unit}</span></div>
+        <div class="sblock-pct" style="color:${has?col:'var(--gray4)'}">${has?ps(a.qty,st.plan?.qty):'Chờ'}</div>
+      </div>
+      <div class="scols">
+        <div class="scol">
+          <div class="scol-hd p">▸ Kế hoạch</div>
+          <div class="srow"><span class="srow-l">Sản lượng</span><span class="srow-v">${fn(st.plan?.qty||0)} <small>${st.unit}</small></span></div>
+          <div class="srow"><span class="srow-l">Nhân sự</span><span class="srow-v">${st.plan?.staff||'—'} <small>người</small></span></div>
+          <div class="srow"><span class="srow-l">Giờ công</span><span class="srow-v">${st.plan?.hours||'—'} <small>giờ</small></span></div>
+        </div>
+        <div class="scol">
+          <div class="scol-hd a">▸ Thực tế</div>
+          ${has?`
+          <div class="srow"><span class="srow-l">Sản lượng</span><span class="srow-v" style="color:${col}">${fn(a.qty)} <small>${st.unit}</small></span></div>
+          <div class="srow"><span class="srow-l">Nhân sự</span><span class="srow-v">${a.staff||'—'} <small>người</small></span></div>
+          <div class="srow"><span class="srow-l">Giờ công</span><span class="srow-v">${a.hours||'—'} <small>giờ</small></span></div>
+          <div class="srow"><span class="srow-l">Dừng máy</span><span class="srow-v" style="color:${a.downtime>30?'var(--red)':a.downtime>0?'var(--yellow)':'var(--green)'}">${a.downtime||0}ph${a.dtReason?' · '+a.dtReason:''}</span></div>
+          ${a.dtNote?`<div class="srow"><span class="srow-l">Ghi chú</span><span class="srow-v" style="font-size:10px">${a.dtNote}</span></div>`:''}
+          `:'<div class="no-result">Chưa có kết quả</div>'}
+        </div>
+      </div>
+      ${has&&v!==null?`<div class="sderived">
+        <div class="sd"><div class="sd-l">% đạt</div><div class="sd-v" style="color:${col}">${ps(a.qty,st.plan?.qty)}</div></div>
+        <div class="sd"><div class="sd-l">Sp/người</div><div class="sd-v">${a.staff?(a.qty/a.staff).toFixed(0):'—'}</div></div>
+        <div class="sd"><div class="sd-l">Sp/giờ</div><div class="sd-v">${a.hours?(a.qty/a.hours).toFixed(0):'—'}</div></div>
+        <div class="sd"><div class="sd-l">Sp/ng·h</div><div class="sd-v">${labor||'—'}</div></div>
+      </div>`:''}
+    </div>`;
+  }
+  
+  function toggleOpen(id){
+    const el=document.getElementById('oc-'+id);
+    if(!el) return;
+    el.classList.toggle('open');
+    if(el.classList.contains('open')){openIds.add(id);}else{openIds.delete(id);}
+  }
+  
+  function deleteOrder(id){
+    const o=orders.find(x=>x.id===id);
+    if(!o) return;
+    const msg=isApproved(o)
+      ?'Lệnh đã duyệt điều hành. Bạn chắc chắn muốn xoá?'
+      :'Xoá lệnh này?';
+    if(!confirm(msg)) return;
+    orders=orders.filter(o=>o.id!==id);
+    openIds.delete(id);
+    saveState();renderAll();
+  }
+
+  function approveOrder(id){
+    const o=orders.find(x=>x.id===id);
+    if(!o) return;
+    if(isApproved(o)) return;
+    if(!confirm('Phê duyệt lệnh này cho sản xuất?')) return;
+    o.approval={
+      approvedAt:fmtFull(new Date()),
+      approvedBy:'Giám Đốc Nhà Máy Nguyễn Văn Hải'
+    };
+    saveState();
+    renderAll();
+  }
+  
+  /* ══ SUMMARY ══ */
+  function renderSummary(){
+    const rows=GLIST.map(g=>{
+      const grp=orders.filter(o=>o.group===g);
+      if(!grp.length) return null;
+      const tp=grp.reduce((s,o)=>s+totalPlan(o),0);
+      const ta=grp.reduce((s,o)=>s+orderActual(o),0);
+      const dt=grp.reduce((s,o)=>s+totalDT(o),0);
+      const v=tp?ta/tp:null;
+      const gcls=gc(g);
+      return`<tr>
+        <td><span class="${gcls}" style="padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700">${g}</span></td>
+        <td class="r">${grp.length}</td>
+        <td class="r">${fn(tp)}</td>
+        <td class="r" style="color:${fc(v)}">${fn(ta)}</td>
+        <td class="r"><span style="font-weight:700;color:${fc(v)}">${v!==null?ps(ta,tp):'—'}</span></td>
+        <td class="r">${dt?`<span style="color:var(--red)">${dt}ph</span>`:'0ph'}</td>
+      </tr>`;
+    }).filter(Boolean);
+    document.getElementById('sum-body').innerHTML=rows.length?rows.join(''):`<tr><td colspan="6" style="text-align:center;color:var(--gray4);padding:16px">Chưa có dữ liệu</td></tr>`;
+  }
+  
+  /* ══ PRINT ══ */
+  function printOrder(id){
+    const o=orders.find(o=>o.id===id);if(!o) return;
+    document.getElementById('pa').innerHTML=buildPrintHTML(o);
+    setTimeout(()=>window.print(),120);
+  }
+  
+  function buildPrintHTML(o){
+    const now=new Date();
+    const ds=fmtDate(now),ts=fmtTime(now);
+    const no=`KHSX-${String(o.id).padStart(4,'0')}`;
+    const sh=o.shift||{};
+    const shHrs=calcHoursFromShift(sh.from,sh.to)||8;
+    const sg=o.signers||{};
+    const checkerName=sg.checker||sg.supervisor||'';
+    const approverName=sg.approver||sg.director||'Nguyễn Văn Hải';
+    const tp=totalPlan(o);
+    const ta=orderActual(o);
+    const pct=tp?ps(ta,tp):'—';
+  
+    const thStyle='padding:5pt 6pt;text-align:left;font-size:8pt;background:#0B1E3D;color:#fff;font-weight:bold;border:0.5pt solid #0B1E3D';
+    const tdStyle='padding:5pt 6pt;font-size:8.5pt;border:0.5pt solid #E2E8F0;vertical-align:top';
+    const tdRStyle='padding:5pt 6pt;font-size:8.5pt;border:0.5pt solid #E2E8F0;text-align:right;vertical-align:top';
+  
+    /* SKU rows */
+    const skuRows=o.skuItems.map((sk,i)=>`<tr style="${i%2===1?'background:#F8FAFC':''}">
+      <td style="${tdStyle};font-family:monospace;font-weight:bold;color:#0B1E3D">${sk.code}</td>
+      <td style="${tdStyle}">${sk.name}</td>
+      <td style="${tdRStyle};font-weight:bold">${fn(sk.qty)}</td>
+    </tr>`).join('');
+  
+    /* Stage rows */
+    const stageRows=(o.stages||[]).map((st,i)=>{
+      const a=st.actual;
+      const has=a?.qty>0;
+      const pctSt=has&&st.plan?.qty?ps(a.qty,st.plan.qty):'—';
+      const pctCol=has&&st.plan?.qty?(a.qty/st.plan.qty>=.85?'#059669':a.qty/st.plan.qty>=.7?'#D97706':'#DC2626'):'#94A3B8';
+      return`<tr>
+        <td style="${tdStyle};font-weight:bold;color:#0B1E3D">CĐ${i+1}: ${st.name}</td>
+        <td style="${tdStyle}">${st.unit}</td>
+        <td style="${tdRStyle}">${fn(st.plan?.qty||0)}</td>
+        <td style="${tdRStyle}">${st.plan?.staff||'—'}</td>
+        <td style="${tdRStyle}">${st.plan?.hours||shHrs}h</td>
+        <td style="${tdRStyle};font-weight:bold;color:${pctCol}">${has?fn(a.qty)+'':''}</td>
+        <td style="${tdRStyle}">${has?a.staff||'':''}</td>
+        <td style="${tdRStyle}">${has?a.hours||'':''}</td>
+        <td style="${tdRStyle};color:${a?.downtime>30?'#DC2626':a?.downtime>0?'#D97706':'#059669'}">${has&&a.downtime?a.downtime+'ph':''}</td>
+        <td style="${tdRStyle};font-weight:bold;color:${pctCol}">${has?pctSt:''}</td>
+        <td style="${tdStyle};font-size:7.5pt;color:#475569">${has&&a.dtNote?a.dtNote:has&&a.dtReason?a.dtReason:''}</td>
+      </tr>`;
+    }).join('');
+  
+    return`<div class="pa-page">
+      <div class="pa-top">
+        <div>
+          <div class="pa-company-name">Công ty TNHH TM SX Lifes Food</div>
+          <div class="pa-company-sub">Nhà máy Tây Ninh · Bộ phận Sản xuất</div>
+        </div>
+        <div class="pa-doc-box">
+          <div class="pa-doc-title">Lệnh Kế Hoạch Sản Xuất</div>
+          <div class="pa-doc-no">Số: <b>${no}</b></div>
+          <div class="pa-doc-dt">Ngày: ${ds} &nbsp;|&nbsp; Giờ: ${ts}</div>
+        </div>
+      </div>
+  
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4pt 10pt;margin-bottom:8pt;font-size:8.5pt;border:1pt solid #E2E8F0;border-radius:3pt;padding:5pt 8pt;background:#F8FAFC">
+        <div><b>Nhóm:</b> ${o.group}</div>
+        <div><b>Ca:</b> ${sh.name||'—'}</div>
+        <div><b>Giờ:</b> ${sh.from||'?'}–${sh.to||'?'} (${shHrs}h)</div>
+        <div><b>Tổng KH:</b> ${fn(tp)} sp</div>
+        <div><b>Số SKU:</b> ${o.skuItems.length}</div>
+        <div><b>Số CĐ:</b> ${(o.stages||[]).length}</div>
+        <div><b>% Đạt:</b> <span style="font-weight:bold;color:${ta>0?(ta/tp>=.85?'#059669':ta/tp>=.7?'#D97706':'#DC2626'):'#94A3B8'}">${pct}</span></div>
+        <div><b>Tạo lệnh:</b> ${o.createdAt}</div>
+        ${o.note?`<div style="grid-column:span 4"><b>Ghi chú:</b> ${o.note}</div>`:''}
+      </div>
+  
+      <div style="font-size:8pt;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3pt;color:#0B1E3D">Danh sách SKU</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:8pt">
+        <thead><tr>
+          <th style="${thStyle}">Mã SKU</th>
+          <th style="${thStyle}">Tên sản phẩm</th>
+          <th style="${thStyle};text-align:right">KH (sp)</th>
+        </tr></thead>
+        <tbody>${skuRows}</tbody>
+        <tfoot><tr style="background:#EFF6FF;font-weight:bold">
+          <td colspan="2" style="${tdStyle};text-align:right">Tổng kế hoạch</td>
+          <td style="${tdRStyle};font-weight:bold">${fn(tp)}</td>
+        </tr></tfoot>
+      </table>
+  
+      <div style="font-size:8pt;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3pt;color:#0B1E3D">Kế hoạch & Kết quả theo công đoạn</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:8pt;font-size:8pt">
+        <thead><tr>
+          <th style="${thStyle}">Công đoạn</th>
+          <th style="${thStyle}">ĐVT</th>
+          <th style="${thStyle};text-align:right">KH SL</th>
+          <th style="${thStyle};text-align:right">KH NS</th>
+          <th style="${thStyle};text-align:right">KH Giờ</th>
+          <th style="${thStyle};text-align:right">TT SL</th>
+          <th style="${thStyle};text-align:right">TT NS</th>
+          <th style="${thStyle};text-align:right">TT Giờ</th>
+          <th style="${thStyle};text-align:right">Dừng</th>
+          <th style="${thStyle};text-align:right">% Đạt</th>
+          <th style="${thStyle}">Ghi chú / Sự cố</th>
+        </tr></thead>
+        <tbody>${stageRows}</tbody>
+      </table>
+  
+      <div style="font-size:7.5pt;color:#475569;border:1pt dashed #CBD5E1;padding:4pt 7pt;border-radius:3pt;margin-bottom:8pt;background:#F8FAFC">
+        Điền kết quả thực tế vào cột TT sau mỗi công đoạn. Ghi nguyên nhân nếu đạt &lt;85% hoặc dừng máy &gt;30 phút.
+      </div>
+  
+      <div class="pa-sign">
+        <div class="pa-sb">
+          <div class="pa-sr">Người tạo lệnh</div>
+          <div class="pa-sn">Lập &amp; xác nhận</div>
+          <div class="pa-sname">${sg.creator||''}</div>
+          <div class="pa-sl">Ký tên: ___________________</div>
+          <div class="pa-sign-dt">Ngày: ${ds}</div>
+        </div>
+        <div class="pa-sb">
+        <div class="pa-sr">Kiểm tra bởi Quản Lý Sản Xuất</div>
+        <div class="pa-sn">Kiểm tra &amp; xác nhận</div>
+        <div class="pa-sname">${checkerName}</div>
+          <div class="pa-sl">Ký tên: ___________________</div>
+          <div class="pa-sign-dt">Ngày: ___/___/______</div>
+        </div>
+        <div class="pa-sb">
+        <div class="pa-sr">Duyệt bởi Giám Đốc Nhà Máy</div>
+        <div class="pa-sn">Nguyễn Văn Hải</div>
+        <div class="pa-sname">${approverName}</div>
+          <div class="pa-sl">Ký tên: ___________________</div>
+          <div class="pa-sign-dt">Ngày: ___/___/______</div>
+        </div>
+      </div>
+      <div class="pa-ft">Tài liệu nội bộ · Lifes Food Factory · ${no} · In: ${ds} ${ts} · v15</div>
+    </div>`;
+  }
+  
+  /* ══ INIT ══ */
+  function renderAll(){renderKPI();renderAlert();renderOrders();renderSummary();}
+  loadState();
+  setView(curView);
+  renderAll();
+  </script>
+  
+  
+  </body></html>
