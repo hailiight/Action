@@ -1,0 +1,3333 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifesFood – Factory Operations Dashboard v9</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg:#0a0c10; --bg2:#0f1218; --bg3:#161b24; --bg4:#1e2633;
+  --border:#252d3d; --border2:#2e3a50;
+  --text:#e8edf5; --text2:#8a97aa; --text3:#5a6678;
+  --green:#00d97e; --green-dim:#00200f;
+  --yellow:#f5a623; --yellow-dim:#2d1f00;
+  --red:#ff4757; --red-dim:#2d0010;
+  --blue:#3b82f6; --blue-dim:#0d1f3d;
+  --cyan:#06b6d4; --orange:#f97316; --purple:#a78bfa;
+  --accent:#00d97e;
+  --font-display:'Bebas Neue',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --radius:8px; --radius-sm:5px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:13px;min-height:100vh;overflow-x:hidden;}
+
+/* ── TOPBAR ── */
+.topbar{background:linear-gradient(90deg,#0a0e14 0%,#0f1520 100%);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:200;box-shadow:0 1px 0 rgba(0,217,126,.06);}
+.logo{font-family:var(--font-display);font-size:22px;letter-spacing:3px;color:var(--green);white-space:nowrap;text-shadow:0 0 20px rgba(0,217,126,.3);}
+.logo span{color:var(--text2);font-size:11px;font-family:var(--font-body);letter-spacing:.5px;margin-left:10px;opacity:.7;}
+.topbar-divider{width:1px;height:28px;background:linear-gradient(to bottom,transparent,var(--border2),transparent);}
+.live-badge{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;color:var(--green);background:var(--green-dim);padding:4px 12px;border-radius:20px;border:1px solid rgba(0,217,126,.25);letter-spacing:.5px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;box-shadow:0 0 8px var(--green);}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+.clock{font-family:var(--font-mono);font-size:13px;color:var(--text2);margin-left:auto;letter-spacing:1px;}
+.shift-badge{background:var(--bg4);border:1px solid var(--border2);padding:4px 14px;border-radius:20px;font-size:11px;color:var(--text2);}
+.export-order-btn{
+  display:inline-flex;align-items:center;gap:7px;padding:6px 16px;
+  border-radius:6px;cursor:pointer;font-size:11px;font-weight:800;
+  background:linear-gradient(135deg,#f5a623,#f97316);color:#000;border:none;
+  font-family:var(--font-body);letter-spacing:.5px;white-space:nowrap;
+  box-shadow:0 2px 12px rgba(245,166,35,.4);transition:all .2s;
+}
+.export-order-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(245,166,35,.6);}
+
+/* ── NAV TABS ── */
+.nav-tabs{display:flex;gap:1px;padding:0 24px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.nav-tab{padding:10px 18px;cursor:pointer;font-size:11px;font-weight:700;color:var(--text3);border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.5px;text-transform:uppercase;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.nav-tab:hover{color:var(--text2);background:rgba(255,255,255,.02);}
+.nav-tab.active{color:var(--green);border-bottom-color:var(--green);background:rgba(0,217,126,.03);}
+.nav-tab .badge{background:var(--red);color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;font-family:var(--font-mono);}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:8px;padding:10px 24px;background:var(--bg2);border-bottom:1px solid var(--border);align-items:center;flex-wrap:wrap;}
+.filter-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-right:4px;}
+.filter-btn{padding:4px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:11px;font-weight:600;background:var(--bg4);color:var(--text2);border:1px solid var(--border2);transition:all .15s;font-family:var(--font-body);}
+.filter-btn:hover{border-color:var(--green);color:var(--green);}
+.filter-btn.active{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+.filter-sep{flex:1;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:var(--radius-sm);cursor:pointer;font-size:11px;font-weight:700;border:1px solid;transition:all .15s;font-family:var(--font-body);white-space:nowrap;}
+.btn-blue{background:var(--blue-dim);color:var(--blue);border-color:var(--blue);}
+.btn-blue:hover{background:var(--blue);color:#fff;}
+.btn-green{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+.btn-green:hover{background:var(--green);color:#000;}
+.btn-red{background:var(--red-dim);color:var(--red);border-color:var(--red);}
+.btn-red:hover{background:var(--red);color:#fff;}
+.btn-yellow{background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow);}
+.btn-sm{padding:4px 10px;font-size:10px;}
+
+/* ── MAIN LAYOUT ── */
+.main{padding:20px 24px;display:none;}
+.main.active{display:block;}
+
+/* ── SECTION HEADER ── */
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.section-title{font-family:var(--font-display);font-size:20px;letter-spacing:1px;color:var(--text);}
+.section-sub{font-size:11px;color:var(--text3);}
+
+/* ── GRID ── */
+.grid{display:grid;gap:14px;}
+.g2{grid-template-columns:repeat(2,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g5{grid-template-columns:repeat(5,1fr);}
+.g-auto{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));}
+.col-span2{grid-column:span 2;}
+.col-span3{grid-column:span 3;}
+
+/* ── CARD ── */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px;position:relative;overflow:hidden;transition:border-color .2s;}
+.card:hover{border-color:var(--border2);}
+.card-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.card-title .icon{font-size:13px;}
+
+/* ── KPI ── */
+.kpi-val{font-family:var(--font-display);font-size:38px;letter-spacing:1px;line-height:1;margin-bottom:4px;}
+.kpi-unit{font-size:12px;color:var(--text2);margin-left:4px;}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:4px;}
+.kpi-trend{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;margin-top:6px;}
+.trend-up{color:var(--green);}
+.trend-down{color:var(--red);}
+.trend-warn{color:var(--yellow);}
+.kpi-bar{height:3px;border-radius:2px;background:var(--bg4);margin-top:10px;overflow:hidden;}
+.kpi-bar-fill{height:100%;border-radius:2px;transition:.6s;}
+
+/* ── COLORS ── */
+.green{color:var(--green);}.yellow{color:var(--yellow);}.red{color:var(--red);}.blue{color:var(--blue);}.cyan{color:var(--cyan);}
+.bg-green{background:var(--green-dim);border-color:var(--green)!important;}
+.bg-yellow{background:var(--yellow-dim);border-color:var(--yellow)!important;}
+.bg-red{background:var(--red-dim);border-color:var(--red)!important;}
+
+/* ── ALERT ── */
+.alert-card{background:var(--red-dim);border:1px solid var(--red);border-radius:var(--radius);padding:12px 16px;display:flex;align-items:center;gap:12px;}
+.alert-icon{font-size:22px;flex-shrink:0;}
+.alert-title{font-weight:700;font-size:13px;color:var(--red);margin-bottom:2px;}
+.alert-msg{font-size:11px;color:var(--text2);}
+.alert-time{margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--red);white-space:nowrap;}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{text-align:left;padding:7px 10px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid var(--border);white-space:nowrap;}
+.tbl td{padding:8px 10px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(255,255,255,.02);}
+.tbl .mono{font-family:var(--font-mono);}
+.tbl .money{font-family:var(--font-mono);color:var(--yellow);font-weight:600;}
+
+/* ── BADGES ── */
+.class-badge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;font-weight:800;font-size:11px;font-family:var(--font-mono);}
+.class-A{background:#2d0010;color:var(--red);border:1px solid var(--red);}
+.class-B{background:var(--yellow-dim);color:var(--yellow);border:1px solid var(--yellow);}
+.class-C{background:var(--bg4);color:var(--text2);border:1px solid var(--border2);}
+
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+.dot-ok{background:var(--green);box-shadow:0 0 6px var(--green);}
+.dot-warn{background:var(--yellow);box-shadow:0 0 6px var(--yellow);}
+.dot-err{background:var(--red);box-shadow:0 0 6px var(--red);animation:pulse 1s infinite;}
+.dot-off{background:var(--text3);}
+
+.overdue-badge{background:var(--red-dim);color:var(--red);border:1px solid var(--red);font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;}
+.ok-badge{background:var(--green-dim);color:var(--green);border:1px solid var(--green);font-family:var(--font-mono);font-size:10px;padding:2px 8px;border-radius:10px;}
+.check-status{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.check-ok{background:var(--green-dim);color:var(--green);}
+.check-fail{background:var(--red-dim);color:var(--red);}
+.check-pending{background:var(--bg4);color:var(--text3);}
+
+/* ── PROGRESS ── */
+.progress{height:6px;border-radius:3px;background:var(--bg4);overflow:hidden;margin-top:4px;}
+.progress-fill{height:100%;border-radius:3px;transition:.6s;}
+
+/* ── WORK ORDER ── */
+.wo-card{border:1px solid var(--border2);border-radius:6px;padding:12px;margin-bottom:8px;background:var(--bg4);}
+.wo-card.critical{border-left:3px solid var(--red);}
+.wo-card.warning{border-left:3px solid var(--yellow);}
+.wo-card.normal{border-left:3px solid var(--green);}
+.wo-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.wo-id{font-family:var(--font-mono);font-size:10px;color:var(--text3);}
+.wo-title{font-weight:600;font-size:12px;flex:1;}
+.wo-pri{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;}
+.pri-critical{background:var(--red-dim);color:var(--red);}
+.pri-high{background:var(--yellow-dim);color:var(--yellow);}
+.pri-normal{background:var(--green-dim);color:var(--green);}
+.wo-meta{display:flex;gap:12px;font-size:11px;color:var(--text2);flex-wrap:wrap;}
+
+/* ── CHECKLIST ── */
+.checklist-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.checklist-item:last-child{border-bottom:none;}
+.check-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s;}
+.check-box.checked{background:var(--green);border-color:var(--green);}
+.check-box.checked::after{content:'✓';font-size:11px;color:#000;font-weight:800;}
+.check-label{flex:1;font-size:12px;}
+
+/* ── PARETO ── */
+.pareto-item{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.pareto-rank{font-family:var(--font-mono);font-size:11px;color:var(--text3);width:20px;text-align:right;}
+.pareto-label{font-size:12px;width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pareto-bar-wrap{flex:1;height:12px;background:var(--bg4);border-radius:3px;overflow:hidden;}
+.pareto-bar-fill{height:100%;border-radius:3px;}
+.pareto-pct{font-family:var(--font-mono);font-size:11px;color:var(--text2);width:36px;text-align:right;}
+.pareto-cumul{font-family:var(--font-mono);font-size:10px;color:var(--text3);width:36px;text-align:right;}
+
+/* ── ZONE CARD ── */
+.zone-card{border-radius:var(--radius);padding:14px;border:1px solid var(--border);}
+.zone-name{font-weight:700;font-size:13px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.mini-metric{display:flex;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid var(--border);}
+.mini-metric:last-child{border-bottom:none;}
+.mm-label{font-size:12px;color:var(--text2);flex:1;}
+.mm-val{font-family:var(--font-mono);font-size:13px;font-weight:600;}
+.mm-bar-wrap{width:80px;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;}
+.mm-bar-fill{height:100%;border-radius:3px;}
+
+/* ── OEE BIG ── */
+.oee-big{font-family:var(--font-display);font-size:64px;color:var(--green);line-height:1;margin:8px 0 4px;}
+.oee-target{font-size:11px;color:var(--text3);}
+.money-big{font-family:var(--font-display);font-size:36px;color:var(--red);line-height:1;}
+.money-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* ══════════════════════════════════════
+   EQUIPMENT CATALOG TAB
+══════════════════════════════════════ */
+.catalog-toolbar{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap;}
+.search-input{background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:12px;padding:7px 12px;border-radius:var(--radius-sm);outline:none;transition:.2s;width:220px;}
+.search-input:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(0,217,126,.1);}
+.search-input::placeholder{color:var(--text3);}
+.select-input{background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:12px;padding:6px 10px;border-radius:var(--radius-sm);outline:none;cursor:pointer;transition:.2s;}
+.select-input:focus{border-color:var(--green);}
+
+.catalog-stats{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+.cat-stat{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 16px;display:flex;align-items:center;gap:10px;}
+.cat-stat-val{font-family:var(--font-display);font-size:28px;line-height:1;}
+.cat-stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;}
+
+/* Zone group header */
+.zone-group-header{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg4);border:1px solid var(--border2);border-radius:6px;margin-bottom:6px;cursor:pointer;user-select:none;transition:.15s;}
+.zone-group-header:hover{border-color:var(--cyan);}
+.zone-group-header .zh-icon{font-size:18px;}
+.zone-group-header .zh-name{font-weight:700;font-size:13px;color:var(--cyan);flex:1;}
+.zone-group-header .zh-count{font-family:var(--font-mono);font-size:11px;color:var(--text3);}
+.zone-group-header .zh-toggle{font-size:12px;color:var(--text3);transition:.2s;}
+.zone-group-header.collapsed .zh-toggle{transform:rotate(-90deg);}
+.zone-group-body{overflow:hidden;transition:all .3s;}
+.zone-group-body.collapsed{display:none;}
+
+/* Item row */
+.cat-item-row{display:grid;grid-template-columns:40px 90px 1fr 110px 90px 80px 80px 90px;align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid var(--border);transition:.15s;}
+.cat-item-row:last-child{border-bottom:none;}
+.cat-item-row:hover{background:rgba(255,255,255,.02);}
+.cat-item-row.edit-mode{background:rgba(0,217,126,.04);border-radius:6px;}
+
+.cat-col-num{font-family:var(--font-mono);font-size:11px;color:var(--text3);text-align:center;}
+.cat-col-id input,.cat-col-name input,.cat-col-zone select,.cat-col-cat input,.cat-col-qty input{
+  background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-mono);font-size:11px;
+  padding:4px 7px;border-radius:4px;width:100%;outline:none;
+}
+.cat-col-id input:focus,.cat-col-name input:focus,.cat-col-cat input:focus,.cat-col-qty input:focus,.cat-col-zone select:focus{border-color:var(--green);}
+.cat-col-name{font-size:12px;}
+.cat-col-qty input{text-align:center;}
+.cat-actions{display:flex;gap:4px;}
+.act-btn{padding:3px 8px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:700;border:1px solid;transition:.15s;font-family:var(--font-body);}
+.act-edit{background:var(--blue-dim);color:var(--blue);border-color:var(--blue);}
+.act-edit:hover{background:var(--blue);color:#fff;}
+.act-save{background:var(--green-dim);color:var(--green);border-color:var(--green);}
+.act-save:hover{background:var(--green);color:#000;}
+.act-del{background:var(--red-dim);color:var(--red);border-color:var(--red);}
+.act-del:hover{background:var(--red);color:#fff;}
+.act-cancel{background:var(--bg4);color:var(--text2);border-color:var(--border2);}
+.act-cancel:hover{background:var(--border2);color:var(--text);}
+
+/* Add form */
+.add-form{background:rgba(0,217,126,.04);border:1px dashed var(--green);border-radius:var(--radius);padding:14px;margin-top:12px;}
+.add-form-grid{display:grid;grid-template-columns:100px 1fr 150px 100px 80px;gap:10px;align-items:end;}
+.form-field label{display:block;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;}
+.form-field input,.form-field select{background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:12px;padding:7px 10px;border-radius:var(--radius-sm);width:100%;outline:none;transition:.2s;}
+.form-field input:focus,.form-field select:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(0,217,126,.1);}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── UTILS ── */
+.row-divider{height:1px;background:var(--border);margin:18px 0;}
+.mb16{margin-bottom:16px;}.mt16{margin-top:16px;}.mt8{margin-top:8px;}
+.flex{display:flex;align-items:center;gap:8px;}
+.gap4{gap:4px;}.ml-auto{margin-left:auto;}
+canvas{max-width:100%;}
+.tooltip-hint{font-size:10px;color:var(--text3);margin-top:8px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .cat-item-row{grid-template-columns:36px 80px 1fr 100px 80px 70px 70px 80px;}
+}
+@media(max-width:900px){
+  .g4{grid-template-columns:repeat(2,1fr);}
+  .g5{grid-template-columns:repeat(2,1fr);}
+  .g3{grid-template-columns:1fr;}
+  .col-span2,.col-span3{grid-column:span 1;}
+  .cat-item-row{grid-template-columns:1fr;}
+  .add-form-grid{grid-template-columns:1fr 1fr;}
+}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:24px;width:420px;max-width:calc(100vw - 32px);box-shadow:var(--shadow);}
+.modal h3{font-family:var(--font-display);font-size:20px;margin-bottom:16px;color:var(--green);}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
+
+/* ══════════════════════════════════════
+   LỆNH BẢO TRÌ MODAL
+══════════════════════════════════════ */
+.mo-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.mo-overlay.open{opacity:1;pointer-events:all;}
+
+.mo-panel{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:14px;
+  width:560px;max-width:calc(100vw - 32px);max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 80px rgba(0,0,0,.7);
+  transform:translateY(16px) scale(.98);transition:transform .28s cubic-bezier(.22,1,.36,1);
+}
+.mo-overlay.open .mo-panel{transform:none;}
+
+.mo-header{
+  padding:20px 24px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;
+  background:linear-gradient(135deg,rgba(245,166,35,.08),transparent);
+}
+.mo-header-icon{
+  width:44px;height:44px;border-radius:10px;
+  background:linear-gradient(135deg,#f5a623,#f97316);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;box-shadow:0 4px 16px rgba(245,166,35,.4);flex-shrink:0;
+}
+.mo-header-text h2{font-family:var(--font-display);font-size:22px;letter-spacing:1px;color:var(--text);}
+.mo-header-text p{font-size:11px;color:var(--text3);margin-top:2px;}
+.mo-close{margin-left:auto;width:32px;height:32px;border-radius:8px;border:1px solid var(--border2);background:var(--bg4);color:var(--text3);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;}
+.mo-close:hover{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+
+.mo-body{padding:20px 24px;}
+
+/* Type selector */
+.mo-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.mo-type-card{
+  border:2px solid var(--border);border-radius:10px;padding:14px 12px;
+  cursor:pointer;transition:all .2s;text-align:center;background:var(--bg3);
+}
+.mo-type-card:hover{border-color:var(--yellow);background:rgba(245,166,35,.06);}
+.mo-type-card.selected{border-color:var(--yellow);background:rgba(245,166,35,.1);box-shadow:0 0 0 1px var(--yellow);}
+.mo-type-icon{font-size:28px;margin-bottom:8px;}
+.mo-type-name{font-weight:800;font-size:12px;letter-spacing:.5px;color:var(--text);}
+.mo-type-desc{font-size:10px;color:var(--text3);margin-top:3px;line-height:1.4;}
+.mo-type-freq{font-family:var(--font-mono);font-size:10px;color:var(--yellow);margin-top:6px;font-weight:700;}
+
+/* Form fields */
+.mo-section{margin-bottom:18px;}
+.mo-section-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.mo-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mo-field label{display:block;font-size:10px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;}
+.mo-field input,.mo-field select,.mo-field textarea{
+  width:100%;background:var(--bg4);border:1px solid var(--border2);
+  color:var(--text);font-family:var(--font-body);font-size:12px;
+  padding:8px 12px;border-radius:6px;outline:none;transition:.2s;
+}
+.mo-field input:focus,.mo-field select:focus,.mo-field textarea:focus{border-color:var(--yellow);box-shadow:0 0 0 2px rgba(245,166,35,.1);}
+.mo-field textarea{resize:none;min-height:64px;}
+.mo-field.full{grid-column:span 2;}
+
+/* Zone multi-select */
+.mo-zones{display:flex;flex-wrap:wrap;gap:6px;}
+.mo-zone-chip{
+  padding:4px 12px;border-radius:20px;cursor:pointer;font-size:11px;font-weight:700;
+  border:1px solid var(--border2);background:var(--bg4);color:var(--text2);transition:.15s;
+}
+.mo-zone-chip:hover{border-color:var(--yellow);color:var(--yellow);}
+.mo-zone-chip.sel{background:rgba(245,166,35,.12);border-color:var(--yellow);color:var(--yellow);}
+
+/* Footer actions */
+.mo-footer{
+  padding:16px 24px;border-top:1px solid var(--border);
+  display:flex;gap:10px;align-items:center;justify-content:flex-end;
+  background:var(--bg3);border-radius:0 0 14px 14px;
+}
+.mo-preview-badge{flex:1;font-size:11px;color:var(--text3);}
+.mo-preview-badge span{color:var(--yellow);font-weight:700;}
+.btn-export-final{
+  display:inline-flex;align-items:center;gap:8px;padding:10px 22px;
+  border-radius:8px;cursor:pointer;font-size:12px;font-weight:800;
+  background:linear-gradient(135deg,#f5a623,#f97316);color:#000;border:none;
+  font-family:var(--font-body);letter-spacing:.5px;
+  box-shadow:0 4px 16px rgba(245,166,35,.4);transition:all .2s;
+}
+.btn-export-final:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(245,166,35,.5);}
+.btn-cancel-mo{
+  padding:9px 18px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;
+  background:var(--bg4);color:var(--text2);border:1px solid var(--border2);
+  font-family:var(--font-body);transition:.15s;
+}
+.btn-cancel-mo:hover{border-color:var(--red);color:var(--red);}
+
+/* ── CARD enhancements ── */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden;transition:all .2s;}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.02) 0%,transparent 60%);pointer-events:none;}
+.card:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,.3);}
+
+/* ── KPI card accent bar ── */
+.kpi-accent{position:absolute;top:0;left:0;width:3px;height:100%;border-radius:2px 0 0 2px;}
+
+/* NAV upgrade */
+.nav-tabs{display:flex;gap:0;padding:0 24px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;}
+.nav-tab{padding:12px 20px;cursor:pointer;font-size:11px;font-weight:700;color:var(--text3);border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.6px;text-transform:uppercase;display:flex;align-items:center;gap:7px;white-space:nowrap;position:relative;}
+.nav-tab:hover{color:var(--text2);background:rgba(255,255,255,.02);}
+.nav-tab.active{color:var(--green);border-bottom-color:var(--green);background:rgba(0,217,126,.03);}
+.nav-tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--green);box-shadow:0 0 6px var(--green);}
+
+
+/* ══════════════════════════════════════
+   ZONE DROPDOWN — CÂY THƯ MỤC LINH ĐỘNG
+══════════════════════════════════════ */
+.zone-btn-wrap{position:relative;display:inline-block;}
+
+.zone-dropdown{
+  position:fixed;top:112px;left:50%;transform:translateX(-50%);z-index:400;
+  width:min(680px,calc(100vw - 32px));
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.7);
+  display:none;flex-direction:column;max-height:80vh;overflow:hidden;
+}
+.zone-dropdown.open{display:flex;}
+
+.zd-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-shrink:0;background:linear-gradient(135deg,rgba(6,182,212,.07),transparent);border-radius:12px 12px 0 0;}
+.zd-icon{font-size:22px;}
+.zd-title{font-family:var(--font-display);font-size:20px;letter-spacing:1px;flex:1;color:var(--cyan);}
+.zd-stats{display:flex;gap:8px;align-items:center;}
+.zd-stat{font-size:10px;font-family:var(--font-mono);padding:2px 8px;border-radius:10px;font-weight:700;}
+.zd-stat.ok{background:var(--green-dim);color:var(--green);}
+.zd-stat.warn{background:var(--yellow-dim);color:var(--yellow);}
+.zd-stat.fault{background:var(--red-dim);color:var(--red);}
+.zd-close-btn{width:30px;height:30px;border-radius:8px;background:var(--bg4);border:1px solid var(--border2);color:var(--text3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;}
+.zd-close-btn:hover{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+
+.zd-toolbar{display:flex;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);flex-shrink:0;align-items:center;background:var(--bg3);}
+.zd-search{flex:1;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:11px;padding:5px 10px;border-radius:6px;outline:none;transition:.2s;}
+.zd-search:focus{border-color:var(--cyan);}
+.zd-add-machine-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:10px;font-weight:700;background:rgba(6,182,212,.12);color:var(--cyan);border:1px solid var(--cyan);font-family:var(--font-body);transition:.15s;white-space:nowrap;}
+.zd-add-machine-btn:hover{background:var(--cyan);color:#000;}
+
+.zd-body{overflow-y:auto;flex:1;}
+
+/* Machine node */
+.mc-node{border-bottom:1px solid var(--border);}
+.mc-node:last-child{border-bottom:none;}
+
+.mc-head{display:flex;align-items:center;gap:0;background:var(--bg3);transition:background .1s;cursor:pointer;user-select:none;}
+.mc-head:hover{background:var(--bg4);}
+
+.mc-expand-btn{width:36px;height:40px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);flex-shrink:0;transition:transform .2s;}
+.mc-node.open .mc-expand-btn{transform:rotate(90deg);}
+
+.mc-id-badge{font-family:var(--font-mono);font-size:9px;color:var(--text3);width:58px;flex-shrink:0;}
+.mc-name-wrap{flex:1;display:flex;align-items:center;gap:6px;padding:0 6px;}
+.mc-name{font-size:12px;font-weight:600;color:var(--text);}
+.mc-overdue-tag{font-size:9px;background:var(--red-dim);color:var(--red);padding:1px 5px;border-radius:6px;font-weight:700;flex-shrink:0;}
+
+.st3{display:flex;border:1px solid var(--border2);border-radius:5px;overflow:hidden;flex-shrink:0;margin-right:4px;}
+.st3 button{padding:4px 8px;font-size:9px;font-weight:800;cursor:pointer;background:var(--bg4);color:var(--text3);border:none;transition:all .1s;font-family:var(--font-body);line-height:1;}
+.st3 button:not(:last-child){border-right:1px solid var(--border2);}
+.st3 button.a-ok{background:var(--green-dim);color:var(--green);}
+.st3 button.a-warn{background:var(--yellow-dim);color:var(--yellow);}
+.st3 button.a-bt{background:var(--red-dim);color:var(--red);}
+
+.mc-actions{display:flex;gap:3px;padding:0 8px;flex-shrink:0;}
+.mc-act{width:24px;height:24px;border-radius:4px;border:1px solid var(--border2);background:var(--bg4);color:var(--text3);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:.15s;}
+.mc-act.edit:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(6,182,212,.1);}
+.mc-act.del:hover{border-color:var(--red);color:var(--red);background:var(--red-dim);}
+
+.mc-body{display:none;border-top:1px solid var(--border);background:var(--bg2);}
+.mc-node.open .mc-body{display:block;}
+
+/* Checklist rows */
+.cl-row{display:flex;align-items:center;gap:6px;padding:6px 14px 6px 44px;border-bottom:1px solid rgba(255,255,255,.03);transition:background .1s;}
+.cl-row:hover{background:rgba(255,255,255,.02);}
+
+.cl-st3{display:flex;border:1px solid var(--border2);border-radius:4px;overflow:hidden;flex-shrink:0;}
+.cl-st3 button{padding:3px 7px;font-size:9px;font-weight:800;cursor:pointer;background:var(--bg4);color:var(--text3);border:none;font-family:var(--font-body);transition:all .1s;}
+.cl-st3 button:not(:last-child){border-right:1px solid var(--border2);}
+.cl-st3 button.a-ok{background:var(--green-dim);color:var(--green);}
+.cl-st3 button.a-warn{background:var(--yellow-dim);color:var(--yellow);}
+.cl-st3 button.a-bt{background:var(--red-dim);color:var(--red);}
+
+.cl-name{font-size:11px;color:var(--text2);flex:1;}
+.cl-name-input{flex:1;background:var(--bg2);border:1px solid var(--cyan);color:var(--text);font-family:var(--font-body);font-size:11px;padding:3px 7px;border-radius:4px;outline:none;}
+.cl-note{background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:10px;padding:3px 7px;border-radius:4px;outline:none;width:100px;transition:width .2s;}
+.cl-note:focus{width:150px;border-color:var(--cyan);}
+.cl-note::placeholder{color:var(--text3);}
+
+.cl-item-actions{display:flex;gap:2px;flex-shrink:0;}
+.ci-act{width:20px;height:20px;border-radius:3px;border:1px solid transparent;background:transparent;color:var(--text3);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;transition:.1s;}
+.ci-act.edit:hover{color:var(--cyan);border-color:var(--cyan);background:rgba(6,182,212,.1);}
+.ci-act.del:hover{color:var(--red);border-color:var(--red);background:var(--red-dim);}
+
+/* Add item row */
+.cl-add-row{display:flex;gap:6px;align-items:center;padding:7px 14px 7px 44px;border-top:1px dashed var(--border2);background:rgba(6,182,212,.03);}
+.cl-add-input{flex:1;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:11px;padding:4px 9px;border-radius:5px;outline:none;}
+.cl-add-input:focus{border-color:var(--cyan);}
+.cl-add-btn{padding:4px 10px;border-radius:5px;cursor:pointer;font-size:10px;font-weight:700;background:rgba(6,182,212,.12);color:var(--cyan);border:1px solid var(--cyan);font-family:var(--font-body);transition:.15s;white-space:nowrap;}
+.cl-add-btn:hover{background:var(--cyan);color:#000;}
+
+.mc-note-row{padding:5px 14px 8px 44px;border-top:1px solid rgba(255,255,255,.04);}
+.mc-note-input{width:100%;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:10px;padding:4px 9px;border-radius:5px;resize:none;outline:none;}
+.mc-note-input:focus{border-color:var(--cyan);}
+
+/* Add machine form */
+.add-machine-form{border-top:1px dashed var(--border2);padding:10px 14px;display:none;background:rgba(6,182,212,.04);}
+.add-machine-form.open{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.amf-input{flex:1;min-width:120px;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:12px;padding:6px 10px;border-radius:6px;outline:none;}
+.amf-input:focus{border-color:var(--cyan);}
+.amf-select{background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:11px;padding:5px 8px;border-radius:6px;outline:none;}
+.amf-save{padding:6px 14px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;background:var(--green-dim);color:var(--green);border:1px solid var(--green);font-family:var(--font-body);transition:.15s;}
+.amf-save:hover{background:var(--green);color:#000;}
+.amf-cancel{padding:6px 10px;border-radius:6px;cursor:pointer;font-size:11px;background:var(--bg4);color:var(--text3);border:1px solid var(--border2);font-family:var(--font-body);transition:.15s;}
+
+/* Footer */
+.zd-footer{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-shrink:0;background:var(--bg3);border-radius:0 0 12px 12px;}
+.zd-summary{font-size:11px;color:var(--text3);flex:1;}
+.zd-summary b{color:var(--yellow);}
+.zd-export-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:800;background:linear-gradient(135deg,#f5a623,#f97316);color:#000;border:none;font-family:var(--font-body);transition:all .2s;white-space:nowrap;box-shadow:0 2px 10px rgba(245,166,35,.35);}
+.zd-export-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(245,166,35,.5);}
+
+.zone-backdrop{position:fixed;inset:0;z-index:399;display:none;}
+.zone-backdrop.active{display:block;}
+
+/* ══════════════════════════════════════
+   BÁO CÁO NGÀY
+══════════════════════════════════════ */
+.dr-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:18px;flex-wrap:wrap;}
+.dr-date-pill{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:6px 14px;}
+.dr-date-pill label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;}
+.dr-date-pill input[type=date]{background:transparent;border:none;color:var(--text);font-family:var(--font-mono);font-size:12px;outline:none;cursor:pointer;}
+.dr-shift-tabs{display:flex;gap:0;border:1px solid var(--border2);border-radius:8px;overflow:hidden;}
+.dr-shift-tab{padding:6px 16px;cursor:pointer;font-size:11px;font-weight:700;background:var(--bg4);color:var(--text3);border:none;font-family:var(--font-body);transition:.15s;}
+.dr-shift-tab:not(:last-child){border-right:1px solid var(--border2);}
+.dr-shift-tab.active{background:var(--green-dim);color:var(--green);}
+.dr-kpi-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;}
+.dr-kpi{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;position:relative;overflow:hidden;}
+.dr-kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px 0 0 2px;}
+.dr-kpi.green::before{background:var(--green);}
+.dr-kpi.yellow::before{background:var(--yellow);}
+.dr-kpi.red::before{background:var(--red);}
+.dr-kpi.blue::before{background:var(--blue);}
+.dr-kpi.cyan::before{background:var(--cyan);}
+.dr-kpi-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px;}
+.dr-kpi-val{font-family:var(--font-display);font-size:28px;line-height:1;}
+.dr-kpi-unit{font-size:10px;color:var(--text2);margin-left:3px;}
+.dr-layout{display:grid;grid-template-columns:1fr 400px;gap:16px;align-items:start;}
+@media(max-width:1100px){.dr-layout{grid-template-columns:1fr;}}
+.dr-form-card,.dr-log-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.dr-form-header,.dr-log-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.dr-form-header{background:linear-gradient(135deg,rgba(0,217,126,.06),transparent);}
+.dr-log-header{background:linear-gradient(135deg,rgba(59,130,246,.06),transparent);}
+.dr-form-title,.dr-log-title{font-family:var(--font-display);font-size:16px;letter-spacing:1px;flex:1;}
+.dr-form-body{padding:16px;}
+.dr-field{margin-bottom:12px;}
+.dr-field label{display:block;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;}
+.dr-field input,.dr-field select,.dr-field textarea{width:100%;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:12px;padding:7px 11px;border-radius:6px;outline:none;transition:.2s;}
+.dr-field input:focus,.dr-field select:focus,.dr-field textarea:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(0,217,126,.1);}
+.dr-field textarea{resize:vertical;min-height:56px;}
+.dr-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.dr-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.dr-status-group{display:flex;gap:6px;flex-wrap:wrap;}
+.dr-status-btn{padding:5px 12px;border-radius:20px;cursor:pointer;font-size:11px;font-weight:700;border:1px solid var(--border2);background:var(--bg4);color:var(--text2);transition:.15s;font-family:var(--font-body);}
+.dr-status-btn.s-ok.active{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.dr-status-btn.s-warn.active{background:var(--yellow-dim);border-color:var(--yellow);color:var(--yellow);}
+.dr-status-btn.s-fault.active{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.dr-status-btn.s-pm.active{background:var(--blue-dim);border-color:var(--blue);color:var(--blue);}
+.dr-submit-btn{width:100%;padding:10px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:800;background:linear-gradient(135deg,var(--green),#00b368);color:#000;border:none;font-family:var(--font-body);letter-spacing:.5px;box-shadow:0 3px 12px rgba(0,217,126,.35);transition:all .2s;margin-top:4px;}
+.dr-submit-btn:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(0,217,126,.45);}
+.dr-log-body{max-height:640px;overflow-y:auto;}
+.dr-entry{border-bottom:1px solid var(--border);padding:11px 16px;transition:background .1s;}
+.dr-entry:hover{background:rgba(255,255,255,.02);}
+.dr-entry:last-child{border-bottom:none;}
+.dr-entry-head{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.dr-entry-time{font-family:var(--font-mono);font-size:10px;color:var(--text3);}
+.dr-entry-machine{font-weight:700;font-size:12px;flex:1;}
+.dr-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dr-status-dot.ok{background:var(--green);box-shadow:0 0 5px var(--green);}
+.dr-status-dot.warn{background:var(--yellow);box-shadow:0 0 5px var(--yellow);}
+.dr-status-dot.fault{background:var(--red);box-shadow:0 0 5px var(--red);animation:pulse 1s infinite;}
+.dr-status-dot.pm{background:var(--blue);box-shadow:0 0 5px var(--blue);}
+.dr-entry-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;}
+.dr-entry-badge.ok{background:var(--green-dim);color:var(--green);}
+.dr-entry-badge.warn{background:var(--yellow-dim);color:var(--yellow);}
+.dr-entry-badge.fault{background:var(--red-dim);color:var(--red);}
+.dr-entry-badge.pm{background:var(--blue-dim);color:var(--blue);}
+.dr-entry-body{font-size:11px;color:var(--text2);line-height:1.5;}
+.dr-entry-meta{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;}
+.dr-entry-meta span{font-size:10px;color:var(--text3);}
+.dr-entry-meta .dt{color:var(--red);font-family:var(--font-mono);font-weight:700;}
+.dr-entry-del{width:20px;height:20px;border-radius:4px;border:1px solid transparent;background:transparent;color:var(--text3);cursor:pointer;font-size:10px;display:flex;align-items:center;justify-content:center;transition:.1s;flex-shrink:0;}
+.dr-entry-del:hover{color:var(--red);border-color:var(--red);background:var(--red-dim);}
+.dr-link-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:8px;font-size:9px;font-weight:700;background:rgba(245,166,35,.12);color:var(--yellow);border:1px solid rgba(245,166,35,.3);cursor:pointer;transition:.15s;}
+.dr-link-badge:hover{background:var(--yellow-dim);}
+.dr-empty{text-align:center;padding:40px;color:var(--text3);}
+.dr-empty-icon{font-size:36px;margin-bottom:10px;opacity:.4;}
+
+
+/* ── ADD FORM ── */
+.add-form{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;margin-bottom:16px;}
+.add-form-grid{display:grid;grid-template-columns:80px 1fr 180px 180px 100px;gap:10px;align-items:end;}
+.form-field{display:flex;flex-direction:column;gap:4px;}
+.form-field label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;}
+.form-field input,.form-field select{background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:12px;padding:6px 10px;border-radius:var(--radius-sm);outline:none;transition:.2s;}
+.form-field input:focus,.form-field select:focus{border-color:var(--green);}
+.act-cancel{background:var(--bg4);color:var(--text3);border-color:var(--border2);}
+.act-cancel:hover{background:var(--border2);color:var(--text);}
+
+/* ── FLEX UTILS ── */
+.flex{display:flex;}.gap4{gap:4px;}.mt16{margin-top:16px;}.mb16{margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">LIFESFOOD <span>Factory Operations Platform</span><span style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-left:6px;background:var(--bg4);padding:2px 6px;border-radius:3px;border:1px solid var(--border2)">v9</span></div>
+  <div class="topbar-divider"></div>
+  <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  <div class="shift-badge" id="shiftLabel">⚙ Ca đang chạy...</div>
+  <div class="topbar-divider"></div>
+  <button class="export-order-btn" onclick="openExportModal()">📋 Xuất Lệnh Bảo Trì</button>
+  <div class="clock" id="clock">--:--:--</div>
+</div>
+
+<!-- ═══ MODAL XUẤT LỆNH BẢO TRÌ ═══ -->
+<div class="mo-overlay" id="moOverlay" onclick="handleMoOverlayClick(event)">
+  <div class="mo-panel" id="moPanel">
+    <div class="mo-header">
+      <div class="mo-header-icon">📋</div>
+      <div class="mo-header-text">
+        <h2>XUẤT LỆNH BẢO TRÌ</h2>
+        <p>Tạo lệnh bảo trì chuẩn — Trưởng BPBT đề xuất · Giám đốc nhà máy duyệt</p>
+      </div>
+      <button class="mo-close" onclick="closeExportModal()">✕</button>
+    </div>
+    <div class="mo-body">
+
+      <!-- BƯỚC 1: Loại lệnh -->
+      <div class="mo-section">
+        <div class="mo-section-label">① Loại lệnh bảo trì</div>
+        <div class="mo-type-grid">
+          <div class="mo-type-card selected" data-type="weekly" onclick="selectMoType('weekly',this)">
+            <div class="mo-type-icon">📅</div>
+            <div class="mo-type-name">HÀNG TUẦN</div>
+            <div class="mo-type-desc">Kiểm tra định kỳ, PM nhỏ, vệ sinh & bôi trơn</div>
+            <div class="mo-type-freq">Chu kỳ: 7 ngày</div>
+          </div>
+          <div class="mo-type-card" data-type="monthly" onclick="selectMoType('monthly',this)">
+            <div class="mo-type-icon">📊</div>
+            <div class="mo-type-name">HÀNG THÁNG</div>
+            <div class="mo-type-desc">PM cấp 2, thay thế phụ tùng, hiệu chỉnh thiết bị</div>
+            <div class="mo-type-freq">Chu kỳ: 30 ngày</div>
+          </div>
+          <div class="mo-type-card" data-type="overhaul" onclick="selectMoType('overhaul',this)">
+            <div class="mo-type-icon">🔩</div>
+            <div class="mo-type-name">ĐẠI TU MÁY</div>
+            <div class="mo-type-desc">Overhaul toàn diện, thay thế lớn, kiểm định an toàn</div>
+            <div class="mo-type-freq">Chu kỳ: 6–12 tháng</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BƯỚC 2: Khu vực -->
+      <div class="mo-section">
+        <div class="mo-section-label">② Khu vực / Thiết bị</div>
+        <div class="mo-zones" id="moZones">
+          <div class="mo-zone-chip sel" data-zone="all" onclick="toggleMoZone('all',this)">🏭 Toàn nhà máy</div>
+          <div class="mo-zone-chip" data-zone="cooking" onclick="toggleMoZone('cooking',this)">🍲 Cooking</div>
+          <div class="mo-zone-chip" data-zone="retort" onclick="toggleMoZone('retort',this)">♨️ Retort</div>
+          <div class="mo-zone-chip" data-zone="filling" onclick="toggleMoZone('filling',this)">🥫 Filling</div>
+          <div class="mo-zone-chip" data-zone="labeling" onclick="toggleMoZone('labeling',this)">🏷 Labeling</div>
+          <div class="mo-zone-chip" data-zone="roasting" onclick="toggleMoZone('roasting',this)">☕ Roasting</div>
+          <div class="mo-zone-chip" data-zone="utilities" onclick="toggleMoZone('utilities',this)">⚙ Utilities</div>
+          <div class="mo-zone-chip" data-zone="hvac" onclick="toggleMoZone('hvac',this)">❄️ HVAC</div>
+          <div class="mo-zone-chip" data-zone="electrical" onclick="toggleMoZone('electrical',this)">⚡ Điện</div>
+        </div>
+      </div>
+
+      <!-- BƯỚC 3: Thông tin lệnh -->
+      <div class="mo-section">
+        <div class="mo-section-label">③ Thông tin lệnh</div>
+        <div class="mo-fields">
+          <div class="mo-field">
+            <label>Số lệnh</label>
+            <input type="text" id="mo-no" placeholder="LBT-2025-001">
+          </div>
+          <div class="mo-field">
+            <label>Ngày lập lệnh</label>
+            <input type="date" id="mo-date">
+          </div>
+          <div class="mo-field">
+            <label>Ngày thực hiện dự kiến</label>
+            <input type="date" id="mo-exec-date">
+          </div>
+          <div class="mo-field">
+            <label>Mức độ ưu tiên</label>
+            <select id="mo-priority">
+              <option value="Bình thường">Bình thường</option>
+              <option value="Cao">Cao</option>
+              <option value="Khẩn cấp">Khẩn cấp</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- BƯỚC 4: Nhân sự -->
+      <div class="mo-section">
+        <div class="mo-section-label">④ Nhân sự phụ trách</div>
+        <div class="mo-fields">
+          <div class="mo-field">
+            <label>Trưởng bộ phận bảo trì</label>
+            <input type="text" id="mo-chief" placeholder="Họ tên trưởng BPBT">
+          </div>
+          <div class="mo-field">
+            <label>Kỹ thuật viên thực hiện</label>
+            <input type="text" id="mo-tech" placeholder="Họ tên KTV">
+          </div>
+          <div class="mo-field full">
+            <label>Ghi chú / Yêu cầu đặc biệt</label>
+            <textarea id="mo-note" placeholder="Các lưu ý an toàn, yêu cầu dừng máy, LOTO, PPE..."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="mo-footer">
+      <div class="mo-preview-badge">Sẽ tạo file Excel chuẩn · <span id="moEquipCount">—</span> thiết bị · 2 sheet</div>
+      <button class="btn-cancel-mo" onclick="closeExportModal()">Hủy</button>
+      <button class="btn-export-final" onclick="executeExportOrder()">📄 Xuất Lệnh Bảo Trì</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- NAV TABS -->
+<div class="nav-tabs">
+  <div class="nav-tab active" data-tab="ceo" onclick="switchTab('ceo',this)">🏭 Giám Đốc Nhà Máy</div>
+  <div class="nav-tab" data-tab="manager" onclick="switchTab('manager',this)">🟠 Manager View</div>
+  <div class="nav-tab" data-tab="dailyreport" onclick="switchTab('dailyreport',this)">📝 Báo Cáo Ngày <span class="badge" id="drBadge">0</span></div>
+  <div class="nav-tab" data-tab="operation" onclick="switchTab('operation',this)">🟢 Operation <span class="badge" id="alertBadge">3</span></div>
+  <div class="nav-tab" data-tab="assets" onclick="switchTab('assets',this)">🏭 Assets</div>
+  <div class="nav-tab" data-tab="catalog" onclick="switchTab('catalog',this)">📋 Danh Mục TB</div>
+  <div class="nav-tab" data-tab="pareto" onclick="switchTab('pareto',this)">📊 Pareto</div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">Khu:</span>
+  <button class="filter-btn active" id="btn-all" onclick="filterZone('all',this)">Tất cả</button>
+  <div class="zone-btn-wrap" id="wrap-cooking">
+    <button class="filter-btn" onclick="toggleZoneDropdown('cooking',this)">🍲 Cooking ▾</button>
+    <div class="zone-dropdown" id="zd-cooking"></div>
+  </div>
+  <div class="zone-btn-wrap" id="wrap-retort">
+    <button class="filter-btn" onclick="toggleZoneDropdown('retort',this)">♨️ Retort ▾</button>
+    <div class="zone-dropdown" id="zd-retort"></div>
+  </div>
+  <div class="zone-btn-wrap" id="wrap-filling">
+    <button class="filter-btn" onclick="toggleZoneDropdown('filling',this)">🥫 Filling ▾</button>
+    <div class="zone-dropdown" id="zd-filling"></div>
+  </div>
+  <div class="zone-btn-wrap" id="wrap-labeling">
+    <button class="filter-btn" onclick="toggleZoneDropdown('labeling',this)">🏷 Labeling ▾</button>
+    <div class="zone-dropdown" id="zd-labeling"></div>
+  </div>
+  <div class="zone-btn-wrap" id="wrap-roasting">
+    <button class="filter-btn" onclick="toggleZoneDropdown('roasting',this)">☕ Roasting ▾</button>
+    <div class="zone-dropdown" id="zd-roasting"></div>
+  </div>
+  <div class="zone-btn-wrap" id="wrap-utilities">
+    <button class="filter-btn" onclick="toggleZoneDropdown('utilities',this)">⚙ Utilities ▾</button>
+    <div class="zone-dropdown" id="zd-utilities"></div>
+  </div>
+  <div class="zone-btn-wrap" id="wrap-hvac">
+    <button class="filter-btn" onclick="toggleZoneDropdown('hvac',this)">❄️ HVAC ▾</button>
+    <div class="zone-dropdown" id="zd-hvac"></div>
+  </div>
+  <div class="zone-btn-wrap" id="wrap-electrical">
+    <button class="filter-btn" onclick="toggleZoneDropdown('electrical',this)">⚡ Điện ▾</button>
+    <div class="zone-dropdown" id="zd-electrical"></div>
+  </div>
+  <div class="filter-sep"></div>
+  <button class="btn btn-blue" onclick="exportWeekly()">⬇ Weekly</button>
+  <button class="btn btn-blue" onclick="exportMonthly()">⬇ Monthly</button>
+</div>
+
+<!-- backdrop để close dropdown -->
+<div class="zone-backdrop" id="zoneBackdrop" onclick="closeAllDropdowns()"></div>
+
+
+<div class="main active" id="tab-ceo">
+  <div id="riskAlerts" class="mb16"></div>
+  <div class="grid g5 mb16">
+    <div class="card">
+      <div class="card-title"><span class="icon">📈</span>OEE Hôm Nay</div>
+      <div class="oee-big" id="oeeVal">78.4%</div>
+      <div class="oee-target">Target: 85% | WC: 85%+</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" id="oeeBar" style="background:var(--yellow);"></div></div>
+      <div class="kpi-trend trend-warn mt16">▼ −2.1% so tuần trước</div>
+    </div>
+    <div class="card bg-red">
+      <div class="card-title"><span class="icon">💸</span>Downtime Cost Hôm Nay</div>
+      <div class="money-big" id="downtimeCost">0</div>
+      <div class="money-sub">VNĐ mất do dừng máy</div>
+      <div class="kpi-trend trend-down mt16" id="downtimeCostSub"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">⏱</span>Tổng Downtime</div>
+      <div class="kpi-val red" id="totalDowntime">--</div><span class="kpi-unit">giờ</span>
+      <div class="kpi-sub" id="dtBreakdown"></div>
+      <div class="kpi-trend trend-down mt16" id="dtTrend"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">✅</span>Planned vs Breakdown</div>
+      <div class="kpi-val green" id="plannedPct">--</div><span class="kpi-unit">% Planned</span>
+      <div class="kpi-bar mt16"><div class="kpi-bar-fill" id="plannedBar" style="background:var(--green);"></div></div>
+      <div class="kpi-sub" id="plannedSub"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🔧</span>MTBF / MTTR</div>
+      <div class="flex gap4">
+        <div><div class="kpi-val green" id="mtbfVal">--</div><span class="kpi-unit">h MTBF</span></div>
+        <div style="margin-left:12px"><div class="kpi-val yellow" id="mttrVal">--</div><span class="kpi-unit">h MTTR</span></div>
+      </div>
+      <div class="kpi-sub mt16">Avg thiết bị Class A+B</div>
+    </div>
+  </div>
+  <div class="grid g2 mb16">
+    <div class="card">
+      <div class="card-title"><span class="icon">🏆</span>Top 5 Máy Mất Tiền Nhiều Nhất</div>
+      <table class="tbl" id="top5Table"></table>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">📉</span>Downtime Trend (7 ngày)</div>
+      <canvas id="trendChart" height="180"></canvas>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-title"><span class="icon">🗂</span>Downtime Theo Khu</div>
+      <canvas id="zoneChart" height="200"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🍩</span>Planned vs Breakdown</div>
+      <canvas id="donutChart" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MANAGER VIEW ═══ -->
+<div class="main" id="tab-manager">
+  <div class="grid g4 mb16">
+    <div class="card">
+      <div class="card-title"><span class="icon">📋</span>PM Compliance</div>
+      <div class="kpi-val green" id="pmComp">--</div><span class="kpi-unit">%</span>
+      <div class="kpi-bar mt16"><div class="kpi-bar-fill" id="pmBar" style="background:var(--green);"></div></div>
+      <div class="kpi-sub" id="pmSub"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🧹</span>AM Compliance</div>
+      <div class="kpi-val yellow" id="amComp">--</div><span class="kpi-unit">%</span>
+      <div class="kpi-bar mt16"><div class="kpi-bar-fill" id="amBar" style="background:var(--yellow);"></div></div>
+      <div class="kpi-sub" id="amSub"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">⚡</span>MTTR Avg</div>
+      <div class="kpi-val yellow" id="mttrAvg">--</div><span class="kpi-unit">giờ</span>
+      <div class="kpi-sub">Target: &lt; 2h Class A</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🔁</span>Lỗi Lặp Lại</div>
+      <div class="kpi-val red" id="repeatFaultsKPI">--</div><span class="kpi-unit">sự cố</span>
+      <div class="kpi-sub red">Cần RCA ngay</div>
+    </div>
+  </div>
+  <div class="card mb16">
+    <div class="card-title"><span class="icon">🗺</span>Trạng Thái Các Khu</div>
+    <div class="grid g-auto mt16" id="zoneStatusGrid"></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">⚙</span>Trạng Thái Thiết Bị (Class A/B/C)</div>
+    <div style="overflow-x:auto"><table class="tbl" id="equipTable"></table></div>
+  </div>
+</div>
+
+<!-- ═══ OPERATION VIEW ═══ -->
+<div class="main" id="tab-operation">
+  <div class="grid g2 mb16">
+    <div class="card">
+      <div class="card-title"><span class="icon">📝</span>Work Orders – Ca Hiện Tại</div>
+      <div id="workOrders"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">✅</span>AM Checklist – Ca Sáng</div>
+      <div id="amChecklist"></div>
+    </div>
+  </div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-title red"><span class="icon">⚠️</span>Thiết Bị Overdue PM</div>
+      <table class="tbl" id="overdueTable"></table>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🔩</span>Vật Tư Sắp Hết</div>
+      <table class="tbl" id="sparePartsTable"></table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ DAILY REPORT TAB ═══ -->
+<div class="main" id="tab-dailyreport">
+
+  <!-- TOOLBAR -->
+  <div class="dr-toolbar">
+    <div class="dr-date-pill">
+      <label>Ngày báo cáo</label>
+      <input type="date" id="dr-date-picker" onchange="refreshDailyKPIs()">
+    </div>
+    <div class="dr-shift-tabs">
+      <button class="dr-shift-tab active" data-shift="ca-sang" onclick="selectShift('ca-sang',this)">☀ Ca Sáng</button>
+      <button class="dr-shift-tab" data-shift="ca-chieu" onclick="selectShift('ca-chieu',this)">🌤 Ca Chiều</button>
+      <button class="dr-shift-tab" data-shift="ca-dem" onclick="selectShift('ca-dem',this)">🌙 Ca Đêm</button>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-blue" onclick="exportDailyReport()">⬇ Xuất BC Ngày</button>
+    <button class="btn" style="background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow)" onclick="linkToMaintenancePlan()">🔗 Tạo Lệnh BT từ BC</button>
+  </div>
+
+  <!-- KPI BAR -->
+  <div class="dr-kpi-bar" id="dr-kpi-bar">
+    <div class="dr-kpi green"><div class="dr-kpi-label">Máy đang chạy OK</div><div class="dr-kpi-val" id="dr-ok">0</div></div>
+    <div class="dr-kpi yellow"><div class="dr-kpi-label">Cảnh báo / Theo dõi</div><div class="dr-kpi-val" id="dr-warn">0</div></div>
+    <div class="dr-kpi red"><div class="dr-kpi-label">Lỗi / Dừng máy</div><div class="dr-kpi-val" id="dr-fault">0</div></div>
+    <div class="dr-kpi blue"><div class="dr-kpi-label">Đang bảo trì PM</div><div class="dr-kpi-val" id="dr-pm">0</div></div>
+    <div class="dr-kpi cyan"><div class="dr-kpi-label">Tổng giờ dừng máy</div><div class="dr-kpi-val" id="dr-dh">0<span class="dr-kpi-unit">h</span></div></div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="dr-layout">
+
+    <!-- LOG PANEL -->
+    <div class="dr-log-card">
+      <div class="dr-log-header">
+        <span class="dr-log-title">📋 Nhật Ký Máy Móc Hôm Nay</span>
+        <div class="dr-log-actions">
+          <select id="dr-filter-zone" style="background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-size:11px;padding:4px 8px;border-radius:5px;outline:none;" onchange="renderDailyLog()">
+            <option value="">Tất cả khu</option>
+            <option value="cooking">🍲 Cooking</option>
+            <option value="retort">♨️ Retort</option>
+            <option value="filling">🥫 Filling</option>
+            <option value="labeling">🏷 Labeling</option>
+            <option value="roasting">☕ Roasting</option>
+            <option value="utilities">⚙ Utilities</option>
+            <option value="hvac">❄️ HVAC</option>
+            <option value="electrical">⚡ Điện</option>
+          </select>
+          <select id="dr-filter-status" style="background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-size:11px;padding:4px 8px;border-radius:5px;outline:none;" onchange="renderDailyLog()">
+            <option value="">Tất cả</option>
+            <option value="ok">✅ OK</option>
+            <option value="warn">⚠ Cảnh báo</option>
+            <option value="fault">❌ Lỗi</option>
+            <option value="pm">🔧 PM</option>
+          </select>
+        </div>
+      </div>
+      <div class="dr-log-body" id="dr-log-body">
+        <div class="dr-empty"><div class="dr-empty-icon">📋</div><div>Chưa có bản ghi nào hôm nay.<br>Điền form bên phải để ghi nhận.</div></div>
+      </div>
+    </div>
+
+    <!-- ENTRY FORM -->
+    <div class="dr-form-card">
+      <div class="dr-form-header">
+        <span style="font-size:18px">✍</span>
+        <span class="dr-form-title">Ghi Nhận Tình Trạng</span>
+      </div>
+      <div class="dr-form-body">
+        <div class="dr-row2">
+          <div class="dr-field">
+            <label>Giờ ghi nhận</label>
+            <input type="time" id="dr-time" step="60">
+          </div>
+          <div class="dr-field">
+            <label>Khu vực</label>
+            <select id="dr-zone" onchange="updateMachineOptions()">
+              <option value="">-- Chọn khu --</option>
+              <option value="cooking">🍲 Cooking</option>
+              <option value="retort">♨️ Retort</option>
+              <option value="filling">🥫 Filling</option>
+              <option value="labeling">🏷 Labeling</option>
+              <option value="roasting">☕ Roasting</option>
+              <option value="utilities">⚙ Utilities</option>
+              <option value="hvac">❄️ HVAC</option>
+              <option value="electrical">⚡ Điện</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="dr-field">
+          <label>Tên thiết bị</label>
+          <select id="dr-machine">
+            <option value="">-- Chọn thiết bị --</option>
+          </select>
+        </div>
+
+        <div class="dr-field">
+          <label>Trạng thái thiết bị</label>
+          <div class="dr-status-group" id="dr-status-group">
+            <button class="dr-status-btn s-ok active" data-v="ok" onclick="selectDRStatus('ok',this)">✅ Chạy OK</button>
+            <button class="dr-status-btn s-warn" data-v="warn" onclick="selectDRStatus('warn',this)">⚠ Cảnh báo</button>
+            <button class="dr-status-btn s-fault" data-v="fault" onclick="selectDRStatus('fault',this)">❌ Lỗi / Dừng</button>
+            <button class="dr-status-btn s-pm" data-v="pm" onclick="selectDRStatus('pm',this)">🔧 Đang PM</button>
+          </div>
+        </div>
+
+        <div class="dr-row2" id="dr-downtime-row">
+          <div class="dr-field">
+            <label>Giờ bắt đầu dừng</label>
+            <input type="time" id="dr-dt-start" step="60">
+          </div>
+          <div class="dr-field">
+            <label>Giờ kết thúc / dự kiến</label>
+            <input type="time" id="dr-dt-end" step="60">
+          </div>
+        </div>
+
+        <div class="dr-field">
+          <label>Nguyên nhân / Mô tả sự cố</label>
+          <textarea id="dr-cause" placeholder="Mô tả chi tiết: tiếng ồn bất thường, rò rỉ, lỗi sensor..."></textarea>
+        </div>
+
+        <div class="dr-row2">
+          <div class="dr-field">
+            <label>Hành động đã thực hiện</label>
+            <input type="text" id="dr-action" placeholder="Vệ sinh, thay dầu, gọi kỹ thuật...">
+          </div>
+          <div class="dr-field">
+            <label>Người ghi nhận</label>
+            <input type="text" id="dr-reporter" placeholder="Họ tên / mã nhân viên">
+          </div>
+        </div>
+
+        <div class="dr-field">
+          <label>Liên kết kế hoạch bảo trì</label>
+          <select id="dr-link-plan">
+            <option value="">-- Không liên kết --</option>
+            <option value="weekly">📅 Lệnh BT Hàng Tuần</option>
+            <option value="monthly">📊 Lệnh BT Hàng Tháng</option>
+            <option value="overhaul">🔩 Đại Tu</option>
+            <option value="new">➕ Tạo lệnh BT mới từ sự cố này</option>
+          </select>
+        </div>
+
+        <div class="dr-field" id="dr-priority-field" style="display:none">
+          <label>Mức độ ưu tiên xử lý</label>
+          <div class="dr-status-group">
+            <button class="dr-status-btn s-ok active" data-p="normal" onclick="selectDRPriority('normal',this)">Bình thường</button>
+            <button class="dr-status-btn s-warn" data-p="high" onclick="selectDRPriority('high',this)">⚠ Cao</button>
+            <button class="dr-status-btn s-fault" data-p="urgent" onclick="selectDRPriority('urgent',this)">🚨 Khẩn cấp</button>
+          </div>
+        </div>
+
+        <button class="dr-submit-btn" onclick="submitDailyEntry()">✓ Ghi Nhận & Lưu</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ ASSETS VIEW ═══ -->
+<div class="main" id="tab-assets">
+  <div class="card">
+    <div class="card-title"><span class="icon">🏭</span>Asset Hierarchy – LifesFood Factory</div>
+    <div id="assetTree" style="overflow-x:auto;margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- ═══ CATALOG TAB ═══ -->
+<div class="main" id="tab-catalog">
+  <!-- Toolbar -->
+  <div class="catalog-toolbar">
+    <input type="text" class="search-input" placeholder="🔍 Tìm tên thiết bị..." id="catSearch" oninput="renderCatalog()">
+    <select class="select-input" id="catFilterZone" onchange="renderCatalog()">
+      <option value="">Tất cả khu vực</option>
+    </select>
+    <select class="select-input" id="catFilterCat" onchange="renderCatalog()">
+      <option value="">Tất cả hạng mục</option>
+    </select>
+    <div class="filter-sep"></div>
+    <button class="btn btn-green" onclick="showAddForm()">+ Thêm thiết bị</button>
+    <button class="btn btn-blue" onclick="exportCatalog()">⬇ Xuất Excel</button>
+    <button class="btn btn-yellow" onclick="triggerImport()">⬆ Nhập Excel</button>
+    <input type="file" id="importInput" accept=".xlsx,.csv" style="display:none" onchange="importCatalog(event)">
+  </div>
+
+  <!-- Stats -->
+  <div class="catalog-stats" id="catStats"></div>
+
+  <!-- Add Form (hidden by default) -->
+  <div class="add-form" id="addForm" style="display:none">
+    <div class="card-title" style="margin-bottom:12px"><span class="icon">➕</span>Thêm thiết bị mới</div>
+    <div class="add-form-grid">
+      <div class="form-field">
+        <label>STT</label>
+        <input type="number" id="af-stt" placeholder="Tự động">
+      </div>
+      <div class="form-field">
+        <label>Tên thiết bị *</label>
+        <input type="text" id="af-name" placeholder="VD: Máy nén khí">
+      </div>
+      <div class="form-field">
+        <label>Khu vực *</label>
+        <select id="af-zone"><option value="">Chọn khu...</option></select>
+      </div>
+      <div class="form-field">
+        <label>Hạng mục</label>
+        <input type="text" id="af-cat" placeholder="VD: Khí nén">
+      </div>
+      <div class="form-field">
+        <label>Số lượng</label>
+        <input type="number" id="af-qty" placeholder="1" min="0">
+      </div>
+    </div>
+    <div class="flex mt16" style="gap:8px">
+      <button class="btn btn-green" onclick="addItem()">✓ Lưu thiết bị</button>
+      <button class="btn" style="background:var(--bg4);color:var(--text2);border-color:var(--border2)" onclick="hideAddForm()">Hủy</button>
+    </div>
+  </div>
+
+  <!-- Catalog Table -->
+  <div id="catalogContainer" class="mt16"></div>
+</div>
+
+<!-- ═══ PARETO VIEW ═══ -->
+<div class="main" id="tab-pareto">
+  <div class="grid g2 mb16">
+    <div class="card">
+      <div class="card-title"><span class="icon">📊</span>Pareto – Nguyên Nhân Downtime (Tháng này)</div>
+      <canvas id="paretoChart" height="220"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon">🔁</span>Lỗi Lặp Lại – Top 10</div>
+      <table class="tbl" id="repeatFaultTable"></table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span class="icon">🚧</span>Bottleneck – 20% Nguyên Nhân → 80% Downtime</div>
+    <div id="paretoList" class="mt16"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     DATA & LOGIC
+════════════════════════════ -->
+<script>
+// ─── CHART REGISTRY (prevent duplicate instances) ─────────────
+const _charts = {};
+function _getCtx(id){ return document.getElementById(id)?.getContext('2d'); }
+function _newChart(id, config){
+  if(_charts[id]){ _charts[id].destroy(); }
+  const ctx = _getCtx(id);
+  if(!ctx) return null;
+  _charts[id] = new Chart(ctx, config);
+  return _charts[id];
+}
+
+// ─── CONSTANTS ────────────────────────────────────────────────
+const VND_PER_HOUR = 45_000_000;
+
+// ─── CATALOG DATA (from DANH_MỤC_THIẾT_BỊ_MÁY_MÓC_LFOOD.xlsx) ──
+let catalogItems = [
+  // Utility – Khí nén
+  {id:1,zone:"Utility",cat:"Khí nén",name:"Máy nén khí",qty:2},
+  {id:2,zone:"Utility",cat:"Khí nén",name:"Bình tích áp",qty:1},
+  // Utility – XLNT
+  {id:3,zone:"Utility",cat:"XLNT",name:"Bơm nguồn",qty:2},
+  {id:4,zone:"Utility",cat:"XLNT",name:"Bơm điều hòa",qty:2},
+  {id:5,zone:"Utility",cat:"XLNT",name:"Bồn pha hóa chất",qty:4},
+  {id:6,zone:"Utility",cat:"XLNT",name:"Bơm khuấy PAM",qty:1},
+  {id:7,zone:"Utility",cat:"XLNT",name:"Bơm khuấy polymer",qty:1},
+  {id:8,zone:"Utility",cat:"XLNT",name:"Bơm định lượng",qty:7},
+  {id:9,zone:"Utility",cat:"XLNT",name:"Bơm màng máy lọc khung bản",qty:1},
+  {id:10,zone:"Utility",cat:"XLNT",name:"Bơm bùn hóa lý",qty:2},
+  {id:11,zone:"Utility",cat:"XLNT",name:"Bơm bùn sinh học",qty:2},
+  {id:12,zone:"Utility",cat:"XLNT",name:"Bơm tuần hoàn",qty:2},
+  {id:13,zone:"Utility",cat:"XLNT",name:"Khuấy anoxic",qty:1},
+  {id:14,zone:"Utility",cat:"XLNT",name:"Máy nén khí XLNT",qty:2},
+  {id:15,zone:"Utility",cat:"XLNT",name:"Máy ép khung bản",qty:1},
+  // Utility – Lò hơi
+  {id:16,zone:"Utility",cat:"Lò hơi",name:"Lò hơi",qty:1},
+  {id:17,zone:"Utility",cat:"Lò hơi",name:"Quạt thổi",qty:1},
+  {id:18,zone:"Utility",cat:"Lò hơi",name:"Quạt hút",qty:1},
+  {id:19,zone:"Utility",cat:"Lò hơi",name:"Bình tích áp",qty:2},
+  {id:20,zone:"Utility",cat:"Lò hơi",name:"Bơm đa tầng cấp RO",qty:2},
+  {id:21,zone:"Utility",cat:"Lò hơi",name:"Bồn RO trung gian",qty:1},
+  {id:22,zone:"Utility",cat:"Lò hơi",name:"Hệ châm pH tự động",qty:1},
+  {id:23,zone:"Utility",cat:"Lò hơi",name:"Level switch",qty:null},
+  // Utility – RO
+  {id:24,zone:"Utility",cat:"RO",name:"Bồn lọc đa tầng",qty:1},
+  {id:25,zone:"Utility",cat:"RO",name:"Bồn lọc than",qty:1},
+  {id:26,zone:"Utility",cat:"RO",name:"Bồn làm mềm",qty:1},
+  {id:27,zone:"Utility",cat:"RO",name:"Bơm đầu nguồn",qty:1},
+  {id:28,zone:"Utility",cat:"RO",name:"Candle lọc sau làm mềm",qty:2},
+  {id:29,zone:"Utility",cat:"RO",name:"Bơm RO đa tầng",qty:2},
+  {id:30,zone:"Utility",cat:"RO",name:"Màng RO",qty:2},
+  {id:31,zone:"Utility",cat:"RO",name:"Hệ châm pH tự động",qty:2},
+  // Chế biến yến – Thủy phân yến
+  {id:32,zone:"Chế biến yến",cat:"Thủy phân yến",name:"Sensor nhiệt",qty:1},
+  {id:33,zone:"Chế biến yến",cat:"Thủy phân yến",name:"Valve điện",qty:1},
+  {id:34,zone:"Chế biến yến",cat:"Thủy phân yến",name:"Bồn gia nhiệt",qty:1},
+  // Chế biến yến – Nấu yến
+  {id:35,zone:"Chế biến yến",cat:"Nấu yến",name:"Bồn gia nhiệt GUM (tạo sợi)",qty:1},
+  {id:36,zone:"Chế biến yến",cat:"Nấu yến",name:"Bồn buffer gum",qty:1},
+  {id:37,zone:"Chế biến yến",cat:"Nấu yến",name:"Bồn hòa tan Canxi",qty:1},
+  {id:38,zone:"Chế biến yến",cat:"Nấu yến",name:"Máng hứng sợi",qty:1},
+  // Chế biến yến – Nấu đường
+  {id:39,zone:"Chế biến yến",cat:"Nấu đường",name:"Bồn gia nhiệt",qty:1},
+  {id:40,zone:"Chế biến yến",cat:"Nấu đường",name:"Sensor nhiệt",qty:1},
+  {id:41,zone:"Chế biến yến",cat:"Nấu đường",name:"Valve điều khiển steam tự động",qty:1},
+  // Chế biến yến – Bồn nấu COD
+  {id:42,zone:"Chế biến yến",cat:"Bồn nấu COD",name:"Bồn gia nhiệt",qty:1},
+  {id:43,zone:"Chế biến yến",cat:"Bồn nấu COD",name:"Sensor nhiệt",qty:1},
+  {id:44,zone:"Chế biến yến",cat:"Bồn nấu COD",name:"Valve điều khiển steam tự động",qty:1},
+  // Chế biến yến – Bồn thành phẩm yến
+  {id:45,zone:"Chế biến yến",cat:"Bồn thành phẩm yến",name:"Bồn gia nhiệt",qty:1},
+  {id:46,zone:"Chế biến yến",cat:"Bồn thành phẩm yến",name:"Sensor nhiệt",qty:1},
+  {id:47,zone:"Chế biến yến",cat:"Bồn thành phẩm yến",name:"Valve điều khiển steam tự động",qty:1},
+  // Chế biến yến – Sữa hạt
+  {id:48,zone:"Chế biến yến",cat:"Sữa hạt",name:"Bồn highshear",qty:2},
+  {id:49,zone:"Chế biến yến",cat:"Sữa hạt",name:"Motor highshear",qty:2},
+  {id:50,zone:"Chế biến yến",cat:"Sữa hạt",name:"Máy xay tách bã",qty:2},
+  {id:51,zone:"Chế biến yến",cat:"Sữa hạt",name:"Máy ly tâm",qty:1},
+  {id:52,zone:"Chế biến yến",cat:"Sữa hạt",name:"Máy đồng hóa",qty:1},
+  {id:53,zone:"Chế biến yến",cat:"Sữa hạt",name:"Bồn thành phẩm trước đồng hóa",qty:2},
+  {id:54,zone:"Chế biến yến",cat:"Sữa hạt",name:"Bồn thành phẩm sau đồng hóa",qty:2},
+  // Chế biến yến – Đóng gói
+  {id:55,zone:"Chế biến yến",cat:"Đóng gói",name:"Máy đóng gói lon",qty:1},
+  {id:56,zone:"Chế biến yến",cat:"Đóng gói",name:"Máy đóng gói lọ",qty:1},
+  {id:57,zone:"Chế biến yến",cat:"Đóng gói",name:"Máy đóng gói nắp gài",qty:2},
+  {id:58,zone:"Chế biến yến",cat:"Đóng gói",name:"Nồi hấp",qty:2},
+  // Chế biến gia vị-sauce – Chế biến BTP
+  {id:59,zone:"Chế biến gia vị-sauce",cat:"Chế biến BTP",name:"Nồi nấu cánh vét",qty:2},
+  {id:60,zone:"Chế biến gia vị-sauce",cat:"Chế biến BTP",name:"Nồi hầm xương",qty:1},
+  {id:61,zone:"Chế biến gia vị-sauce",cat:"Chế biến BTP",name:"Palang xích",qty:1},
+  {id:62,zone:"Chế biến gia vị-sauce",cat:"Chế biến BTP",name:"Bồn chứa BTP nước dùng",qty:1},
+  {id:63,zone:"Chế biến gia vị-sauce",cat:"Chế biến BTP",name:"Bồn chứa BTP sệt",qty:1},
+  // Chế biến gia vị-sauce – Sơ chế nguyên liệu
+  {id:64,zone:"Chế biến gia vị-sauce",cat:"Sơ chế nguyên liệu",name:"Máy cắt lát",qty:2},
+  {id:65,zone:"Chế biến gia vị-sauce",cat:"Sơ chế nguyên liệu",name:"Máy xay đùn",qty:2},
+  {id:66,zone:"Chế biến gia vị-sauce",cat:"Sơ chế nguyên liệu",name:"Máy xay nồi",qty:1},
+  {id:67,zone:"Chế biến gia vị-sauce",cat:"Sơ chế nguyên liệu",name:"Máy băm sả",qty:1},
+  {id:68,zone:"Chế biến gia vị-sauce",cat:"Sơ chế nguyên liệu",name:"Máy xay đá",qty:1},
+  {id:69,zone:"Chế biến gia vị-sauce",cat:"Sơ chế nguyên liệu",name:"Tủ lạnh rời",qty:3},
+  {id:70,zone:"Chế biến gia vị-sauce",cat:"Sơ chế nguyên liệu",name:"Kho đông",qty:1},
+  // Chế biến gia vị-sauce – Đóng gói
+  {id:71,zone:"Chế biến gia vị-sauce",cat:"Đóng gói",name:"Máy đóng gói cháo tươi",qty:1},
+  {id:72,zone:"Chế biến gia vị-sauce",cat:"Đóng gói",name:"Máy chiết gia vị lọ",qty:1},
+  {id:73,zone:"Chế biến gia vị-sauce",cat:"Đóng gói",name:"Máy seal cao tần",qty:1},
+  // Cháo gói – Sản xuất phôi
+  {id:74,zone:"Cháo gói",cat:"Sản xuất phôi",name:"Đầu đùn phôi",qty:3},
+  {id:75,zone:"Cháo gói",cat:"Sản xuất phôi",name:"Máy cắt phôi",qty:3},
+  {id:76,zone:"Cháo gói",cat:"Sản xuất phôi",name:"Máy nghiền phôi",qty:1},
+  {id:77,zone:"Cháo gói",cat:"Sản xuất phôi",name:"Băng tải",qty:1},
+  // Cháo gói – Sản xuất gia vị
+  {id:78,zone:"Cháo gói",cat:"Sản xuất gia vị",name:"Máy trộn gia vị",qty:1},
+  {id:79,zone:"Cháo gói",cat:"Sản xuất gia vị",name:"Máy sachet gia vị",qty:6},
+  // Cháo gói – Đóng gói thành phẩm
+  {id:80,zone:"Cháo gói",cat:"Đóng gói thành phẩm",name:"Máy đóng gói cháo",qty:2},
+  {id:81,zone:"Cháo gói",cat:"Đóng gói thành phẩm",name:"Máy dập nắp",qty:1},
+  {id:82,zone:"Cháo gói",cat:"Đóng gói thành phẩm",name:"Máy co",qty:1},
+  {id:83,zone:"Cháo gói",cat:"Đóng gói thành phẩm",name:"Máy đóng thùng",qty:1},
+  // Ngũ cốc – Sản xuất bột
+  {id:84,zone:"Ngũ cốc",cat:"Sản xuất bột",name:"Máy rang",qty:1},
+  {id:85,zone:"Ngũ cốc",cat:"Sản xuất bột",name:"Máy xay",qty:1},
+  // Ngũ cốc – Sản xuất thành phẩm
+  {id:86,zone:"Ngũ cốc",cat:"Sản xuất thành phẩm",name:"Máy trộn",qty:2},
+  // Ngũ cốc – Đóng gói thành phẩm
+  {id:87,zone:"Ngũ cốc",cat:"Đóng gói thành phẩm",name:"Máy đóng sachet",qty:8},
+  {id:88,zone:"Ngũ cốc",cat:"Đóng gói thành phẩm",name:"Máy hàn túi",qty:4},
+  {id:89,zone:"Ngũ cốc",cat:"Đóng gói thành phẩm",name:"Máy đóng thùng",qty:1},
+  // Khu vực thành phẩm
+  {id:90,zone:"Khu vực thành phẩm",cat:"Đóng gói / xuất hàng",name:"Máy co lốc",qty:1},
+  {id:91,zone:"Khu vực thành phẩm",cat:"Đóng gói / xuất hàng",name:"Máy co khay",qty:1},
+  {id:92,zone:"Khu vực thành phẩm",cat:"Đóng gói / xuất hàng",name:"Máy phóng nhãn",qty:1},
+  {id:93,zone:"Khu vực thành phẩm",cat:"Đóng gói / xuất hàng",name:"Máy đóng thùng",qty:2},
+  // Khu vực khác
+  {id:94,zone:"Khu vực khác",cat:"Tiện ích chung",name:"Máy indate",qty:4},
+  {id:95,zone:"Khu vực khác",cat:"Tiện ích chung",name:"AHU",qty:null},
+  {id:96,zone:"Khu vực khác",cat:"Tiện ích chung",name:"Máy lạnh dân dụng",qty:null},
+  {id:97,zone:"Khu vực khác",cat:"Vận chuyển nội bộ",name:"Xe nâng điện",qty:null},
+  {id:98,zone:"Khu vực khác",cat:"Vận chuyển nội bộ",name:"Xe nâng cơ",qty:null},
+  {id:99,zone:"Khu vực khác",cat:"Vận chuyển nội bộ",name:"Thang máy",qty:1},
+];
+
+let catNextId = 100;
+let editingId = null;
+
+// ─── ASSET HIERARCHY (Operations) ────────────────────────────
+const assetHierarchy = {
+  plant:"LifesFood Factory",
+  zones:[
+    {id:"cooking",name:"Cooking (Khu Nấu)",icon:"🍲",equipment:[
+      {id:"CK-001",name:"Nồi nấu yến #1",class:"A",type:"Pressure Vessel"},
+      {id:"CK-002",name:"Nồi nấu yến #2",class:"A",type:"Pressure Vessel"},
+      {id:"CK-003",name:"Nồi nấu ngũ cốc",class:"B",type:"Mixer"},
+      {id:"CK-004",name:"Conveyor nấu",class:"B",type:"Conveyor"},
+      {id:"CK-005",name:"Bơm tuần hoàn",class:"C",type:"Pump"},
+    ]},
+    {id:"retort",name:"Retort (Hấp Tiệt Trùng)",icon:"♨️",equipment:[
+      {id:"RT-001",name:"Retort #1 (lon)",class:"A",type:"Autoclave"},
+      {id:"RT-002",name:"Retort #2 (túi)",class:"A",type:"Autoclave"},
+      {id:"RT-003",name:"Van an toàn Retort 1",class:"A",type:"Safety Valve"},
+      {id:"RT-004",name:"Van an toàn Retort 2",class:"A",type:"Safety Valve"},
+      {id:"RT-005",name:"Bơm nước Retort",class:"B",type:"Pump"},
+    ]},
+    {id:"filling",name:"Filling (Chiết Rót)",icon:"🥫",equipment:[
+      {id:"FL-001",name:"Máy chiết lon #1",class:"A",type:"Filler"},
+      {id:"FL-002",name:"Máy chiết lon #2",class:"A",type:"Filler"},
+      {id:"FL-003",name:"Máy chiết túi",class:"A",type:"Pouch Filler"},
+      {id:"FL-004",name:"Máy đóng bột",class:"A",type:"Powder Filler"},
+      {id:"FL-005",name:"Seamer (ghép mí lon)",class:"A",type:"Seamer"},
+      {id:"FL-006",name:"Conveyor filling",class:"B",type:"Conveyor"},
+      {id:"FL-007",name:"Máy dò kim loại",class:"B",type:"Metal Detector"},
+    ]},
+    {id:"labeling",name:"Labeling",icon:"🏷",equipment:[
+      {id:"LB-001",name:"Máy dán nhãn #1",class:"B",type:"Labeler"},
+      {id:"LB-002",name:"Máy dán nhãn #2",class:"B",type:"Labeler"},
+      {id:"LB-003",name:"Máy in date",class:"B",type:"Inkjet Printer"},
+      {id:"LB-004",name:"Conveyor labeling",class:"C",type:"Conveyor"},
+    ]},
+    {id:"roasting",name:"Roasting & Grinding",icon:"☕",equipment:[
+      {id:"RG-001",name:"Máy rang hạt #1",class:"B",type:"Roaster"},
+      {id:"RG-002",name:"Máy rang hạt #2",class:"B",type:"Roaster"},
+      {id:"RG-003",name:"Máy nghiền",class:"B",type:"Grinder"},
+      {id:"RG-004",name:"Hệ thống thu bụi",class:"C",type:"Dust Collector"},
+    ]},
+    {id:"utilities",name:"Utilities",icon:"⚙",equipment:[
+      {id:"UT-001",name:"Boiler #1",class:"A",type:"Boiler"},
+      {id:"UT-002",name:"Boiler #2 (backup)",class:"A",type:"Boiler"},
+      {id:"UT-003",name:"Air Compressor #1",class:"B",type:"Compressor"},
+      {id:"UT-004",name:"Air Compressor #2",class:"B",type:"Compressor"},
+      {id:"UT-005",name:"Chiller #1",class:"B",type:"Chiller"},
+      {id:"UT-006",name:"Chiller #2",class:"B",type:"Chiller"},
+      {id:"UT-007",name:"Cooling Tower",class:"B",type:"Cooling Tower"},
+      {id:"UT-008",name:"Water Cooling Line",class:"B",type:"Pipeline"},
+      {id:"UT-009",name:"RO System (WTP)",class:"B",type:"Water Treatment"},
+      {id:"UT-010",name:"WWTP",class:"C",type:"Wastewater"},
+    ]},
+    {id:"hvac",name:"HVAC",icon:"❄️",equipment:[
+      {id:"HV-001",name:"AHU Phòng Sạch",class:"B",type:"AHU"},
+      {id:"HV-002",name:"FCU Kho Lạnh",class:"B",type:"FCU"},
+      {id:"HV-003",name:"FCU Kho Mát",class:"B",type:"FCU"},
+      {id:"HV-004",name:"Quạt cấp gió",class:"C",type:"Fan"},
+      {id:"HV-005",name:"Quạt hút gió",class:"C",type:"Fan"},
+    ]},
+    {id:"electrical",name:"Hệ Thống Điện",icon:"⚡",equipment:[
+      {id:"EL-001",name:"MDB Tổng",class:"A",type:"Switchboard"},
+      {id:"EL-002",name:"DB Khu Filling",class:"A",type:"Distribution Board"},
+      {id:"EL-003",name:"PLC Filling",class:"A",type:"PLC"},
+      {id:"EL-004",name:"VFD Conveyor",class:"B",type:"VFD"},
+      {id:"EL-005",name:"Chiếu sáng nhà máy",class:"C",type:"Lighting"},
+      {id:"EL-006",name:"PCCC / Fire System",class:"A",type:"Safety"},
+    ]}
+  ]
+};
+
+const equipmentList=[];
+assetHierarchy.zones.forEach(z=>{
+  z.equipment.forEach(e=>{
+    equipmentList.push({
+      ...e,zone:z.id,zoneName:z.name,
+      status:randomStatus(e.class),
+      availability:e.class==='A'?rand(88,99):e.class==='B'?rand(82,98):rand(75,99),
+      mtbf:e.class==='A'?rand(200,500):e.class==='B'?rand(100,350):rand(50,200),
+      mttr:e.class==='A'?+(Math.random()*2+0.5).toFixed(1):+(Math.random()*4+1).toFixed(1),
+      lastPM:randomDate(-60),nextPM:randomDate(rand(-10,60)),
+      pmFreqDays:e.class==='A'?30:e.class==='B'?60:90,
+    });
+  });
+});
+
+// ─── DOWNTIME / MAINTENANCE DATA ────────────────────────────
+const downtimeLog=[
+  {id:"DT-001",equip:"FL-001",name:"Máy chiết lon #1",zone:"filling",class:"A",date:"2025-07-14",hours:3.5,cause:"Mòn van bi",type:"Breakdown",cost:3.5*VND_PER_HOUR},
+  {id:"DT-002",equip:"RT-001",name:"Retort #1",zone:"retort",class:"A",date:"2025-07-14",hours:2.0,cause:"Rò rỉ hơi van an toàn",type:"Breakdown",cost:2*VND_PER_HOUR},
+  {id:"DT-003",equip:"UT-001",name:"Boiler #1",zone:"utilities",class:"A",date:"2025-07-13",hours:4.0,cause:"Bộ đốt lỗi igniter",type:"Breakdown",cost:4*VND_PER_HOUR},
+  {id:"DT-004",equip:"FL-003",name:"Máy chiết túi",zone:"filling",class:"A",date:"2025-07-13",hours:1.5,cause:"Kẹt túi tại sealer",type:"Breakdown",cost:1.5*VND_PER_HOUR},
+  {id:"DT-005",equip:"LB-001",name:"Máy dán nhãn #1",zone:"labeling",class:"B",date:"2025-07-12",hours:2.0,cause:"Hết mực",type:"Breakdown",cost:0.8*VND_PER_HOUR},
+  {id:"DT-006",equip:"HV-001",name:"AHU Phòng Sạch",zone:"hvac",class:"B",date:"2025-07-12",hours:1.0,cause:"Lọc bẩn",type:"PM",cost:0},
+  {id:"DT-007",equip:"UT-003",name:"Air Compressor #1",zone:"utilities",class:"B",date:"2025-07-11",hours:3.0,cause:"Rò rỉ khí nén",type:"Breakdown",cost:0.6*VND_PER_HOUR},
+  {id:"DT-008",equip:"RG-001",name:"Máy rang hạt #1",zone:"roasting",class:"B",date:"2025-07-11",hours:1.5,cause:"Vòng bi motor mòn",type:"PM",cost:0},
+  {id:"DT-009",equip:"CK-001",name:"Nồi nấu yến #1",zone:"cooking",class:"A",date:"2025-07-10",hours:2.0,cause:"Rò rỉ hơi gasket",type:"Breakdown",cost:2*VND_PER_HOUR},
+  {id:"DT-010",equip:"FL-001",name:"Máy chiết lon #1",zone:"filling",class:"A",date:"2025-07-10",hours:2.5,cause:"Mòn van bi",type:"Breakdown",cost:2.5*VND_PER_HOUR},
+  {id:"DT-011",equip:"EL-001",name:"MDB Tổng",zone:"electrical",class:"A",date:"2025-07-09",hours:0.5,cause:"CB trip",type:"Breakdown",cost:0.5*VND_PER_HOUR},
+  {id:"DT-012",equip:"UT-005",name:"Chiller #1",zone:"utilities",class:"B",date:"2025-07-09",hours:5.0,cause:"Rò gas lạnh",type:"Breakdown",cost:1.5*VND_PER_HOUR},
+  {id:"DT-013",equip:"FL-002",name:"Máy chiết lon #2",zone:"filling",class:"A",date:"2025-07-08",hours:3.0,cause:"Lỗi sensor đếm",type:"Breakdown",cost:3*VND_PER_HOUR},
+  {id:"DT-014",equip:"RT-002",name:"Retort #2",zone:"retort",class:"A",date:"2025-07-08",hours:1.0,cause:"Bơm nước hỏng",type:"Breakdown",cost:VND_PER_HOUR},
+  {id:"DT-015",equip:"HV-002",name:"FCU Kho Lạnh",zone:"hvac",class:"B",date:"2025-07-07",hours:2.0,cause:"Motor FCU hỏng",type:"Breakdown",cost:0.4*VND_PER_HOUR},
+];
+const _today=new Date().toISOString().split("T")[0];const todayDowntime=downtimeLog.filter(d=>d.date===_today||d.date==="2025-07-14");
+const totalHoursToday=todayDowntime.reduce((s,d)=>s+d.hours,0);
+const totalCostToday=todayDowntime.reduce((s,d)=>s+d.cost,0);
+
+const maintenanceLog=[
+  {id:"PM-001",equip:"UT-001",name:"Boiler #1",zone:"utilities",type:"PM",date:"2025-07-01",tech:"Nguyễn Văn A",hours:4,status:"Done"},
+  {id:"PM-002",equip:"FL-001",name:"Máy chiết lon #1",zone:"filling",type:"PM",date:"2025-07-05",tech:"Trần Văn B",hours:3,status:"Done"},
+  {id:"PM-003",equip:"RT-001",name:"Retort #1",zone:"retort",type:"PM",date:"2025-06-28",tech:"Lê Văn C",hours:6,status:"Done"},
+  {id:"PM-004",equip:"HV-001",name:"AHU Phòng Sạch",zone:"hvac",type:"PM",date:"2025-07-12",tech:"Phạm Văn D",hours:2,status:"Done"},
+  {id:"PM-005",equip:"UT-003",name:"Air Compressor #1",zone:"utilities",type:"PM",date:"2025-06-15",tech:"Hoàng Văn E",hours:3,status:"Overdue"},
+  {id:"PM-006",equip:"FL-005",name:"Seamer",zone:"filling",type:"PM",date:"2025-06-20",tech:"",hours:0,status:"Overdue"},
+  {id:"PM-007",equip:"EL-001",name:"MDB Tổng",zone:"electrical",type:"PM",date:"2025-07-10",tech:"Nguyễn Văn A",hours:2,status:"Done"},
+  {id:"PM-008",equip:"CK-001",name:"Nồi nấu yến #1",zone:"cooking",type:"Overhaul",date:"2025-06-01",tech:"Team",hours:16,status:"Done"},
+];
+const pmDone=maintenanceLog.filter(m=>m.status==="Done").length;
+const pmCompliance=Math.round(pmDone/maintenanceLog.length*100);
+
+const amChecklistData=[
+  {machine:"Máy chiết lon #1 (FL-001)",checks:[
+    {item:"Vệ sinh bề mặt",status:"done"},{item:"Kiểm tra rò rỉ",status:"done"},
+    {item:"Tiếng ồn bất thường",status:"fail"},{item:"Rung/Nhiệt độ",status:"done"},
+    {item:"Bulong/Belt",status:"pending"},{item:"Sensor OK",status:"pending"},
+  ]},
+  {machine:"Retort #1 (RT-001)",checks:[
+    {item:"Vệ sinh bề mặt",status:"done"},{item:"Kiểm tra rò rỉ hơi",status:"done"},
+    {item:"Van an toàn",status:"done"},{item:"Áp suất hoạt động",status:"done"},
+    {item:"Sensor nhiệt độ",status:"done"},
+  ]},
+  {machine:"Boiler #1 (UT-001)",checks:[
+    {item:"Mức nước",status:"done"},{item:"Rò rỉ hơi",status:"fail"},
+    {item:"Áp suất",status:"done"},{item:"Tiếng ồn",status:"done"},
+    {item:"Van xả đáy",status:"pending"},
+  ]},
+];
+
+const workOrdersData=[
+  {id:"WO-2025-0145",title:"Thay van bi Máy chiết lon #1",equip:"FL-001",priority:"critical",zone:"Filling",assignee:"Trần Văn B",due:"07:30",est:"2h",status:"In Progress"},
+  {id:"WO-2025-0146",title:"Kiểm tra rò rỉ hơi Boiler #1",equip:"UT-001",priority:"high",zone:"Utilities",assignee:"Nguyễn Văn A",due:"09:00",est:"1h",status:"Pending"},
+  {id:"WO-2025-0147",title:"PM định kỳ Air Compressor #1",equip:"UT-003",priority:"normal",zone:"Utilities",assignee:"Phạm Văn D",due:"13:00",est:"3h",status:"Pending"},
+  {id:"WO-2025-0148",title:"Thay filter AHU Phòng Sạch",equip:"HV-001",priority:"normal",zone:"HVAC",assignee:"Lê Văn C",due:"14:00",est:"1h",status:"Pending"},
+];
+
+const sparePartsData=[
+  {code:"SP-001",name:"Van bi DN25 (Filling)",qty:2,min:5,unit:"cái",status:"LOW"},
+  {code:"SP-002",name:"Gasket Retort Ø400",qty:8,min:6,unit:"cái",status:"OK"},
+  {code:"SP-003",name:"Dây curoa 3V-800",qty:1,min:3,unit:"sợi",status:"CRITICAL"},
+  {code:"SP-004",name:"Vòng bi 6205-2RS",qty:12,min:10,unit:"cái",status:"OK"},
+  {code:"SP-005",name:"Lọc khí P-829332",qty:0,min:2,unit:"cái",status:"CRITICAL"},
+  {code:"SP-006",name:"Đầu phun Boiler",qty:2,min:2,unit:"cái",status:"LOW"},
+  {code:"SP-007",name:"Cầu dao MCB 3P 32A",qty:5,min:3,unit:"cái",status:"OK"},
+];
+
+const repeatFaults=[
+  {equip:"FL-001",name:"Máy chiết lon #1",fault:"Mòn van bi",count:4,lastDate:"2025-07-14",loss:fmtVND(6*VND_PER_HOUR),rca:"Chưa có"},
+  {equip:"UT-001",name:"Boiler #1",fault:"Rò rỉ hơi",count:3,lastDate:"2025-07-14",loss:fmtVND(3*VND_PER_HOUR),rca:"Chưa có"},
+  {equip:"RT-001",name:"Retort #1",fault:"Van an toàn rò",count:3,lastDate:"2025-07-14",loss:fmtVND(2*VND_PER_HOUR),rca:"Chưa có"},
+  {equip:"UT-003",name:"Air Compressor",fault:"Rò khí nén",count:2,lastDate:"2025-07-11",loss:fmtVND(1.2*VND_PER_HOUR),rca:"Đang RCA"},
+  {equip:"LB-001",name:"Máy dán nhãn",fault:"Hết mực đột ngột",count:2,lastDate:"2025-07-12",loss:fmtVND(0.6*VND_PER_HOUR),rca:"Đang RCA"},
+];
+
+const paretoData=[
+  {cause:"Mòn van bi / seal",hours:9,zone:"Filling"},
+  {cause:"Rò rỉ hơi / gas",hours:7,zone:"Utilities/Retort"},
+  {cause:"Lỗi sensor/điện",hours:5.5,zone:"Filling/Điện"},
+  {cause:"Kẹt cơ khí",hours:4,zone:"Filling"},
+  {cause:"Vòng bi mòn",hours:3,zone:"Roasting"},
+  {cause:"Rò khí nén",hours:3,zone:"Utilities"},
+  {cause:"Motor hỏng",hours:2,zone:"HVAC"},
+  {cause:"Lỗi phần mềm PLC",hours:1.5,zone:"Điện"},
+  {cause:"Thiếu vật tư",hours:1,zone:"Tất cả"},
+  {cause:"Lỗi khác",hours:0.8,zone:"Tất cả"},
+];
+
+// ─── HELPERS ──────────────────────────────────────────────────
+function fmtVND(n){return Math.round(n).toLocaleString('vi-VN')+" đ";}
+function statusDot(s){
+  const m={OK:'dot-ok',WARNING:'dot-warn',FAULT:'dot-err'};
+  return `<span class="status-dot ${m[s]||'dot-off'}"></span>`;
+}
+function classBadge(c){return `<span class="class-badge class-${c}">${c}</span>`;}
+function randomStatus(cls){
+  const r=Math.random();
+  if(cls==='A')return r<.75?'OK':r<.88?'WARNING':'FAULT';
+  if(cls==='B')return r<.70?'OK':r<.90?'WARNING':'FAULT';
+  return r<.80?'OK':r<.92?'WARNING':'FAULT';
+}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function randomDate(off){const d=new Date();d.setDate(d.getDate()+off);return d.toISOString().split('T')[0];}
+
+// ─── CLOCK ────────────────────────────────────────────────────
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('vi-VN');
+  const h=now.getHours();
+  let shift=h>=6&&h<14?"Ca Sáng (6:00–14:00)":h>=14&&h<22?"Ca Chiều (14:00–22:00)":"Ca Đêm (22:00–6:00)";
+  document.getElementById('shiftLabel').textContent="⚙ "+shift;
+}
+setInterval(updateClock,1000);updateClock();
+
+// ─── TAB SWITCH ───────────────────────────────────────────────
+function switchTab(id,el){
+  document.querySelectorAll('.main').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  el.classList.add('active');
+  if(id==='catalog') renderCatalog();
+  if(id==='dailyreport') initDailyReport();
+  if(id==='pareto') renderPareto();
+  if(id==='assets') renderAssetTree();
+  if(id==='manager') { renderManagerKPIs(); renderZoneStatusGrid(); renderEquipTable(); }
+  closeAllDropdowns();
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+
+let activeDropdownZone = null;
+let activeZone = 'all';
+
+function init(){
+  renderRiskAlerts();renderCEOKPIs();renderTop5();
+  renderTrendChart();renderZoneChart();renderDonutChart();
+  renderManagerKPIs();renderEquipTable();renderZoneStatusGrid();
+  renderWorkOrders();renderAMChecklist();renderOverdueTable();renderSpareParts();
+  renderAssetTree();
+  // NOTE: renderPareto() intentionally deferred - called when tab is opened
+  // This prevents Chart.js rendering to a hidden canvas with 0 dimensions
+}
+init();
+
+// ══════════════════════════════════════════════
+// ZONE DROPDOWN — CÂY THƯ MỤC LINH ĐỘNG
+// ══════════════════════════════════════════════
+
+// ── DATA MODEL ────────────────────────────────
+// zoneTree: per-zone editable equipment+checklist
+// Initialized from assetHierarchy, then fully mutable
+const zoneTree = {}; // { zoneId: [ {id, name, class, type, items:[{id,name,note,status}], machineStatus, machineNote} ] }
+let treeIdCounter = 9000;
+
+// Default checklist templates by equipment type
+const checkTemplates = {
+  default:     ['Vệ sinh bề mặt','Kiểm tra rò rỉ','Tiếng ồn / rung','Nhiệt độ hoạt động','Bulong / Belt / Chain','Sensor & đèn báo'],
+  Boiler:      ['Mức nước','Áp suất hoạt động','Rò rỉ hơi','Van an toàn','Tiếng ồn đốt lửa','Ống khói','Đầu đốt'],
+  Autoclave:   ['Áp suất buồng','Van an toàn','Rò rỉ hơi / nước','Sensor nhiệt độ','Đệm cửa Retort','Timer / Controller'],
+  Filler:      ['Cụm chiết rót','Rò rỉ sản phẩm','Van bi / van định lượng','Sensor đếm sản phẩm','Vệ sinh đầu chiết','Băng tải đầu vào','Sealer / ghép mí'],
+  Compressor:  ['Áp suất đầu ra','Dầu bôi trơn','Lọc khí đầu vào','Rò rỉ khí nén','Nhiệt độ motor','Belt / coupling'],
+  Pump:        ['Rò rỉ mặt bích','Tiếng ồn / rung','Áp suất đầu ra','Nhiệt độ vòng bi','Trục gioăng cơ khí','Vệ sinh lọc đầu hút'],
+  AHU:         ['Lọc gió (filter)','Quạt cấp / hồi gió','Coil làm lạnh','Drain pan & ống thoát','Tiếng ồn quạt','Nhiệt độ cài đặt'],
+  Switchboard: ['Cầu dao / MCB','Nhiệt độ tủ điện','Đèn báo nguồn','Tiếp điểm & busbar','Vệ sinh tủ điện','UPS / ATS'],
+  Conveyor:    ['Băng tải / xích','Căng đai','Bôi trơn ổ đỡ','Roller & bearing','Tiếng ồn / rung','Cảm biến vị trí'],
+};
+
+function getTemplate(type){
+  return (checkTemplates[type]||checkTemplates.default).map((name,i)=>({
+    id: ++treeIdCounter, name, note:'', status: null
+  }));
+}
+
+// Build zoneTree from assetHierarchy on init
+function initZoneTree(){
+  try {
+    assetHierarchy.zones.forEach(z=>{
+      const eq = equipmentList.filter(e=>e.zone===z.id);
+      zoneTree[z.id] = eq.map(e=>({
+        id: e.id,
+        name: e.name,
+        class: e.class||'C',
+        type: e.type||'default',
+        nextPM: e.nextPM||'',
+        machineStatus: null,
+        machineNote: '',
+        items: getTemplate(e.type||'default'),
+      }));
+    });
+  } catch(err) {
+    console.error('[initZoneTree] Error:', err);
+  }
+}
+initZoneTree();
+
+// ── DROPDOWN OPEN / CLOSE ─────────────────────
+// activeZone + activeDropdownZone declared before init() — see above
+
+function filterZone(zone,el){
+  // Close dropdowns without resetting active button
+  document.querySelectorAll('.zone-dropdown').forEach(d=>d.classList.remove('open'));
+  document.getElementById('zoneBackdrop').classList.remove('active');
+  activeDropdownZone = null;
+  activeZone=zone;
+  document.querySelectorAll('.filter-bar .filter-btn').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  renderEquipTable();renderZoneStatusGrid();
+}
+
+function toggleZoneDropdown(zoneId, btn){
+  if(activeDropdownZone===zoneId){ closeAllDropdowns(); return; }
+  closeAllDropdowns();
+  activeDropdownZone = zoneId;
+  document.querySelectorAll('.filter-bar .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderZoneDropdown(zoneId);
+  document.getElementById('zd-'+zoneId).classList.add('open');
+  document.getElementById('zoneBackdrop').classList.add('active');
+}
+
+function closeAllDropdowns(){
+  document.querySelectorAll('.zone-dropdown').forEach(d=>d.classList.remove('open'));
+  document.getElementById('zoneBackdrop').classList.remove('active');
+  document.querySelectorAll('.filter-bar .filter-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('btn-all').classList.add('active');
+  activeDropdownZone = null;
+}
+
+// ── RENDER FULL DROPDOWN ──────────────────────
+function renderZoneDropdown(zoneId){
+  const zone = assetHierarchy.zones.find(z=>z.id===zoneId);
+  const machines = zoneTree[zoneId]||[];
+  const dd = document.getElementById('zd-'+zoneId);
+
+  const ok   = machines.filter(m=>m.machineStatus==='ok').length;
+  const warn = machines.filter(m=>m.machineStatus==='warn').length;
+  const bt   = machines.filter(m=>m.machineStatus==='bt').length;
+  const none = machines.length - ok - warn - bt;
+
+  dd.innerHTML = `
+    <div class="zd-head">
+      <span class="zd-icon">${zone.icon}</span>
+      <span class="zd-title">${zone.name}</span>
+      <div class="zd-stats">
+        ${ok?`<span class="zd-stat ok">✅ ${ok} OK</span>`:''}
+        ${warn?`<span class="zd-stat warn">⚠ ${warn}</span>`:''}
+        ${bt?`<span class="zd-stat fault">🔧 ${bt} BT</span>`:''}
+        ${none?`<span class="zd-stat" style="background:var(--bg4);color:var(--text3)">⬜ ${none}</span>`:''}
+      </div>
+      <button class="zd-close-btn" onclick="closeAllDropdowns()">✕</button>
+    </div>
+    <div class="zd-toolbar">
+      <input class="zd-search" id="zds-${zoneId}" placeholder="🔍 Tìm thiết bị..." oninput="filterDropdownSearch('${zoneId}')">
+      <button class="zd-add-machine-btn" onclick="toggleAddMachineForm('${zoneId}')">+ Thêm thiết bị</button>
+    </div>
+    <div class="zd-body" id="zdb-${zoneId}">
+      ${renderMachineNodes(zoneId, '')}
+    </div>
+    <div class="add-machine-form" id="amf-${zoneId}">
+      <input class="amf-input" id="amf-name-${zoneId}" placeholder="Tên thiết bị (VD: Máy chiết lon #3)">
+      <input class="amf-input" id="amf-id-${zoneId}" placeholder="Mã (VD: FL-008)" style="max-width:100px">
+      <select class="amf-select" id="amf-class-${zoneId}">
+        <option value="A">Class A</option><option value="B" selected>Class B</option><option value="C">Class C</option>
+      </select>
+      <select class="amf-select" id="amf-type-${zoneId}">
+        <option value="default">Mặc định</option>
+        <option value="Boiler">Boiler</option><option value="Autoclave">Autoclave</option>
+        <option value="Filler">Filler</option><option value="Compressor">Compressor</option>
+        <option value="Pump">Pump</option><option value="AHU">AHU</option>
+        <option value="Switchboard">Switchboard</option><option value="Conveyor">Conveyor</option>
+      </select>
+      <button class="amf-save" onclick="addMachine('${zoneId}')">✓ Thêm</button>
+      <button class="amf-cancel" onclick="toggleAddMachineForm('${zoneId}')">Hủy</button>
+    </div>
+    <div class="zd-footer">
+      <div class="zd-summary" id="zdsum-${zoneId}">${getSummaryText(zoneId)}</div>
+      <button class="zd-export-btn" onclick="openExportModalForZone('${zoneId}')">📋 Xuất Lệnh Bảo Trì</button>
+    </div>
+  `;
+}
+
+function getSummaryText(zoneId){
+  const m = zoneTree[zoneId]||[];
+  const checked = m.filter(x=>x.machineStatus).length;
+  const bt = m.filter(x=>x.machineStatus==='bt').length;
+  return `${checked}/${m.length} thiết bị đã kiểm tra${bt?` · <b>🔧 ${bt} cần bảo trì</b>`:''}`;
+}
+
+function renderMachineNodes(zoneId, q){
+  const machines = (zoneTree[zoneId]||[]).filter(m=>
+    !q || m.name.toLowerCase().includes(q) || m.id.toLowerCase().includes(q)
+  );
+  if(!machines.length) return '<div style="text-align:center;padding:24px;color:var(--text3)">Không tìm thấy thiết bị nào.</div>';
+
+  return machines.map(m=>{
+    const isOverdue = m.nextPM && new Date(m.nextPM)<new Date();
+    const sc = m.machineStatus;
+    const itemDone  = m.items.filter(i=>i.status==='ok').length;
+    const itemBt    = m.items.filter(i=>i.status==='bt').length;
+    const itemWarn  = m.items.filter(i=>i.status==='warn').length;
+
+    return `
+    <div class="mc-node" id="mcn-${zoneId}-${m.id}">
+      <div class="mc-head" onclick="toggleMcNode('${zoneId}','${m.id}')">
+        <span class="mc-expand-btn">▶</span>
+        <span class="mc-id-badge">${m.id}</span>
+        <span class="mc-name-wrap">
+          <span class="mc-name">${m.name}</span>
+          ${isOverdue?'<span class="mc-overdue-tag">OVERDUE</span>':''}
+          ${m.class?classBadge(m.class):''}
+          <span style="font-size:9px;color:var(--text3);margin-left:2px">
+            ${itemDone?`✅${itemDone}`:''}${itemWarn?` ⚠${itemWarn}`:''}${itemBt?` 🔧${itemBt}`:''}
+          </span>
+        </span>
+        <div class="st3" onclick="event.stopPropagation()">
+          <button class="${sc==='ok'?'a-ok':''}" onclick="setMachineStatus('${zoneId}','${m.id}','ok')">✅ OK</button>
+          <button class="${sc==='warn'?'a-warn':''}" onclick="setMachineStatus('${zoneId}','${m.id}','warn')">⚠</button>
+          <button class="${sc==='bt'?'a-bt':''}" onclick="setMachineStatus('${zoneId}','${m.id}','bt')">🔧 BT</button>
+        </div>
+        <div class="mc-actions" onclick="event.stopPropagation()">
+          <button class="mc-act edit" title="Đổi tên" onclick="renameMachine('${zoneId}','${m.id}')">✏</button>
+          <button class="mc-act del" title="Xóa thiết bị" onclick="deleteMachine('${zoneId}','${m.id}')">✕</button>
+        </div>
+      </div>
+      <div class="mc-body" id="mcb-${zoneId}-${m.id}">
+        ${renderChecklistItems(zoneId, m)}
+        <div class="cl-add-row">
+          <input class="cl-add-input" id="cl-add-${zoneId}-${m.id}" placeholder="+ Thêm hạng mục kiểm tra..." onkeydown="if(event.key==='Enter')addCheckItem('${zoneId}','${m.id}')">
+          <button class="cl-add-btn" onclick="addCheckItem('${zoneId}','${m.id}')">+ Thêm</button>
+        </div>
+        <div class="mc-note-row">
+          <textarea class="mc-note-input" rows="1" placeholder="📝 Ghi chú thiết bị..." onchange="setMachineNote('${zoneId}','${m.id}',this.value)">${m.machineNote}</textarea>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderChecklistItems(zoneId, machine){
+  if(!machine.items.length) return '<div style="font-size:10px;color:var(--text3);padding:8px 14px 4px 44px">Chưa có hạng mục. Thêm bên dưới.</div>';
+  return machine.items.map(item=>{
+    const st = item.status;
+    return `
+    <div class="cl-row" id="cli-${item.id}">
+      <div class="cl-st3">
+        <button class="${st==='ok'?'a-ok':''}" onclick="setItemSt('${zoneId}','${machine.id}',${item.id},'ok')">✅</button>
+        <button class="${st==='warn'?'a-warn':''}" onclick="setItemSt('${zoneId}','${machine.id}',${item.id},'warn')">⚠</button>
+        <button class="${st==='bt'?'a-bt':''}" onclick="setItemSt('${zoneId}','${machine.id}',${item.id},'bt')">🔧</button>
+      </div>
+      <span class="cl-name" id="cln-${item.id}">${item.name}</span>
+      <input class="cl-note" placeholder="Ghi chú..." value="${item.note}" onchange="setItemNote('${zoneId}','${machine.id}',${item.id},this.value)">
+      <div class="cl-item-actions">
+        <button class="ci-act edit" title="Đổi tên" onclick="renameItem('${zoneId}','${machine.id}',${item.id})">✏</button>
+        <button class="ci-act del" title="Xóa" onclick="deleteItem_cl('${zoneId}','${machine.id}',${item.id})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── TOGGLE ────────────────────────────────────
+function toggleMcNode(zoneId, machineId){
+  const node = document.getElementById(`mcn-${zoneId}-${machineId}`);
+  if(node) node.classList.toggle('open');
+}
+
+function filterDropdownSearch(zoneId){
+  const q = document.getElementById('zds-'+zoneId)?.value.toLowerCase()||'';
+  const body = document.getElementById('zdb-'+zoneId);
+  if(body) body.innerHTML = renderMachineNodes(zoneId, q);
+}
+
+// ── MACHINE CRUD ──────────────────────────────
+function toggleAddMachineForm(zoneId){
+  const f = document.getElementById('amf-'+zoneId);
+  if(!f) return;
+  f.classList.toggle('open');
+  if(f.classList.contains('open')) document.getElementById('amf-name-'+zoneId)?.focus();
+}
+
+function addMachine(zoneId){
+  const name  = document.getElementById('amf-name-'+zoneId)?.value.trim();
+  const mid   = document.getElementById('amf-id-'+zoneId)?.value.trim()||'EQ-'+(++treeIdCounter);
+  const cls   = document.getElementById('amf-class-'+zoneId)?.value||'B';
+  const type  = document.getElementById('amf-type-'+zoneId)?.value||'default';
+  if(!name){ alert('Nhập tên thiết bị'); return; }
+
+  zoneTree[zoneId] = zoneTree[zoneId]||[];
+  zoneTree[zoneId].push({
+    id: mid, name, class: cls, type,
+    nextPM: '', machineStatus: null, machineNote: '',
+    items: getTemplate(type==='default'?'default':type),
+  });
+  renderZoneDropdown(zoneId);
+  document.getElementById('amf-'+zoneId)?.classList.remove('open');
+}
+
+function deleteMachine(zoneId, machineId){
+  const m = (zoneTree[zoneId]||[]).find(m=>m.id===machineId);
+  if(!m) return;
+  if(!confirm(`Xóa thiết bị "${m.name}" khỏi danh mục kiểm tra?`)) return;
+  zoneTree[zoneId] = zoneTree[zoneId].filter(m=>m.id!==machineId);
+  renderZoneDropdown(zoneId);
+}
+
+function renameMachine(zoneId, machineId){
+  const m = (zoneTree[zoneId]||[]).find(m=>m.id===machineId);
+  if(!m) return;
+  const newName = prompt('Đổi tên thiết bị:', m.name);
+  if(newName && newName.trim()) { m.name = newName.trim(); renderZoneDropdown(zoneId); }
+}
+
+// ── MACHINE STATUS ────────────────────────────
+function setMachineStatus(zoneId, machineId, status){
+  const m = (zoneTree[zoneId]||[]).find(m=>m.id===machineId);
+  if(!m) return;
+  m.machineStatus = m.machineStatus===status ? null : status;
+  // Quick-fill all unchecked items with same status
+  if(m.machineStatus){
+    m.items.forEach(i=>{ if(!i.status) i.status=m.machineStatus; });
+  }
+  renderZoneDropdown(zoneId);
+}
+
+function setMachineNote(zoneId, machineId, val){
+  const m = (zoneTree[zoneId]||[]).find(m=>m.id===machineId);
+  if(m) m.machineNote = val;
+}
+
+// ── CHECKLIST ITEM CRUD ───────────────────────
+function addCheckItem(zoneId, machineId){
+  const inp = document.getElementById(`cl-add-${zoneId}-${machineId}`);
+  const name = inp?.value.trim();
+  if(!name) return;
+  const m = (zoneTree[zoneId]||[]).find(m=>m.id===machineId);
+  if(!m) return;
+  m.items.push({ id: ++treeIdCounter, name, note:'', status:null });
+  inp.value='';
+  // Re-render just the body
+  const body = document.getElementById(`mcb-${zoneId}-${machineId}`);
+  if(body){
+    const node = document.getElementById(`mcn-${zoneId}-${machineId}`);
+    const wasOpen = node?.classList.contains('open');
+    renderZoneDropdown(zoneId);
+    if(wasOpen){
+      const newNode = document.getElementById(`mcn-${zoneId}-${machineId}`);
+      newNode?.classList.add('open');
+    }
+  }
+}
+
+function deleteItem_cl(zoneId, machineId, itemId){
+  const m = (zoneTree[zoneId]||[]).find(m=>m.id===machineId);
+  if(!m) return;
+  m.items = m.items.filter(i=>i.id!==itemId);
+  const row = document.getElementById('cli-'+itemId);
+  if(row){ row.style.opacity='0'; row.style.height='0'; setTimeout(()=>row.remove(),200); }
+  // update summary
+  document.getElementById('zdsum-'+zoneId).innerHTML = getSummaryText(zoneId);
+}
+
+function renameItem(zoneId, machineId, itemId){
+  const m = (zoneTree[zoneId]||[]).find(m=>m.id===machineId);
+  if(!m) return;
+  const item = m.items.find(i=>i.id===itemId);
+  if(!item) return;
+  const span = document.getElementById('cln-'+itemId);
+  if(!span) return;
+  // Inline edit
+  const input = document.createElement('input');
+  input.className='cl-name-input';
+  input.value = item.name;
+  span.replaceWith(input);
+  input.focus();
+  input.select();
+  const save = ()=>{
+    item.name = input.value.trim()||item.name;
+    const newSpan=document.createElement('span');
+    newSpan.className='cl-name'; newSpan.id='cln-'+itemId; newSpan.textContent=item.name;
+    input.replaceWith(newSpan);
+  };
+  input.onblur=save;
+  input.onkeydown=e=>{ if(e.key==='Enter'||e.key==='Escape') input.blur(); };
+}
+
+function setItemSt(zoneId, machineId, itemId, status){
+  const m = (zoneTree[zoneId]||[]).find(m=>m.id===machineId);
+  if(!m) return;
+  const item = m.items.find(i=>i.id===itemId);
+  if(!item) return;
+  item.status = item.status===status ? null : status;
+
+  // Bubble up: auto-set machine status
+  const vals = m.items.map(i=>i.status).filter(Boolean);
+  if(vals.includes('bt'))      m.machineStatus='bt';
+  else if(vals.includes('warn')) m.machineStatus='warn';
+  else if(vals.length&&vals.every(v=>v==='ok')) m.machineStatus='ok';
+  else if(!vals.length) m.machineStatus=null;
+
+  // Re-render the node keeping it open
+  const wasOpen = document.getElementById(`mcn-${zoneId}-${machineId}`)?.classList.contains('open');
+  renderZoneDropdown(zoneId);
+  if(wasOpen){
+    document.getElementById(`mcn-${zoneId}-${machineId}`)?.classList.add('open');
+  }
+}
+
+function setItemNote(zoneId, machineId, itemId, val){
+  const m = (zoneTree[zoneId]||[]).find(m=>m.id===machineId);
+  const item = m?.items.find(i=>i.id===itemId);
+  if(item) item.note=val;
+}
+
+// ── getCheckItems (for export compat) ─────────
+function getCheckItems(equip){
+  const zid = equip.zone;
+  const m = (zoneTree[zid]||[]).find(m=>m.id===equip.id);
+  return m ? m.items.map(i=>i.name) : (checkTemplates[equip.type]||checkTemplates.default);
+}
+// Old functions kept for compatibility
+function openZonePanel(){}
+function closeZonePanel(){}
+function renderZonePanel(){}
+function renderZonePanelStats(){}
+function setZPFilter(){}
+function renderPMEntries(){ return ''; }
+function toggleEquipCard(){}
+function showAddPM(){}
+function savePM(){}
+function deletePM(){}
+function saveNote(){}
+
+function openExportModalForZone(zoneId){
+  closeAllDropdowns();
+  // Pre-select zone in modal
+  openExportModal();
+  // Clear all, select this zone
+  moZones.clear();
+  moZones.add(zoneId);
+  document.querySelectorAll('.mo-zone-chip').forEach(c=>c.classList.remove('sel'));
+  const chip = document.querySelector(`.mo-zone-chip[data-zone="${zoneId}"]`);
+  if(chip) chip.classList.add('sel');
+  updateMoEquipCount();
+}
+
+function exportMaintenanceOrder(zoneId){ openExportModalForZone(zoneId); }
+
+
+
+
+
+// ══════════════════════════════════════════════
+// CATALOG TAB
+// ══════════════════════════════════════════════
+
+function getUniqueZones(){return [...new Set(catalogItems.map(i=>i.zone))].sort();}
+function getUniqueCats(){return [...new Set(catalogItems.map(i=>i.cat).filter(Boolean))].sort();}
+
+function initCatalogFilters(){
+  const zSel=document.getElementById('catFilterZone');
+  const cSel=document.getElementById('catFilterCat');
+  const afZone=document.getElementById('af-zone');
+  const prevZ=zSel.value,prevC=cSel.value;
+  zSel.innerHTML='<option value="">Tất cả khu vực</option>';
+  cSel.innerHTML='<option value="">Tất cả hạng mục</option>';
+  afZone.innerHTML='<option value="">Chọn khu...</option>';
+  getUniqueZones().forEach(z=>{
+    zSel.innerHTML+=`<option value="${z}"${z===prevZ?' selected':''}>${z}</option>`;
+    afZone.innerHTML+=`<option value="${z}">${z}</option>`;
+  });
+  getUniqueCats().forEach(c=>{
+    cSel.innerHTML+=`<option value="${c}"${c===prevC?' selected':''}>${c}</option>`;
+  });
+}
+
+function getFilteredItems(){
+  const q=document.getElementById('catSearch').value.toLowerCase().trim();
+  const fz=document.getElementById('catFilterZone').value;
+  const fc=document.getElementById('catFilterCat').value;
+  return catalogItems.filter(i=>{
+    if(q && !i.name.toLowerCase().includes(q) && !i.zone.toLowerCase().includes(q) && !(i.cat||'').toLowerCase().includes(q)) return false;
+    if(fz && i.zone!==fz) return false;
+    if(fc && i.cat!==fc) return false;
+    return true;
+  });
+}
+
+function renderCatalogStats(filtered){
+  const total=catalogItems.length;
+  const totalQty=catalogItems.reduce((s,i)=>s+(i.qty||0),0);
+  const zones=getUniqueZones().length;
+  document.getElementById('catStats').innerHTML=`
+    <div class="cat-stat"><div class="cat-stat-val cyan">${total}</div><div class="cat-stat-label">Tổng loại thiết bị</div></div>
+    <div class="cat-stat"><div class="cat-stat-val yellow">${totalQty}</div><div class="cat-stat-label">Tổng số lượng</div></div>
+    <div class="cat-stat"><div class="cat-stat-val green">${zones}</div><div class="cat-stat-label">Khu vực</div></div>
+    <div class="cat-stat"><div class="cat-stat-val" style="color:var(--purple)">${filtered.length}</div><div class="cat-stat-label">Đang hiển thị</div></div>
+  `;
+}
+
+function renderCatalog(){
+  initCatalogFilters();
+  const filtered=getFilteredItems();
+  renderCatalogStats(filtered);
+
+  // Group by zone
+  const byZone={};
+  filtered.forEach(i=>{
+    if(!byZone[i.zone]) byZone[i.zone]=[];
+    byZone[i.zone].push(i);
+  });
+
+  const container=document.getElementById('catalogContainer');
+  if(!filtered.length){
+    container.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">Không tìm thấy thiết bị nào phù hợp.</div>';
+    return;
+  }
+
+  let html='';
+  const zoneIcons={
+    'Utility':'⚙️','Chế biến yến':'🍶','Chế biến gia vị-sauce':'🌶️',
+    'Cháo gói':'🥣','Ngũ cốc':'🌾','Khu vực thành phẩm':'📦','Khu vực khác':'🔧'
+  };
+
+  Object.entries(byZone).forEach(([zone,items])=>{
+    const icon=zoneIcons[zone]||'🏭';
+    const totalQty=items.reduce((s,i)=>s+(i.qty||0),0);
+    html+=`
+    <div class="zone-group" data-zone="${zone}">
+      <div class="zone-group-header" onclick="toggleZoneGroup('${zone}')">
+        <span class="zh-icon">${icon}</span>
+        <span class="zh-name">${zone}</span>
+        <span class="zh-count">${items.length} loại · ${totalQty} thiết bị</span>
+        <span class="zh-toggle">▼</span>
+      </div>
+      <div class="zone-group-body card" style="padding:0;border-top:none;border-radius:0 0 var(--radius) var(--radius)">
+        <div style="display:grid;grid-template-columns:40px 90px 1fr 140px 100px 80px 80px 100px;padding:6px 10px;border-bottom:1px solid var(--border);">
+          <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px">#</span>
+          <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px">STT</span>
+          <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px">Tên thiết bị</span>
+          <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px">Hạng mục</span>
+          <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px">Khu vực</span>
+          <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;text-align:center">Số lượng</span>
+          <span></span>
+          <span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;text-align:right">Thao tác</span>
+        </div>`;
+    items.forEach((item,idx)=>{
+      html+=renderItemRow(item,idx+1);
+    });
+    html+=`</div></div>`;
+  });
+
+  container.innerHTML=html;
+}
+
+function renderItemRow(item,idx){
+  if(editingId===item.id){
+    return `<div class="cat-item-row edit-mode" id="row-${item.id}" style="display:grid;grid-template-columns:40px 90px 1fr 140px 100px 80px 80px 100px;align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid var(--border);">
+      <span class="cat-col-num" style="font-family:var(--font-mono);font-size:11px;color:var(--text3);text-align:center">${idx}</span>
+      <span style="font-size:11px;font-family:var(--font-mono);color:var(--text3)">#${item.id}</span>
+      <input type="text" id="e-name-${item.id}" value="${item.name}" style="background:var(--bg2);border:1px solid var(--green);color:var(--text);font-family:var(--font-body);font-size:12px;padding:5px 8px;border-radius:4px;width:100%;outline:none;">
+      <input type="text" id="e-cat-${item.id}" value="${item.cat||''}" style="background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:12px;padding:5px 8px;border-radius:4px;width:100%;outline:none;">
+      <select id="e-zone-${item.id}" style="background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-body);font-size:12px;padding:5px 8px;border-radius:4px;width:100%;outline:none;">
+        ${getUniqueZones().map(z=>`<option value="${z}"${z===item.zone?' selected':''}>${z}</option>`).join('')}
+      </select>
+      <input type="number" id="e-qty-${item.id}" value="${item.qty||''}" min="0" style="background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-family:var(--font-mono);font-size:12px;padding:5px 8px;border-radius:4px;width:100%;outline:none;text-align:center;">
+      <span></span>
+      <div class="cat-actions" style="justify-content:flex-end">
+        <button class="act-btn act-save" onclick="saveEdit(${item.id})">✓ Lưu</button>
+        <button class="act-btn act-cancel" onclick="cancelEdit()">✕</button>
+      </div>
+    </div>`;
+  }
+  return `<div class="cat-item-row" id="row-${item.id}" style="display:grid;grid-template-columns:40px 90px 1fr 140px 100px 80px 80px 100px;align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid var(--border);">
+    <span style="font-family:var(--font-mono);font-size:11px;color:var(--text3);text-align:center">${idx}</span>
+    <span style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">#${item.id}</span>
+    <span style="font-size:12px">${item.name}</span>
+    <span style="font-size:11px;color:var(--text2)">${item.cat||'—'}</span>
+    <span style="font-size:11px;color:var(--text3)">${item.zone}</span>
+    <span style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--yellow);text-align:center">${item.qty??'—'}</span>
+    <span></span>
+    <div class="cat-actions" style="justify-content:flex-end">
+      <button class="act-btn act-edit" onclick="startEdit(${item.id})">✏</button>
+      <button class="act-btn act-del" onclick="deleteItem(${item.id})">✕</button>
+    </div>
+  </div>`;
+}
+
+function toggleZoneGroup(zone){
+  const header=document.querySelector(`.zone-group[data-zone="${CSS.escape(zone)}"] .zone-group-header`);
+  const body=document.querySelector(`.zone-group[data-zone="${CSS.escape(zone)}"] .zone-group-body`);
+  if(!header||!body) return;
+  header.classList.toggle('collapsed');
+  body.classList.toggle('collapsed');
+}
+
+function startEdit(id){
+  editingId=id;
+  renderCatalog();
+}
+function cancelEdit(){
+  editingId=null;
+  renderCatalog();
+}
+function saveEdit(id){
+  const item=catalogItems.find(i=>i.id===id);
+  if(!item) return;
+  const name=document.getElementById(`e-name-${id}`).value.trim();
+  if(!name){alert('Tên thiết bị không được để trống');return;}
+  item.name=name;
+  item.cat=document.getElementById(`e-cat-${id}`).value.trim();
+  item.zone=document.getElementById(`e-zone-${id}`).value;
+  const q=document.getElementById(`e-qty-${id}`).value;
+  item.qty=q===''?null:parseInt(q);
+  editingId=null;
+  renderCatalog();
+}
+
+function deleteItem(id){
+  const item=catalogItems.find(i=>i.id===id);
+  if(!item) return;
+  if(!confirm(`Xóa thiết bị "${item.name}"?`)) return;
+  catalogItems=catalogItems.filter(i=>i.id!==id);
+  renderCatalog();
+}
+
+function showAddForm(){
+  const f=document.getElementById('addForm');
+  f.style.display='block';
+  f.scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('af-name').focus();
+}
+function hideAddForm(){
+  document.getElementById('addForm').style.display='none';
+  ['af-stt','af-name','af-cat','af-qty'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('af-zone').value='';
+}
+
+function addItem(){
+  const name=document.getElementById('af-name').value.trim();
+  const zone=document.getElementById('af-zone').value;
+  if(!name){alert('Vui lòng nhập tên thiết bị');return;}
+  if(!zone){alert('Vui lòng chọn khu vực');return;}
+  const cat=document.getElementById('af-cat').value.trim();
+  const qStr=document.getElementById('af-qty').value;
+  const qty=qStr===''?null:parseInt(qStr);
+  catalogItems.push({id:catNextId++,zone,cat:cat||'',name,qty});
+  hideAddForm();
+  renderCatalog();
+}
+
+function exportCatalog(){
+  const wb=XLSX.utils.book_new();
+  const header=['STT','Khu vực','Hạng mục','Thiết bị','Số lượng'];
+  const rows=[header];
+  catalogItems.forEach((i,idx)=>rows.push([idx+1,i.zone,i.cat||'',i.name,i.qty??'']));
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:6},{wch:22},{wch:22},{wch:36},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,ws,"Danh Mục Thiết Bị");
+  XLSX.writeFile(wb,"LifesFood_DanhMucThietBi.xlsx");
+}
+
+function triggerImport(){document.getElementById('importInput').click();}
+
+function importCatalog(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const wb=XLSX.read(ev.target.result,{type:'binary'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      // Find header row
+      let start=0;
+      for(let i=0;i<Math.min(5,data.length);i++){
+        const row=data[i].map(c=>String(c).toLowerCase());
+        if(row.some(c=>c.includes('thiết bị')||c.includes('thiet bi'))){start=i+1;break;}
+      }
+      const imported=[];
+      for(let i=start;i<data.length;i++){
+        const row=data[i];
+        const name=String(row[3]||row[2]||'').trim();
+        if(!name) continue;
+        const zone=String(row[1]||'Khu vực khác').trim()||'Khu vực khác';
+        const cat=String(row[2]||'').trim();
+        const qty=row[4]===''||row[4]===null||row[4]===undefined?null:parseInt(row[4])||null;
+        imported.push({id:catNextId++,zone,cat,name,qty});
+      }
+      if(!imported.length){alert('Không tìm thấy dữ liệu thiết bị trong file.');return;}
+      if(confirm(`Nhập ${imported.length} thiết bị? (Sẽ thêm vào danh mục hiện tại)`)){
+        catalogItems=[...catalogItems,...imported];
+        renderCatalog();
+      }
+    }catch(err){alert('Lỗi đọc file: '+err.message);}
+    e.target.value='';
+  };
+  reader.readAsBinaryString(file);
+}
+
+// ══════════════════════════════════════════════
+// CEO RENDERS
+// ══════════════════════════════════════════════
+
+function renderRiskAlerts(){
+  const overdue=equipmentList.filter(e=>{
+    if(e.class!=='A')return false;
+    return new Date(e.nextPM)<new Date();
+  });
+  let html='';
+  overdue.forEach(e=>{
+    const days=Math.round((new Date()-new Date(e.nextPM))/86400000);
+    html+=`<div class="alert-card mb16"><div class="alert-icon">🚨</div><div><div class="alert-title">CLASS A OVERDUE – ${e.name} (${e.id})</div><div class="alert-msg">PM quá hạn ${days} ngày · ${e.zoneName} · Rủi ro dừng sản xuất bất ngờ</div></div><div class="alert-time">QUÁ HẠN +${days}d</div></div>`;
+  });
+  const faults=equipmentList.filter(e=>e.status==='FAULT'&&e.class==='A');
+  faults.forEach(e=>{
+    html+=`<div class="alert-card mb16" style="background:rgba(255,71,87,.12);border-color:#ff6b78"><div class="alert-icon">⚠️</div><div><div class="alert-title">CLASS A FAULT – ${e.name} (${e.id})</div><div class="alert-msg">Thiết bị đang lỗi · ${e.zoneName} · Cần xử lý ngay</div></div><div class="alert-time">FAULT NOW</div></div>`;
+  });
+  document.getElementById('riskAlerts').innerHTML=html||`<div class="alert-card" style="background:var(--green-dim);border-color:var(--green)"><div class="alert-icon">✅</div><div><div class="alert-title" style="color:var(--green)">Không có cảnh báo Class A</div><div class="alert-msg">Tất cả thiết bị critical trong tầm kiểm soát</div></div></div>`;
+  document.getElementById('alertBadge').textContent=overdue.length+faults.length;
+}
+
+function renderCEOKPIs(){
+  const oee=78.4;
+  document.getElementById('oeeVal').textContent=oee+'%';
+  document.getElementById('oeeBar').style.width=oee+'%';
+  document.getElementById('downtimeCost').textContent=fmtVND(totalCostToday);
+  document.getElementById('downtimeCostSub').textContent=`${totalHoursToday>0?'▲ Tổng':'◼'} ${totalHoursToday}h dừng máy hôm nay`;
+  document.getElementById('totalDowntime').textContent=totalHoursToday;
+  document.getElementById('dtBreakdown').textContent=`Breakdown: ${todayDowntime.filter(d=>d.type==='Breakdown').reduce((s,d)=>s+d.hours,0)}h | PM: ${todayDowntime.filter(d=>d.type==='PM').reduce((s,d)=>s+d.hours,0)}h`;
+  document.getElementById('dtTrend').innerHTML='▲ +1.5h so hôm qua';
+  const bd=downtimeLog.filter(d=>d.type==='Breakdown').length;
+  const pl=downtimeLog.filter(d=>d.type==='PM').length;
+  const pct=Math.round(pl/(bd+pl)*100);
+  document.getElementById('plannedPct').textContent=pct+'%';
+  document.getElementById('plannedBar').style.width=pct+'%';
+  document.getElementById('plannedSub').textContent=`Planned: ${pl} | Breakdown: ${bd}`;
+  const classAB=equipmentList.filter(e=>e.class==='A'||e.class==='B');
+  document.getElementById('mtbfVal').textContent=(classAB.reduce((s,e)=>s+e.mtbf,0)/classAB.length).toFixed(0);
+  document.getElementById('mttrVal').textContent=(classAB.reduce((s,e)=>s+e.mttr,0)/classAB.length).toFixed(1);
+}
+
+function renderTop5(){
+  const byEquip={};
+  downtimeLog.forEach(d=>{
+    if(!byEquip[d.equip])byEquip[d.equip]={name:d.name,hours:0,cost:0,class:d.class,count:0};
+    byEquip[d.equip].hours+=d.hours;byEquip[d.equip].cost+=d.cost;byEquip[d.equip].count++;
+  });
+  const sorted=Object.values(byEquip).sort((a,b)=>b.cost-a.cost).slice(0,5);
+  let html=`<tr><th>#</th><th>Thiết bị</th><th>Class</th><th>Giờ dừng</th><th>Chi phí</th><th>Sự cố</th></tr>`;
+  sorted.forEach((r,i)=>{
+    const col=i===0?'red':i===1?'yellow':'text';
+    html+=`<tr><td class="mono" style="color:var(--${col})">${i+1}</td><td><strong>${r.name}</strong></td><td>${classBadge(r.class)}</td><td class="mono yellow">${r.hours}h</td><td class="money">${fmtVND(r.cost)}</td><td class="mono red">${r.count}x</td></tr>`;
+  });
+  document.getElementById('top5Table').innerHTML=html;
+}
+
+function renderTrendChart(){
+  const days=['T8','T9','T10','T11','T12','T13','T14'];
+  const dtH=[4.5,6,4.5,7,3,5.5,5.5];
+  const dtC=dtH.map(h=>Math.round(h*VND_PER_HOUR/1e6));
+  _newChart('trendChart',{
+    type:'line',
+    data:{labels:days,datasets:[
+      {label:'Downtime (giờ)',data:dtH,borderColor:'#ff4757',backgroundColor:'rgba(255,71,87,.1)',tension:.4,fill:true,yAxisID:'y'},
+      {label:'Chi phí (triệu đ)',data:dtC,borderColor:'#f5a623',tension:.4,fill:false,yAxisID:'y1'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'#8a97aa',font:{size:11}}}},
+      scales:{
+        x:{ticks:{color:'#5a6678'},grid:{color:'#1e2633'}},
+        y:{ticks:{color:'#ff4757'},grid:{color:'#1e2633'},title:{display:true,text:'Giờ',color:'#5a6678'}},
+        y1:{position:'right',ticks:{color:'#f5a623'},grid:{display:false},title:{display:true,text:'Triệu đ',color:'#5a6678'}},
+      }
+    }
+  });
+}
+
+function renderZoneChart(){
+  const zones={};
+  downtimeLog.forEach(d=>{zones[d.zone]=(zones[d.zone]||0)+d.hours;});
+  const labels=Object.keys(zones),vals=labels.map(z=>zones[z]);
+  const colors=['#ff4757','#f5a623','#3b82f6','#00d97e','#06b6d4','#f97316','#a78bfa','#ec4899'];
+  _newChart('zoneChart',{
+    type:'bar',
+    data:{labels,datasets:[{label:'Downtime (giờ)',data:vals,backgroundColor:colors,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{color:'#5a6678'},grid:{display:false}},y:{ticks:{color:'#8a97aa'},grid:{color:'#1e2633'}}}
+    }
+  });
+}
+
+function renderDonutChart(){
+  const bd=downtimeLog.filter(d=>d.type==='Breakdown').reduce((s,d)=>s+d.hours,0);
+  const pl=downtimeLog.filter(d=>d.type==='PM').reduce((s,d)=>s+d.hours,0);
+  _newChart('donutChart',{
+    type:'doughnut',
+    data:{labels:['Breakdown','Planned PM'],datasets:[{data:[bd,pl],backgroundColor:['#ff4757','#00d97e'],borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,maintainAspectRatio:true,cutout:'65%',
+      plugins:{legend:{labels:{color:'#8a97aa',font:{size:11}}},
+        tooltip:{callbacks:{label:d=>`${d.label}: ${d.raw}h`}}
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════════
+// MANAGER RENDERS
+// ══════════════════════════════════════════════
+
+function renderManagerKPIs(){
+  document.getElementById('pmComp').textContent=pmCompliance+'%';
+  document.getElementById('pmBar').style.width=pmCompliance+'%';
+  document.getElementById('pmSub').textContent=`${pmDone}/${maintenanceLog.length} PM hoàn thành`;
+  const amDone=amChecklistData.reduce((s,m)=>s+m.checks.filter(c=>c.status==='done').length,0);
+  const amTotal=amChecklistData.reduce((s,m)=>s+m.checks.length,0);
+  const amPct=Math.round(amDone/amTotal*100);
+  document.getElementById('amComp').textContent=amPct+'%';
+  document.getElementById('amBar').style.width=amPct+'%';
+  document.getElementById('amSub').textContent=`${amDone}/${amTotal} hạng mục`;
+  const classA=equipmentList.filter(e=>e.class==='A');
+  document.getElementById('mttrAvg').textContent=(classA.reduce((s,e)=>s+e.mttr,0)/classA.length).toFixed(1);
+  document.getElementById('repeatFaultsKPI').textContent=repeatFaults.length;
+}
+
+function renderZoneStatusGrid(){
+  const filtered=activeZone==='all'?assetHierarchy.zones:assetHierarchy.zones.filter(z=>z.id===activeZone);
+  let html='';
+  filtered.forEach(z=>{
+    const equips=equipmentList.filter(e=>e.zone===z.id);
+    const ok=equips.filter(e=>e.status==='OK').length;
+    const warn=equips.filter(e=>e.status==='WARNING').length;
+    const fault=equips.filter(e=>e.status==='FAULT').length;
+    const col=fault>0?'var(--red)':warn>1?'var(--yellow)':'var(--green)';
+    const avgAvail=(equips.reduce((s,e)=>s+e.availability,0)/equips.length).toFixed(0);
+    html+=`<div class="zone-card" style="border-color:${col}20">
+      <div class="zone-name">${z.icon} ${z.name}</div>
+      <div class="mini-metric"><span class="mm-label">✅ OK</span><span class="mm-val green">${ok}</span></div>
+      <div class="mini-metric"><span class="mm-label">⚠ WARNING</span><span class="mm-val yellow">${warn}</span></div>
+      <div class="mini-metric"><span class="mm-label">❌ FAULT</span><span class="mm-val red">${fault}</span></div>
+      <div style="height:3px;border-radius:2px;background:var(--bg4);margin-top:10px;overflow:hidden"><div style="height:100%;width:${avgAvail}%;background:${col};border-radius:2px"></div></div>
+      <div style="font-size:10px;color:var(--text3);margin-top:4px">Availability: ${avgAvail}%</div>
+    </div>`;
+  });
+  document.getElementById('zoneStatusGrid').innerHTML=html;
+}
+
+function renderEquipTable(){
+  const filtered=activeZone==='all'?equipmentList:equipmentList.filter(e=>e.zone===activeZone);
+  let html=`<tr><th>ID</th><th>Thiết bị</th><th>Khu</th><th>Class</th><th>Status</th><th>Avail %</th><th>MTBF (h)</th><th>MTTR (h)</th><th>PM tiếp theo</th></tr>`;
+  filtered.forEach(e=>{
+    const pmDate=new Date(e.nextPM),now=new Date();
+    const overdue=pmDate<now;
+    html+=`<tr>
+      <td class="mono" style="color:var(--text3)">${e.id}</td>
+      <td><strong>${e.name}</strong></td>
+      <td style="color:var(--text2);font-size:11px">${e.zoneName}</td>
+      <td>${classBadge(e.class)}</td>
+      <td>${statusDot(e.status)}<span class="${e.status==='OK'?'green':e.status==='WARNING'?'yellow':'red'}">${e.status}</span></td>
+      <td class="mono">${e.availability}%</td>
+      <td class="mono green">${e.mtbf}</td>
+      <td class="mono ${e.mttr>2?'yellow':'green'}">${e.mttr}</td>
+      <td class="mono ${overdue?'red':'green'}">${e.nextPM}${overdue?' ⚠':''}</td>
+    </tr>`;
+  });
+  document.getElementById('equipTable').innerHTML=html;
+}
+
+// ══════════════════════════════════════════════
+// OPERATION RENDERS
+// ══════════════════════════════════════════════
+
+function renderWorkOrders(){
+  let html='';
+  workOrdersData.forEach(wo=>{
+    html+=`<div class="wo-card ${wo.priority==='critical'?'critical':wo.priority==='high'?'warning':'normal'}">
+      <div class="wo-top">
+        <span class="wo-id">${wo.id}</span>
+        <span class="wo-title">${wo.title}</span>
+        <span class="wo-pri pri-${wo.priority}">${wo.priority.toUpperCase()}</span>
+      </div>
+      <div class="wo-meta">
+        <span>⚙ ${wo.equip}</span><span>📍 ${wo.zone}</span>
+        <span>👤 ${wo.assignee}</span><span>⏰ ${wo.due}</span>
+        <span>⏱ ${wo.est}</span>
+        <span style="margin-left:auto;font-weight:700;color:${wo.status==='In Progress'?'var(--green)':'var(--text2)'}">${wo.status}</span>
+      </div>
+    </div>`;
+  });
+  document.getElementById('workOrders').innerHTML=html;
+}
+
+function renderAMChecklist(){
+  let html='';
+  amChecklistData.forEach(m=>{
+    html+=`<div style="margin-bottom:12px"><div style="font-weight:700;font-size:12px;margin-bottom:6px;color:var(--cyan)">${m.machine}</div>`;
+    m.checks.forEach((c,ci)=>{
+      const id=`chk-${m.machine.replace(/\s/g,'')}-${ci}`;
+      const checked=c.status==='done';
+      html+=`<div class="checklist-item">
+        <div class="check-box ${checked?'checked':''}" onclick="toggleCheck(this)"></div>
+        <span class="check-label">${c.item}</span>
+        <span class="check-status ${c.status==='done'?'check-ok':c.status==='fail'?'check-fail':'check-pending'}">${c.status==='done'?'OK':c.status==='fail'?'FAIL':'—'}</span>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('amChecklist').innerHTML=html;
+}
+function toggleCheck(el){
+  el.classList.toggle('checked');
+  const isChecked = el.classList.contains('checked');
+  const statusEl = el.nextElementSibling?.nextElementSibling;
+  if(statusEl && statusEl.classList.contains('check-status')){
+    if(isChecked){
+      statusEl.className='check-status check-ok';
+      statusEl.textContent='OK';
+    } else {
+      statusEl.className='check-status check-pending';
+      statusEl.textContent='—';
+    }
+  }
+}
+
+function renderOverdueTable(){
+  const overdue=maintenanceLog.filter(m=>m.status==='Overdue');
+  let html=`<tr><th>ID</th><th>Thiết bị</th><th>Khu</th><th>Ngày PM</th><th>Trạng thái</th></tr>`;
+  overdue.forEach(m=>{
+    html+=`<tr><td class="mono" style="color:var(--text3)">${m.id}</td><td><strong>${m.name}</strong></td><td style="color:var(--text2)">${m.zone}</td><td class="mono red">${m.date}</td><td><span class="overdue-badge">OVERDUE</span></td></tr>`;
+  });
+  document.getElementById('overdueTable').innerHTML=html;
+}
+
+function renderSpareParts(){
+  let html=`<tr><th>Mã</th><th>Tên vật tư</th><th>Tồn</th><th>Min</th><th>Trạng thái</th></tr>`;
+  sparePartsData.forEach(s=>{
+    const cls=s.status==='CRITICAL'?'red':s.status==='LOW'?'yellow':'green';
+    html+=`<tr>
+      <td class="mono" style="color:var(--text3)">${s.code}</td>
+      <td>${s.name}</td>
+      <td class="mono ${cls}">${s.qty} ${s.unit}</td>
+      <td class="mono" style="color:var(--text3)">${s.min} ${s.unit}</td>
+      <td><span class="${s.status==='CRITICAL'?'overdue-badge':s.status==='LOW'?'check-status check-fail':'check-status check-ok'}">${s.status}</span></td>
+    </tr>`;
+  });
+  document.getElementById('sparePartsTable').innerHTML=html;
+}
+
+// ══════════════════════════════════════════════
+// ASSETS
+// ══════════════════════════════════════════════
+
+function renderAssetTree(){
+  let html=`<table class="tbl"><tr><th>ID</th><th>Thiết bị</th><th>Khu</th><th>Type</th><th>Class</th><th>PM (ngày)</th></tr>`;
+  assetHierarchy.zones.forEach(z=>{
+    html+=`<tr style="background:var(--bg4)"><td colspan="6" style="font-weight:700;color:var(--cyan);padding:10px">${z.icon} ${z.name}</td></tr>`;
+    z.equipment.forEach(e=>{
+      html+=`<tr>
+        <td class="mono" style="color:var(--text3)">${e.id}</td>
+        <td style="padding-left:20px">${e.name}</td>
+        <td style="color:var(--text2)">${z.name}</td>
+        <td style="color:var(--text3)">${e.type}</td>
+        <td>${classBadge(e.class)}</td>
+        <td class="mono">${e.class==='A'?30:e.class==='B'?60:90}</td>
+      </tr>`;
+    });
+  });
+  html+='</table>';
+  document.getElementById('assetTree').innerHTML=html;
+}
+
+// ══════════════════════════════════════════════
+// PARETO
+// ══════════════════════════════════════════════
+
+function renderPareto(){
+  const total=paretoData.reduce((s,d)=>s+d.hours,0);
+  let cumul=0;
+  const sorted=[...paretoData].sort((a,b)=>b.hours-a.hours);
+  const labels=sorted.map(d=>d.cause),vals=sorted.map(d=>d.hours),cumulPct=[];
+  sorted.forEach(d=>{cumul+=d.hours/total*100;cumulPct.push(+cumul.toFixed(1));});
+  _newChart('paretoChart',{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Giờ dừng',data:vals,backgroundColor:'#3b82f6',yAxisID:'y',borderRadius:4},
+      {label:'Tích lũy %',data:cumulPct,type:'line',borderColor:'#f5a623',tension:.3,yAxisID:'y1',pointBackgroundColor:'#f5a623'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'#8a97aa',font:{size:11}}}},
+      scales:{
+        x:{ticks:{color:'#5a6678',maxRotation:30},grid:{display:false}},
+        y:{ticks:{color:'#3b82f6'},grid:{color:'#1e2633'},title:{display:true,text:'Giờ',color:'#5a6678'}},
+        y1:{position:'right',ticks:{color:'#f5a623',callback:v=>v+'%'},grid:{display:false},max:100},
+      }
+    }
+  });
+  cumul=0;
+  let listHtml='<div style="margin-bottom:8px;font-size:11px;color:var(--text3)">20% nguyên nhân hàng đầu → 80% downtime</div>';
+  sorted.forEach((d,i)=>{
+    cumul+=d.hours/total*100;
+    const is80=cumul<=80,barColor=is80?'#ff4757':'#3b82f6',pct=(d.hours/total*100).toFixed(1);
+    listHtml+=`<div class="pareto-item">
+      <div class="pareto-rank">${i+1}</div>
+      <div class="pareto-label" title="${d.cause}">${d.cause}</div>
+      <div class="pareto-bar-wrap"><div class="pareto-bar-fill" style="width:${Math.min(100,(d.hours/sorted[0].hours)*95)}%;background:${barColor}"></div></div>
+      <div class="pareto-pct">${d.hours}h</div><div class="pareto-pct">${pct}%</div>
+      <div class="pareto-cumul">${cumul.toFixed(0)}%</div>
+      ${is80?'<span style="font-size:10px;background:var(--red-dim);color:var(--red);padding:2px 6px;border-radius:3px;margin-left:6px">80%</span>':''}
+    </div>`;
+  });
+  document.getElementById('paretoList').innerHTML=listHtml;
+  let rfHtml=`<tr><th>Thiết bị</th><th>Lỗi</th><th>Lần</th><th>Lần cuối</th><th>Thiệt hại</th><th>RCA</th></tr>`;
+  repeatFaults.forEach(f=>{
+    rfHtml+=`<tr>
+      <td><strong>${f.name}</strong><br><span class="mono" style="color:var(--text3);font-size:10px">${f.equip}</span></td>
+      <td>${f.fault}</td><td class="mono red">${f.count}x</td>
+      <td class="mono" style="color:var(--text3)">${f.lastDate}</td>
+      <td class="money">${f.loss}</td>
+      <td style="color:${f.rca==='Chưa có'?'var(--red)':'var(--yellow)'};font-size:11px">${f.rca}</td>
+    </tr>`;
+  });
+  document.getElementById('repeatFaultTable').innerHTML=rfHtml;
+}
+
+// ══════════════════════════════════════════════
+// MODAL XUẤT LỆNH BẢO TRÌ
+// ══════════════════════════════════════════════
+
+let moType = 'weekly';
+let moZones = new Set(['all']);
+
+function openExportModal(){
+  // Auto-fill date fields
+  const today = new Date();
+  document.getElementById('mo-date').value = today.toISOString().split('T')[0];
+  const execD = new Date(today); execD.setDate(execD.getDate()+3);
+  document.getElementById('mo-exec-date').value = execD.toISOString().split('T')[0];
+  // Auto number
+  const wk = getWeekNumber(today);
+  document.getElementById('mo-no').value = `LBT-${today.getFullYear()}-W${String(wk).padStart(2,'0')}`;
+  updateMoEquipCount();
+  document.getElementById('moOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeExportModal(){
+  document.getElementById('moOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function handleMoOverlayClick(e){
+  if(e.target===document.getElementById('moOverlay')) closeExportModal();
+}
+// ESC key closes modal
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    closeExportModal();
+    closeAllDropdowns();
+  }
+});
+function getWeekNumber(d){
+  const date = new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  const dayNum = date.getUTCDay()||7;
+  date.setUTCDate(date.getUTCDate()+4-dayNum);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  return Math.ceil((((date-yearStart)/86400000)+1)/7);
+}
+
+function selectMoType(type, el){
+  moType = type;
+  document.querySelectorAll('.mo-type-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  // Update order number
+  const today = new Date();
+  const wk = getWeekNumber(today);
+  const prefixes = {weekly:`W${String(wk).padStart(2,'0')}`,monthly:`M${String(today.getMonth()+1).padStart(2,'0')}`,overhaul:'OH'};
+  document.getElementById('mo-no').value=`LBT-${today.getFullYear()}-${prefixes[type]}`;
+}
+
+function toggleMoZone(zone, el){
+  if(zone==='all'){
+    moZones.clear(); moZones.add('all');
+    document.querySelectorAll('.mo-zone-chip').forEach(c=>c.classList.remove('sel'));
+    el.classList.add('sel');
+  } else {
+    moZones.delete('all');
+    document.querySelector('.mo-zone-chip[data-zone="all"]').classList.remove('sel');
+    if(moZones.has(zone)){moZones.delete(zone);el.classList.remove('sel');}
+    else{moZones.add(zone);el.classList.add('sel');}
+    if(moZones.size===0){moZones.add('all');document.querySelector('.mo-zone-chip[data-zone="all"]').classList.add('sel');}
+  }
+  updateMoEquipCount();
+}
+
+function getSelectedEquips(){
+  if(moZones.has('all')) return equipmentList;
+  return equipmentList.filter(e=>moZones.has(e.zone));
+}
+
+function updateMoEquipCount(){
+  const n = getSelectedEquips().length;
+  const el = document.getElementById('moEquipCount');
+  if(el) el.textContent = `${n} thiết bị`;
+}
+
+// ── CORE EXPORT ───────────────────────────────
+function executeExportOrder(){
+  try {
+    const no       = (document.getElementById('mo-no').value||'').trim() || 'LBT-2025-001';
+    const dateVal  = document.getElementById('mo-date').value;
+    const execVal  = document.getElementById('mo-exec-date').value;
+    const priority = document.getElementById('mo-priority').value || 'Binh thuong';
+    const chief    = (document.getElementById('mo-chief').value||'').trim() || '___________________';
+    const tech     = (document.getElementById('mo-tech').value||'').trim() || '___________________';
+    const noteVal  = (document.getElementById('mo-note').value||'').trim();
+
+    const fmt = v => v ? new Date(v).toLocaleDateString('vi-VN') : '___________________';
+    const today    = fmt(dateVal);
+    const execDate = fmt(execVal);
+
+    const typeLabels = {weekly:'BAO TRI HANG TUAN', monthly:'BAO TRI HANG THANG', overhaul:'DAI TU THIET BI'};
+    const typeLabelMap = {weekly:'BẢO TRÌ HÀNG TUẦN', monthly:'BẢO TRÌ HÀNG THÁNG', overhaul:'ĐẠI TU THIẾT BỊ'};
+    const typeLabel  = typeLabelMap[moType] || 'BẢO TRÌ HÀNG TUẦN';
+
+    const zoneLabel = moZones.has('all') ? 'Toan nha may'
+      : [...moZones].map(z => assetHierarchy.zones.find(zz=>zz.id===z)?.name || z).join(', ');
+
+    const machines = getMachinesForExport();
+    if (!machines.length) {
+      alert('Khong co thiet bi nao de xuat. Vui long chon khu vuc.');
+      return;
+    }
+
+    const wb = XLSX.utils.book_new();
+
+    const s1 = buildMainSheet(no, typeLabel, today, execDate, priority, zoneLabel, chief, noteVal, machines);
+    const ws1 = XLSX.utils.aoa_to_sheet(s1.rows);
+    ws1['!cols'] = s1.cols; ws1['!merges'] = s1.merges;
+    XLSX.utils.book_append_sheet(wb, ws1, 'LENH BAO TRI');
+
+    const s3 = buildPartsSheetNew(no, typeLabel, today, machines);
+    const ws3 = XLSX.utils.aoa_to_sheet(s3.rows);
+    ws3['!cols'] = s3.cols; ws3['!merges'] = s3.merges;
+    XLSX.utils.book_append_sheet(wb, ws3, 'VAT TU PHU TUNG');
+
+    const safe  = no.replace(/[\/\\:*?"<>|]/g,'_');
+    const dated = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, 'LenhBaoTri_' + safe + '_' + dated + '.xlsx');
+    closeExportModal();
+  } catch(err) {
+    console.error('Export error:', err);
+    alert('Loi xuat file: ' + err.message);
+  }
+}
+
+function getMachinesForExport(){
+  const result = [];
+  const zones = moZones.has('all') ? assetHierarchy.zones.map(z=>z.id) : [...moZones];
+  zones.forEach(zoneId=>{
+    const zdef = assetHierarchy.zones.find(z=>z.id===zoneId);
+    const tree = zoneTree[zoneId]||[];
+    tree.forEach(m=>{
+      result.push({
+        id:m.id, name:m.name, class:m.class||'B', type:m.type||'default',
+        zone:zoneId, zoneName:zdef ? zdef.name : zoneId, zoneIcon:zdef ? zdef.icon : '',
+        machineStatus:m.machineStatus, machineNote:m.machineNote||'',
+        nextPM:m.nextPM||'', items:m.items||[],
+      });
+    });
+  });
+  return result;
+}
+
+function stLabel(s){ return s==='ok'?'OK - Binh thuong':s==='warn'?'Canh bao - Theo doi':s==='bt'?'Can bao tri':'Chua kiem tra'; }
+function stShort(s){ return s==='ok'?'DAT':s==='warn'?'THEO DOI':s==='bt'?'KHONG DAT':'—'; }
+
+function jobDesc(type, machine){
+  var base={
+    weekly:'Ve sinh be mat, Boi tron, Kiem tra ro ri, Tieng on & rung',
+    monthly:'PM dinh ky, Thay dau/loc, Kiem tra belt & coupling, Hieu chinh sensor',
+    overhaul:'Overhaul toan dien, Thao lap, Thay the phu tung, Kiem dinh an toan'
+  };
+  var bt = machine.items.filter(function(i){return i.status==='bt';}).map(function(i){return i.name;});
+  return bt.length ? (base[type]||base.weekly) + ' | DAC BIET: ' + bt.join(', ') : (base[type]||base.weekly);
+}
+
+function itemStd(name){
+  var m={
+    'Ve sinh be mat':'Khong bam bui, dau mo',
+    'Kiem tra ro ri':'Khong ro ri tai mat bich, van, ong',
+    'Tieng on / rung':'< 85 dB, khong rung bat thuong',
+    'Nhiet do hoat dong':'Theo thong so ky thuat +/- 5°C',
+    'Bulong / Belt / Chain':'Dung moment, khong long, wear < 20%',
+    'Sensor & den bao':'Hoat dong dung, den xanh',
+    'Muc nuoc':'80-95% theo gauge',
+    'Ap suat hoat dong':'Theo nameplate +/- 0.1 bar',
+    'Van an toan':'Test thu, tac dong dung set point',
+  };
+  return m[name] || 'Theo tieu chuan nha san xuat';
+}
+
+function buildMainSheet(no, type, date, execDate, priority, zone, chief, note, machines){
+  var rows=[], merges=[], r=0;
+  var estH = moType==='weekly'?1:moType==='monthly'?3:8;
+
+  // ── HEADER ──────────────────────────────────────
+  rows.push(['CONG TY CO PHAN THUC PHAM LIFES FOOD','','','','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:7}}); r++;
+  rows.push(['Nha may Tay Ninh  |  Dien thoai: (0276) xxx-xxxx  |  factory@lifesfood.com.vn','','','','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:7}}); r++;
+  rows.push(['','','','','','','',''  ]); r++;
+
+  rows.push(['LENH ' + type + '   So: ' + no,'','','','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:7}}); r++;
+  rows.push(['','','','','','','','']); r++;
+
+  // ── THÔNG TIN LỆNH ──────────────────────────────
+  rows.push(['Ngay lap lenh:', date, '', 'Ngay thuc hien:', execDate, '', 'Do uu tien:', priority]);
+  merges.push({s:{r:r,c:1},e:{r:r,c:2}}); merges.push({s:{r:r,c:4},e:{r:r,c:5}}); r++;
+  rows.push(['Khu vuc / Pham vi:', zone,'','','','','','']);
+  merges.push({s:{r:r,c:1},e:{r:r,c:7}}); r++;
+  rows.push(['Nguoi tao lenh:', chief,'','','','','','']);
+  merges.push({s:{r:r,c:1},e:{r:r,c:7}}); r++;
+  rows.push(['','','','','','','','']); r++;
+
+  // ── BẢNG THIẾT BỊ + CHECKLIST ──────────────────
+  rows.push(['STT','MA TB','TEN THIET BI / HANG MUC KIEM TRA','KHU VUC','CLASS','TRANG THAI','CONG VIEC / TIEU CHUAN','GIO DK']);
+  r++;
+
+  var stt=1;
+  machines.forEach(function(m){
+    // Dòng thiết bị chính
+    rows.push([stt++, m.id, m.name, m.zoneName, m.class,
+               stLabel(m.machineStatus), jobDesc(moType,m), estH]);
+    r++;
+    // Các hạng mục checklist inline (thụt lề)
+    m.items.forEach(function(item, i){
+      var danh = stShort(item.status);
+      rows.push(['', '', '    '+(i+1)+'. '+item.name, '', '', danh, itemStd(item.name), '']);
+      r++;
+    });
+    // Dòng kết quả + ký tên KTV
+    rows.push(['', '', 'KTV thuc hien: ___________________   Bat dau: ___:___   Ket thuc: ___:___', '', '', '', '', '']);
+    merges.push({s:{r:r,c:2},e:{r:r,c:7}}); r++;
+    rows.push(['','','','','','','','']); r++;
+  });
+
+  // ── TỔNG KẾT ────────────────────────────────────
+  rows.push(['','','','','','','TONG GIO DU KIEN:', machines.length*estH+' gio']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:5}}); r++;
+  rows.push(['','','','','','','','']); r++;
+
+  if(note){
+    rows.push(['GHI CHU / YEU CAU: '+note,'','','','','','','']);
+    merges.push({s:{r:r,c:0},e:{r:r,c:7}}); r++;
+    rows.push(['','','','','','','','']); r++;
+  }
+
+  rows.push(['LUU Y AN TOAN: Thuc hien LOTO truoc khi bao tri. Trang bi PPE day du. Khoa nguon dien truoc khi sua chua.','','','','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:7}}); r++;
+  rows.push(['','','','','','','','']); r++;
+
+  // ── CHỮ KÝ: chỉ Người tạo lệnh + Giám Đốc NM ──
+  rows.push(['NGUOI TAO LENH BAO TRI','','','','GIAM DOC NHA MAY PHE DUYET','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:3}}); merges.push({s:{r:r,c:4},e:{r:r,c:7}}); r++;
+  rows.push(['','','','','','','','']); r++;
+  rows.push(['','','','','','','','']); r++;
+  rows.push(['','','','','','','','']); r++;
+  rows.push([chief,'','','','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:3}}); merges.push({s:{r:r,c:4},e:{r:r,c:7}}); r++;
+  rows.push(['Ky ten','','','','Ky ten & Dong dau','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:3}}); merges.push({s:{r:r,c:4},e:{r:r,c:7}}); r++;
+  rows.push(['Ngay: ___/___/_____','','','','Ngay: ___/___/_____','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:3}}); merges.push({s:{r:r,c:4},e:{r:r,c:7}}); r++;
+
+  var cols=[{wch:5},{wch:10},{wch:42},{wch:18},{wch:6},{wch:18},{wch:34},{wch:10}];
+  return {rows:rows, merges:merges, cols:cols};
+}
+
+
+function buildDetailSheet(no, type, date, machines){
+  var rows=[], merges=[], r=0;
+
+  rows.push(['CHECKLIST BAO TRI CHI TIET — '+type,'','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:5}}); r++;
+  rows.push(['Lenh so: '+no+'   |   Ngay: '+date,'','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:5}}); r++;
+  rows.push(['','','','','','']); r++;
+
+  machines.forEach(function(m){
+    rows.push([m.zoneIcon+' '+m.id+' — '+m.name+' ('+m.zoneName+') Class '+m.class+' | '+stLabel(m.machineStatus),'','','','','']);
+    merges.push({s:{r:r,c:0},e:{r:r,c:5}}); r++;
+    rows.push(['STT','HANG MUC KIEM TRA','TIEU CHUAN KY THUAT','KET QUA DO','DANH GIA','GHI CHU']);
+    r++;
+    if(!m.items.length){
+      rows.push(['—','(Khong co hang muc)','','','','']);
+      r++;
+    } else {
+      m.items.forEach(function(item,i){
+        rows.push([i+1, item.name, itemStd(item.name), '', stShort(item.status), item.note||'']);
+        r++;
+      });
+    }
+    rows.push(['KTV thuc hien: ___________________','','','Bat dau: ___:___','Ket thuc: ___:___','Ky ten: ___________________']);
+    merges.push({s:{r:r,c:0},e:{r:r,c:2}}); r++;
+    rows.push(['','','','','','']); r++;
+  });
+
+  var cols=[{wch:5},{wch:34},{wch:28},{wch:14},{wch:12},{wch:28}];
+  return {rows:rows, merges:merges, cols:cols};
+}
+
+function buildPartsSheetNew(no, type, date, machines){
+  var rows=[], merges=[], r=0;
+
+  rows.push(['VAT TU & PHU TUNG CAN CHUAN BI — '+type,'','','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:6}}); r++;
+  rows.push(['Lenh so: '+no+'   |   Ngay: '+date,'','','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:6}}); r++;
+  rows.push(['','','','','','','']); r++;
+
+  rows.push(['STT','MA TB','TEN THIET BI','TEN VAT TU / PHU TUNG','SL','DVT','GHI CHU / TON KHO']);
+  r++;
+
+  var partMap={
+    weekly:  [['Dau boi tron',1,'lit'],['Mo boi tron',0.5,'kg'],['Ge lau cong nghiep',2,'kg']],
+    monthly: [['Loc khi / Loc dau',1,'cai'],['Vong dem O-ring',4,'cai'],['Dau thuy luc',2,'lit'],['Gioang lam kin',2,'bo']],
+    overhaul:[['Vong bi 6205-2RS',2,'cai'],['Day curoa cong nghiep',1,'soi'],['Bo gioang day du',1,'bo'],['Dau boi tron',5,'lit'],['Linh kien dien du phong',1,'bo']],
+  };
+  var parts = partMap[moType]||partMap.weekly;
+
+  var stt=1;
+  machines.forEach(function(m){
+    var btParts = m.items
+      .filter(function(i){return i.status==='bt';})
+      .map(function(i){return [i.name+' (thay the/sua)',1,'bo'];});
+    parts.concat(btParts).forEach(function(p){
+      rows.push([stt++, m.id, m.name, p[0], p[1], p[2], '']);
+      r++;
+    });
+  });
+
+  rows.push(['','','','','','','']); r++;
+  rows.push(['TONG DONG VAT TU:', stt-1,'','','','','']);
+  merges.push({s:{r:r,c:1},e:{r:r,c:6}}); r++;
+  rows.push(['','','','','','','']); r++;
+
+  // Xác nhận tồn kho
+  rows.push(['XAC NHAN TON KHO TRUOC KHI THUC HIEN','','','','NGUOI NHAN VAT TU','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:3}}); merges.push({s:{r:r,c:4},e:{r:r,c:6}}); r++;
+  rows.push(['','','','','','','']); r++;
+  rows.push(['','','','','','','']); r++;
+  rows.push(['___________________','','','','___________________','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:3}}); merges.push({s:{r:r,c:4},e:{r:r,c:6}}); r++;
+  rows.push(['Thu kho / Cung ung','','','','KTV / Truong ca','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:3}}); merges.push({s:{r:r,c:4},e:{r:r,c:6}}); r++;
+  rows.push(['Ngay: ___/___/_____','','','','Ngay: ___/___/_____','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:3}}); merges.push({s:{r:r,c:4},e:{r:r,c:6}}); r++;
+
+  var cols=[{wch:5},{wch:10},{wch:26},{wch:34},{wch:6},{wch:8},{wch:26}];
+  return {rows:rows, merges:merges, cols:cols};
+}
+
+
+function buildApprovalSheet2(no, type, date, execDate, chief, tech, zone, priority, note, machines){
+  var rows=[], merges=[], r=0;
+
+  rows.push(['PHIEU XAC NHAN & PHE DUYET LENH BAO TRI','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:4}}); r++;
+  rows.push(['CONG TY CP THUC PHAM LIFES FOOD  —  NHA MAY TAY NINH','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:4}}); r++;
+  rows.push(['','','','','']); r++;
+
+  var summary=[
+    ['So lenh:', no, 'Ngay lap:', date, ''],
+    ['Loai bao tri:', type, 'Ngay thuc hien:', execDate, ''],
+    ['Khu vuc:', zone, 'Do uu tien:', priority, ''],
+    ['Tong thiet bi:', machines.length+' may', 'Can bao tri:', machines.filter(function(m){return m.machineStatus==='bt';}).length+' may', ''],
+    ['Ghi chu:', note||'Khong co', '', '', ''],
+  ];
+  summary.forEach(function(row){ rows.push(row); r++; });
+
+  rows.push(['','','','','']); r++;
+  rows.push(['TOM TAT KIEM TRA','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:4}}); r++;
+  rows.push(['STT','THIET BI','KHU VUC','TRANG THAI','HANG MUC BT']);
+  r++;
+  machines.forEach(function(m,i){
+    var btCount = m.items.filter(function(x){return x.status==='bt';}).length;
+    rows.push([i+1, m.id+' - '+m.name, m.zoneName, stLabel(m.machineStatus), btCount||'—']);
+    r++;
+  });
+
+  rows.push(['','','','','']); r++;
+  rows.push(['TRUONG BPBT DE XUAT','','GIAM DOC NHA MAY PHE DUYET','','KE TOAN / CUNG UNG']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:1}}); merges.push({s:{r:r,c:2},e:{r:r,c:3}}); r++;
+  rows.push(['','','','','']); r++;
+  rows.push(['','','','','']); r++;
+  rows.push(['___________________','','___________________','','___________________']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:1}}); merges.push({s:{r:r,c:2},e:{r:r,c:3}}); r++;
+  rows.push([chief,'','Nguyen Van Hai','','___________________']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:1}}); merges.push({s:{r:r,c:2},e:{r:r,c:3}}); r++;
+  rows.push(['Ngay: ___/___/_____','','Ngay: ___/___/_____','','Ngay: ___/___/_____']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:1}}); merges.push({s:{r:r,c:2},e:{r:r,c:3}}); r++;
+
+  rows.push(['','','','','']); r++;
+  rows.push(['KET QUA THUC HIEN (dien sau khi hoan thanh)','','','','']);
+  merges.push({s:{r:r,c:0},e:{r:r,c:4}}); r++;
+  rows.push(['Ngay hoan thanh:','','','Thoi gian thuc te (h):','']);
+  rows.push(['Chi phi vat tu (VND):','','','Chi phi nhan cong (VND):','']);
+  rows.push(['Ket qua:','[ ] Hoan thanh','[ ] Mot phan','[ ] Doi lich','[ ] Chua thuc hien']);
+  rows.push(['Su co phat sinh:','','','','']);
+  rows.push(['KTV thuc hien (Ky ten):','___________________','','KTV kiem tra (Ky ten):','___________________']);
+
+  var cols=[{wch:22},{wch:22},{wch:22},{wch:22},{wch:22}];
+  return {rows:rows, merges:merges, cols:cols};
+}
+
+function applySheetStyle(){}
+
+
+function exportWeekly(){
+  const wb=XLSX.utils.book_new();
+  const s1=[
+    ["BÁO CÁO VẬN HÀNH TUẦN – LIFESFOOD FACTORY","","","",""],
+    [`Tuần: ${(()=>{const d=new Date(),m=d.getDay(),diff=d.getDate()-m+(m==0?-6:1);const mo=new Date(d.setDate(diff)),su=new Date(mo);su.setDate(mo.getDate()+6);return mo.toLocaleDateString("vi-VN")+"–"+su.toLocaleDateString("vi-VN")})()}  |  Người lập: Nguyễn Văn Hải – Giám đốc nhà máy`],[""],
+    ["KPI","Giá trị","Target","Trạng thái","Ghi chú"],
+    ["OEE (%)","78.4","85","⚠ Cần cải thiện","Dưới target 6.6%"],
+    ["Downtime hôm nay (h)",totalHoursToday,"<3h","❌ Vượt","Cần action"],
+    ["PM Compliance (%)",pmCompliance,">=90","⚠","Cần tăng"],
+    ["Lỗi lặp lại",repeatFaults.length,"0","❌","Cần RCA"],
+  ];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(s1),"KPI Summary");
+  const s2=[["ID","Thiết bị","Khu","Class","Ngày","Giờ dừng","Nguyên nhân","Loại","Chi phí (đ)"]];
+  downtimeLog.forEach(d=>s2.push([d.id,d.name,d.zone,d.class,d.date,d.hours,d.cause,d.type,Math.round(d.cost)]));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(s2),"Downtime Log");
+  const _wDate=new Date();const _wk=getWeekNumber(_wDate);XLSX.writeFile(wb,`LifesFood_BaoCaoTuan_W${String(_wk).padStart(2,"0")}_${_wDate.getFullYear()}.xlsx`);
+}
+
+function exportMonthly(){
+  const wb=XLSX.utils.book_new();
+  const oee=[[`BÁO CÁO THÁNG ${new Date().getMonth()+1}/${new Date().getFullYear()} – LIFESFOOD FACTORY`],
+    ["Tháng","OEE (%)","Target","Downtime (h)","PM Compliance"],
+    ["Tháng 1","82.1","85",28,"87%"],["Tháng 2","80.5","85",32,"84%"],
+    ["Tháng 3","79.8","85",35,"80%"],["Tháng 4","81.2","85",30,"85%"],
+    ["Tháng 5","78.9","85",36,"79%"],["Tháng 6","77.4","85",40,"75%"],
+    ["Tháng 7 (YTD)","78.4","85",37,"77%"]];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(oee),"OEE Trend");
+  const tot=paretoData.reduce((s,d)=>s+d.hours,0);
+  const pd=[["Nguyên nhân","Giờ","Tỷ lệ %","Khu"]];
+  [...paretoData].sort((a,b)=>b.hours-a.hours).forEach(d=>pd.push([d.cause,d.hours,(d.hours/tot*100).toFixed(1)+'%',d.zone]));
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(pd),"Pareto");
+  const _mDate=new Date();XLSX.writeFile(wb,`LifesFood_BaoCaoThang_${String(_mDate.getMonth()+1).padStart(2,"0")}_${_mDate.getFullYear()}.xlsx`);
+}
+
+
+// ══════════════════════════════════════════════
+// BÁO CÁO NGÀY — DAILY REPORT
+// ══════════════════════════════════════════════
+
+// In-memory store: array of entry objects
+let dailyLog = [];
+let drEntryId = 1;
+let drCurrentStatus = 'ok';
+let drCurrentPriority = 'normal';
+let drCurrentShift = 'ca-sang';
+
+// Seed with some example data so it's not empty on first load
+function seedDailyLog(){
+  const today = new Date().toISOString().split('T')[0];
+  dailyLog = [
+    {id:drEntryId++,date:today,shift:'ca-sang',time:'07:15',zone:'filling',zoneName:'Filling',machine:'FL-001',machineName:'Máy chiết lon #1',status:'fault',dtStart:'07:10',dtEnd:'08:45',cause:'Mòn van bi, rò rỉ sản phẩm tại cụm chiết rót số 2',action:'Tắt máy, thay van bi dự phòng. Gọi KTV Trần Văn B',reporter:'Nguyễn Minh Tuấn',linkPlan:'weekly',priority:'urgent',note:''},
+    {id:drEntryId++,date:today,shift:'ca-sang',time:'08:00',zone:'utilities',zoneName:'Utilities',machine:'UT-001',machineName:'Boiler #1',status:'warn',dtStart:'',dtEnd:'',cause:'Áp suất dao động nhẹ ±0.2 bar so với set point, tiếng ồn đốt lửa bất thường',action:'Kiểm tra vòi đốt, điều chỉnh van gas. Theo dõi 2h',reporter:'Hoàng Văn Long',linkPlan:'',priority:'high',note:''},
+    {id:drEntryId++,date:today,shift:'ca-sang',time:'09:30',zone:'retort',zoneName:'Retort',machine:'RT-001',machineName:'Retort #1 (lon)',status:'ok',dtStart:'',dtEnd:'',cause:'Kiểm tra định kỳ đầu ca. Toàn bộ hoạt động bình thường',action:'AM checklist hoàn thành đầy đủ',reporter:'Lê Thị Hoa',linkPlan:'',priority:'normal',note:''},
+    {id:drEntryId++,date:today,shift:'ca-sang',time:'10:45',zone:'hvac',zoneName:'HVAC',machine:'HV-001',machineName:'AHU Phòng Sạch',status:'pm',dtStart:'10:30',dtEnd:'11:30',cause:'PM định kỳ tháng — thay lọc gió, vệ sinh coil',action:'Thay filter G4 + F7. Vệ sinh drain pan. Hoàn thành đúng kế hoạch',reporter:'Phạm Văn Đức',linkPlan:'monthly',priority:'normal',note:''},
+  ];
+}
+seedDailyLog();
+
+// ── INIT DAILY REPORT TAB ─────────────────────
+function initDailyReport(){
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('dr-date-picker').value = today;
+  // Set current time
+  const now = new Date();
+  document.getElementById('dr-time').value =
+    String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  // Render
+  refreshDailyKPIs();
+  renderDailyLog();
+  // Show/hide downtime row based on initial status
+  updateDowntimeRow();
+}
+
+function selectShift(shift, el){
+  drCurrentShift = shift;
+  document.querySelectorAll('.dr-shift-tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  refreshDailyKPIs();
+  renderDailyLog();
+}
+
+function selectDRStatus(val, el){
+  drCurrentStatus = val;
+  document.querySelectorAll('#dr-status-group .dr-status-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  updateDowntimeRow();
+}
+
+function selectDRPriority(val, el){
+  drCurrentPriority = val;
+  document.querySelectorAll('#dr-priority-field .dr-status-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function updateDowntimeRow(){
+  const row = document.getElementById('dr-downtime-row');
+  const pf  = document.getElementById('dr-priority-field');
+  const lp  = document.getElementById('dr-link-plan');
+  if(row) row.style.display = (drCurrentStatus==='fault'||drCurrentStatus==='pm') ? 'grid' : 'none';
+  if(pf)  pf.style.display  = (drCurrentStatus==='fault') ? 'block' : 'none';
+}
+
+function updateMachineOptions(){
+  const zoneId = document.getElementById('dr-zone').value;
+  const sel    = document.getElementById('dr-machine');
+  sel.innerHTML = '<option value="">-- Chọn thiết bị --</option>';
+  if(!zoneId) return;
+  const machines = zoneTree[zoneId] || [];
+  if(machines.length){
+    machines.forEach(m=>{
+      const opt = document.createElement('option');
+      opt.value = m.id;
+      opt.textContent = m.id + ' — ' + m.name;
+      sel.appendChild(opt);
+    });
+  } else {
+    // Fallback: build from catalogItems if no assetHierarchy zone
+    const zoneNames = {'cooking':'cooking','retort':'retort','filling':'filling',
+      'labeling':'labeling','roasting':'roasting','utilities':'utilities',
+      'hvac':'hvac','electrical':'electrical'};
+    const fallback = catalogItems.filter(i=>
+      (i.zone||'').toLowerCase().replace(/\s/g,'-')===zoneId ||
+      i.zone===zoneId
+    );
+    fallback.forEach((m,i)=>{
+      const opt = document.createElement('option');
+      opt.value = 'CAT-'+m.id;
+      opt.textContent = m.name;
+      sel.appendChild(opt);
+    });
+    if(!fallback.length){
+      sel.innerHTML = '<option value="">-- Không có thiết bị --</option>';
+    }
+  }
+}
+
+// ── SUBMIT ENTRY ──────────────────────────────
+function submitDailyEntry(){
+  const date     = document.getElementById('dr-date-picker').value;
+  const time     = document.getElementById('dr-time').value;
+  const zoneId   = document.getElementById('dr-zone').value;
+  const machId   = document.getElementById('dr-machine').value;
+  const dtStart  = document.getElementById('dr-dt-start').value;
+  const dtEnd    = document.getElementById('dr-dt-end').value;
+  const cause    = document.getElementById('dr-cause').value.trim();
+  const action   = document.getElementById('dr-action').value.trim();
+  const reporter = document.getElementById('dr-reporter').value.trim();
+  const linkPlan = document.getElementById('dr-link-plan').value;
+
+  if(!date)     { alert('Vui lòng chọn ngày báo cáo'); return; }
+  if(!zoneId)   { alert('Vui lòng chọn khu vực'); return; }
+  if(!machId)   { alert('Vui lòng chọn thiết bị'); return; }
+  if(!cause)    { alert('Vui lòng nhập mô tả tình trạng'); return; }
+  if(!reporter) { alert('Vui lòng nhập tên người ghi nhận'); return; }
+
+  const zone   = assetHierarchy.zones.find(z=>z.id===zoneId);
+  const mach   = (zoneTree[zoneId]||[]).find(m=>m.id===machId);
+
+  // Calculate downtime hours
+  let dtHours = 0;
+  if(dtStart && dtEnd){
+    const [sh,sm] = dtStart.split(':').map(Number);
+    const [eh,em] = dtEnd.split(':').map(Number);
+    let diffMin = (eh*60+em)-(sh*60+sm);
+    if(diffMin < 0) diffMin += 24*60; // overnight crossing midnight
+    dtHours = Math.max(0, diffMin/60);
+  }
+
+  const entry = {
+    id: drEntryId++,
+    date, shift: drCurrentShift,
+    time: time || '--:--',
+    zone: zoneId,
+    zoneName: zone?.name || zoneId,
+    machine: machId,
+    machineName: mach?.name || machId,
+    status: drCurrentStatus,
+    dtStart, dtEnd,
+    dtHours: +dtHours.toFixed(1),
+    cause, action, reporter, linkPlan,
+    priority: drCurrentPriority,
+    note: '',
+  };
+
+  dailyLog.unshift(entry);
+
+  // Also update zoneTree machine status
+  if(mach) mach.machineStatus = drCurrentStatus==='ok'?'ok':drCurrentStatus==='warn'?'warn':'bt';
+
+  // If user wants to create new maintenance order, pre-populate modal
+  if(linkPlan === 'new'){
+    setTimeout(()=>{
+      openExportModal();
+      // Pre-select this zone
+      moZones.clear(); moZones.add(zoneId);
+      document.querySelectorAll('.mo-zone-chip').forEach(c=>c.classList.remove('sel'));
+      const chip = document.querySelector('.mo-zone-chip[data-zone="'+zoneId+'"]');
+      if(chip) chip.classList.add('sel');
+      updateMoEquipCount();
+      // Set priority
+      const psel = document.getElementById('mo-priority');
+      if(psel) psel.value = drCurrentPriority==='urgent'?'Khẩn cấp':drCurrentPriority==='high'?'Cao':'Bình thường';
+      // Prefill note
+      const noteEl = document.getElementById('mo-note');
+      if(noteEl) noteEl.value = cause;
+    },100);
+  }
+
+  // Reset form
+  document.getElementById('dr-cause').value = '';
+  document.getElementById('dr-action').value = '';
+  document.getElementById('dr-dt-start').value = '';
+  document.getElementById('dr-dt-end').value = '';
+  document.getElementById('dr-link-plan').value = '';
+  document.getElementById('dr-machine').value = '';
+  // Reset status to OK
+  drCurrentStatus = 'ok';
+  drCurrentPriority = 'normal';
+  document.querySelectorAll('#dr-status-group .dr-status-btn').forEach(b=>b.classList.remove('active'));
+  const okBtn = document.querySelector('#dr-status-group .s-ok');
+  if(okBtn) okBtn.classList.add('active');
+  updateDowntimeRow();
+
+  // Refresh
+  refreshDailyKPIs();
+  renderDailyLog();
+
+  // Flash confirmation
+  const btn = document.querySelector('.dr-submit-btn');
+  if(btn){
+    const orig = btn.textContent;
+    btn.textContent = '✓ Đã lưu!';
+    btn.style.background = 'linear-gradient(135deg,var(--blue),#2563eb)';
+    setTimeout(()=>{ btn.textContent=orig; btn.style.background=''; },1800);
+  }
+}
+
+// ── REFRESH KPIs ──────────────────────────────
+function refreshDailyKPIs(){
+  const _rawDate = document.getElementById('dr-date-picker')?.value;
+  const date  = _rawDate || new Date().toISOString().split('T')[0];
+  const shift = drCurrentShift;
+  const entries = dailyLog.filter(e=>e.date===date && e.shift===shift);
+
+  // Latest status per machine (dedupe)
+  const latestByMachine = {};
+  [...entries].reverse().forEach(e=>{ latestByMachine[e.machine]=e; });
+  const latest = Object.values(latestByMachine);
+
+  const ok    = latest.filter(e=>e.status==='ok').length;
+  const warn  = latest.filter(e=>e.status==='warn').length;
+  const fault = latest.filter(e=>e.status==='fault').length;
+  const pm    = latest.filter(e=>e.status==='pm').length;
+  const dtH   = entries.reduce((s,e)=>s+(e.dtHours||0),0);
+
+  const set = (id,v) => { const el=document.getElementById(id); if(el) el.innerHTML=v; };
+  set('dr-ok',    ok);
+  set('dr-warn',  warn);
+  set('dr-fault', fault);
+  set('dr-pm',    pm);
+  set('dr-dh',    dtH.toFixed(1)+'<span class="dr-kpi-unit">h</span>');
+
+  // Update badge on tab - count all entries for today (not filtered by shift)
+  const badge = document.getElementById('drBadge');
+  const dateForBadge = document.getElementById('dr-date-picker').value;
+  if(badge) badge.textContent = dailyLog.filter(e=>e.date===dateForBadge).length;
+}
+
+// ── RENDER LOG ────────────────────────────────
+function renderDailyLog(){
+  const dateRaw    = document.getElementById('dr-date-picker').value;
+  const date       = dateRaw || new Date().toISOString().split('T')[0];
+  const filterZone = document.getElementById('dr-filter-zone').value;
+  const filterSt   = document.getElementById('dr-filter-status').value;
+
+  let entries = dailyLog.filter(e=>e.date===date);
+  if(filterZone) entries = entries.filter(e=>e.zone===filterZone);
+  if(filterSt)   entries = entries.filter(e=>e.status===filterSt);
+
+  const body = document.getElementById('dr-log-body');
+  if(!entries.length){
+    body.innerHTML='<div class="dr-empty"><div class="dr-empty-icon">📋</div><div>Chưa có bản ghi'+(filterZone||filterSt?' phù hợp':' nào hôm nay')+'.</div></div>';
+    return;
+  }
+
+  const statusLabels={ok:'Chạy OK',warn:'Cảnh báo',fault:'Lỗi / Dừng',pm:'Đang PM'};
+  const priorityMap={urgent:'🚨 KHẨN CẤP',high:'⚠ CAO',normal:''};
+  const shiftMap={'ca-sang':'☀ Ca Sáng','ca-chieu':'🌤 Ca Chiều','ca-dem':'🌙 Ca Đêm'};
+
+  body.innerHTML = entries.map(e=>{
+    const dtStr = e.dtHours>0 ? `<span class="dt">⏱ ${e.dtHours}h dừng</span>` : '';
+    const linkBadge = e.linkPlan && e.linkPlan!=='new' ?
+      `<span class="dr-link-badge">🔗 ${e.linkPlan==='weekly'?'Kế hoạch tuần':e.linkPlan==='monthly'?'Kế hoạch tháng':'Đại tu'}</span>` : '';
+    const priStr = e.priority!=='normal' ? `<span style="font-size:9px;color:${e.priority==='urgent'?'var(--red)':'var(--yellow)'}">${priorityMap[e.priority]}</span>` : '';
+    return `<div class="dr-entry" id="dre-${e.id}">
+      <div class="dr-entry-head">
+        <div class="dr-status-dot ${e.status}"></div>
+        <span class="dr-entry-time">${e.time}</span>
+        <span class="dr-entry-machine">${e.machineName}</span>
+        <span class="dr-entry-badge ${e.status}">${statusLabels[e.status]}</span>
+        ${priStr}
+        <button class="dr-entry-del" onclick="deleteDREntry(${e.id})" title="Xóa">✕</button>
+      </div>
+      <div class="dr-entry-body">${e.cause}</div>
+      ${e.action?`<div style="font-size:10px;color:var(--cyan);margin-top:3px">→ ${e.action}</div>`:''}
+      <div class="dr-entry-meta">
+        <span>📍 ${e.zoneName}</span>
+        <span>👤 ${e.reporter}</span>
+        <span>${shiftMap[e.shift]||e.shift}</span>
+        ${dtStr}
+        ${linkBadge}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteDREntry(id){
+  if(!confirm('Xóa bản ghi này?')) return;
+  dailyLog = dailyLog.filter(e=>e.id!==id);
+  refreshDailyKPIs();
+  renderDailyLog();
+}
+
+// ── LINK TO MAINTENANCE PLAN ──────────────────
+function linkToMaintenancePlan(){
+  const date    = document.getElementById('dr-date-picker').value;
+  const faults  = dailyLog.filter(e=>e.date===date&&e.status==='fault');
+  const warns   = dailyLog.filter(e=>e.date===date&&e.status==='warn');
+
+  if(!faults.length && !warns.length){
+    alert('Không có sự cố hoặc cảnh báo nào hôm nay để tạo lệnh bảo trì.');
+    return;
+  }
+
+  // Pre-select all zones that have faults
+  const affectedZones = [...new Set(faults.map(e=>e.zone))];
+  moZones.clear();
+  if(affectedZones.length) affectedZones.forEach(z=>moZones.add(z));
+  else moZones.add('all');
+
+  openExportModal();
+  // Update chips UI
+  document.querySelectorAll('.mo-zone-chip').forEach(c=>{
+    c.classList.toggle('sel', moZones.has(c.dataset.zone));
+  });
+  // Set priority to urgent if any faults
+  const psel = document.getElementById('mo-priority');
+  if(psel) psel.value = faults.length ? 'Khẩn cấp' : 'Cao';
+  // Build note from faults
+  const noteEl = document.getElementById('mo-note');
+  if(noteEl && faults.length){
+    noteEl.value = faults.map(e=>`[${e.time}] ${e.machineName}: ${e.cause}`).join('\n');
+  }
+  updateMoEquipCount();
+}
+
+// ── EXPORT DAILY REPORT ───────────────────────
+function exportDailyReport(){
+  const date  = document.getElementById('dr-date-picker').value;
+  const entries = dailyLog.filter(e=>e.date===date);
+
+  if(!entries.length){
+    alert('Không có bản ghi nào để xuất.');
+    return;
+  }
+
+  const wb  = XLSX.utils.book_new();
+  const fmt = new Date(date).toLocaleDateString('vi-VN');
+  const shiftMap={'ca-sang':'Ca Sáng (6:00-14:00)','ca-chieu':'Ca Chieu (14:00-22:00)','ca-dem':'Ca Dem (22:00-6:00)'};
+
+  // Sheet 1: Báo cáo tổng hợp ngày
+  const s1rows = [
+    ['BAO CAO TINH TRANG MAY MOC HANG NGAY','','','','','','',''],
+    ['Cong ty CP Thuc pham Lifes Food — Nha may Tay Ninh','','','','','','',''],
+    ['Ngay bao cao: '+fmt,'','','','','','',''],
+    [''],
+    ['GIO','KHU VUC','THIET BI','TRANG THAI','GIO DUNG','NGUYEN NHAN / MO TA','HANH DONG DA THUC HIEN','NGUOI GHI NHAN'],
+  ];
+
+  const statusMap={ok:'Chay OK',warn:'Canh bao',fault:'Loi/Dung may',pm:'Dang PM'};
+  entries.forEach(e=>{
+    s1rows.push([
+      e.time + ' ('+( shiftMap[e.shift]||e.shift)+')',
+      e.zoneName, e.machineName,
+      statusMap[e.status]||e.status,
+      e.dtHours>0 ? e.dtHours+'h' : '—',
+      e.cause, e.action||'—', e.reporter
+    ]);
+  });
+
+  // Summary stats
+  s1rows.push(['']);
+  s1rows.push(['TONG KET NGAY','','','','','','','']);
+  const statusCounts={ok:0,warn:0,fault:0,pm:0};
+  entries.forEach(e=>{ if(statusCounts[e.status]!==undefined) statusCounts[e.status]++; });
+  s1rows.push(['Chay OK:',statusCounts.ok,'Canh bao:',statusCounts.warn,'Loi/Dung may:',statusCounts.fault,'Dang PM:',statusCounts.pm]);
+  const totalDT = entries.reduce((s,e)=>s+(e.dtHours||0),0);
+  s1rows.push(['Tong gio dung may:',totalDT.toFixed(1)+'h','','','Chi phi uoc tinh (trieu):',Math.round(totalDT*45),'','']);
+  s1rows.push(['']);
+  s1rows.push(['Truong BPBT xac nhan:','___________________','','Giam doc nha may duyet:','___________________','','','']);
+
+  const ws1 = XLSX.utils.aoa_to_sheet(s1rows);
+  ws1['!cols']=[{wch:22},{wch:18},{wch:26},{wch:14},{wch:10},{wch:40},{wch:36},{wch:18}];
+  ws1['!merges']=[{s:{r:0,c:0},e:{r:0,c:7}},{s:{r:1,c:0},e:{r:1,c:7}},{s:{r:2,c:0},e:{r:2,c:7}}];
+  XLSX.utils.book_append_sheet(wb, ws1, 'BAO CAO NGAY');
+
+  // Sheet 2: Danh sách sự cố cần xử lý
+  const faults = entries.filter(e=>e.status==='fault'||e.status==='warn');
+  if(faults.length){
+    const s2rows=[
+      ['DANH SACH SU CO VA CANH BAO CAN XU LY — '+fmt,'','','','',''],
+      [''],
+      ['STT','THIET BI','KHU VUC','TRANG THAI','UU TIEN','NGUYEN NHAN','HANH DONG DE XUAT','KE HOACH BT'],
+    ];
+    const priMap={urgent:'KHAN CAP',high:'CAO',normal:'BINH THUONG'};
+    faults.forEach((e,i)=>{
+      s2rows.push([i+1, e.machineName, e.zoneName, statusMap[e.status], priMap[e.priority]||'—', e.cause, e.action||'Can xu ly', e.linkPlan==='weekly'?'KH Tuan':e.linkPlan==='monthly'?'KH Thang':e.linkPlan==='overhaul'?'Dai tu':'Chua co']);
+    });
+    const ws2 = XLSX.utils.aoa_to_sheet(s2rows);
+    ws2['!cols']=[{wch:5},{wch:26},{wch:18},{wch:14},{wch:12},{wch:36},{wch:30},{wch:12}];
+    ws2['!merges']=[{s:{r:0,c:0},e:{r:0,c:7}}];
+    XLSX.utils.book_append_sheet(wb, ws2, 'SU CO CAN XU LY');
+  }
+
+  const dated = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, 'BaoCaoNgay_'+date+'_'+dated+'.xlsx');
+}
+
+
+</script>
+</body>
+</html>
