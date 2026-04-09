@@ -1,0 +1,2090 @@
+<html lang="vi"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trung Tâm Điều Hành Sản Xuất v9 — LIFESFOOD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:        #0A0A0F;
+  --ink2:       #1C1C2A;
+  --ink3:       #2E2E42;
+  --muted:      #6B6B85;
+  --muted2:     #9494AA;
+  --muted3:     #C0C0CC;
+  --paper:      #F8F7F4;
+  --paper2:     #F0EFE9;
+  --paper3:     #E6E4DC;
+  --card:       #FFFFFF;
+  --card2:      #FAFAF8;
+  --border:     rgba(10,10,15,0.08);
+  --border2:    rgba(10,10,15,0.14);
+  --red:        #D63030;
+  --red-bg:     rgba(214,48,48,0.06);
+  --red-border: rgba(214,48,48,0.20);
+  --amber:      #C47A00;
+  --amber-bg:   rgba(196,122,0,0.06);
+  --amber-border:rgba(196,122,0,0.20);
+  --green:      #1A7A4A;
+  --green-bg:   rgba(26,122,74,0.06);
+  --green-border:rgba(26,122,74,0.20);
+  --blue:       #1A5FC8;
+  --blue-bg:    rgba(26,95,200,0.06);
+  --blue-border:rgba(26,95,200,0.20);
+  --gold:       #B8860B;
+  --gold-bg:    rgba(184,134,11,0.08);
+  --sans: 'Syne', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --r4: 4px; --r8: 8px; --r12: 12px; --r16: 16px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  font-size: 13px;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.55;
+}
+
+/* HEADER */
+header {
+  position: sticky; top: 0; z-index: 200;
+  background: var(--ink);
+  height: 52px;
+  display: flex; align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  border-bottom: 1px solid var(--ink3);
+}
+.logo { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+.logo-gem { width: 28px; height: 28px; background: linear-gradient(135deg, #FFD700, #B8860B); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.logo-sub { font-size: 9px; font-weight: 400; letter-spacing: 2px; color: var(--muted2); margin-top: 1px; }
+.header-r { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.live-chip { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; color: #4ADE80; border: 1px solid rgba(74,222,128,0.25); background: rgba(74,222,128,0.06); padding: 3px 10px; border-radius: 20px; }
+.live-dot { width: 5px; height: 5px; border-radius: 50%; background: #4ADE80; animation: blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+#hdr-time { font-family: var(--mono); font-size: 9px; color: var(--muted2); letter-spacing: 0.5px; }
+
+/* LAYOUT */
+.wrap { max-width: 1500px; margin: 0 auto; padding: 24px 28px; display: grid; gap: 20px; }
+
+/* CARD */
+.card { background: var(--card); border: 1px solid var(--border2); border-radius: var(--r12); box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04); }
+.card-head { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.card-num { width: 22px; height: 22px; background: var(--ink); color: #fff; border-radius: 6px; font-family: var(--mono); font-size: 10px; display: flex; align-items: center; justify-content: center; }
+.card-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: var(--muted); text-transform: uppercase; }
+
+/* INPUT PANEL */
+.input-grid { padding: 20px; display: grid; grid-template-columns: 1fr 200px; gap: 20px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; color: var(--muted); text-transform: uppercase; }
+textarea { width: 100%; height: 140px; padding: 12px 14px; background: var(--paper); border: 1.5px solid var(--border2); border-radius: var(--r8); color: var(--ink); font-family: var(--mono); font-size: 11px; line-height: 1.7; resize: vertical; transition: border-color 0.15s, box-shadow 0.15s; }
+textarea::placeholder { color: var(--muted3); }
+textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,95,200,0.10); background: #fff; }
+.hint { font-size: 10px; color: var(--muted2); font-family: var(--mono); line-height: 1.6; }
+.right-col { display: flex; flex-direction: column; gap: 10px; }
+.num-input { width: 100%; padding: 8px 12px; background: var(--paper); border: 1.5px solid var(--border2); border-radius: var(--r8); color: var(--ink); font-family: var(--mono); font-size: 13px; font-weight: 500; transition: border-color 0.15s; }
+.num-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,95,200,0.10); background: #fff; }
+input[type=text].num-input { font-size: 12px; }
+
+/* BUTTONS */
+.btn { padding: 9px 16px; border-radius: var(--r8); border: none; font-family: var(--sans); font-size: 11px; font-weight: 700; letter-spacing: 0.3px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s; white-space: nowrap; }
+.btn-primary { background: var(--ink); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+.btn-primary:hover { background: var(--ink2); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
+.btn-ghost { background: var(--paper); border: 1.5px solid var(--border2); color: var(--muted); }
+.btn-ghost:hover { border-color: var(--muted); color: var(--ink); background: var(--paper2); }
+.btn-gold { background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%); color: #2a1a00; font-weight: 800; box-shadow: 0 2px 10px rgba(184,134,11,0.35); }
+.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(184,134,11,0.45); }
+.btn-danger { background: var(--red-bg); border: 1.5px solid var(--red-border); color: var(--red); }
+.btn-danger:hover { background: rgba(214,48,48,0.12); }
+.btn-green { background: var(--green-bg); border: 1.5px solid var(--green-border); color: var(--green); }
+.btn-green:hover { background: rgba(26,122,74,0.12); }
+.btn-blue { background: var(--blue-bg); border: 1.5px solid var(--blue-border); color: var(--blue); }
+.btn-blue:hover { background: rgba(26,95,200,0.12); }
+
+/* ALERTS */
+#alert-zone { display: flex; flex-direction: column; gap: 8px; }
+.alert { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-radius: var(--r8); font-size: 12px; line-height: 1.6; animation: slideDown 0.2s ease; }
+@keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+.a-err  { background:var(--red-bg);  border:1px solid var(--red-border);  border-left:3px solid var(--red);  color:var(--red); }
+.a-warn { background:var(--amber-bg);border:1px solid var(--amber-border);border-left:3px solid var(--amber);color:var(--amber); }
+.a-info { background:var(--blue-bg); border:1px solid var(--blue-border); border-left:3px solid var(--blue); color:var(--blue); }
+
+/* KPI GRID */
+.kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+.kpi { background: var(--card); border: 1px solid var(--border2); border-radius: var(--r12); padding: 18px 18px 14px; position: relative; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; }
+.kpi:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.kpi::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.kpi.c-ink::after   { background: var(--ink); }
+.kpi.c-red::after   { background: linear-gradient(90deg,var(--red),#FF6B6B); }
+.kpi.c-amber::after { background: linear-gradient(90deg,var(--amber),#F59E0B); }
+.kpi.c-blue::after  { background: linear-gradient(90deg,var(--blue),#60A5FA); }
+.kpi.c-green::after { background: linear-gradient(90deg,var(--green),#4ADE80); }
+.kpi.c-gold::after  { background: linear-gradient(90deg,#B8860B,#FFD700); }
+.kpi-lbl { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+.kpi-val { font-family: var(--mono); font-size: 26px; font-weight: 600; letter-spacing: -1px; line-height: 1; margin-top: 8px; }
+.kpi.c-ink   .kpi-val { color: var(--ink); }
+.kpi.c-red   .kpi-val { color: var(--red); }
+.kpi.c-amber .kpi-val { color: var(--amber); }
+.kpi.c-blue  .kpi-val { color: var(--blue); }
+.kpi.c-green .kpi-val { color: var(--green); }
+.kpi.c-gold  .kpi-val { color: var(--gold); }
+.kpi-sub { font-size: 10px; color: var(--muted2); margin-top: 3px; }
+.kpi-bar { margin-top: 10px; height: 3px; background: var(--paper3); border-radius: 2px; overflow: hidden; }
+.kpi-bar-fill { height: 100%; border-radius: 2px; transition: width 0.7s cubic-bezier(.4,0,.2,1); }
+
+/* TABS */
+.tabs { display: flex; gap: 0; padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--paper2); border-radius: var(--r12) var(--r12) 0 0; }
+.tab { padding: 12px 16px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; color: var(--muted); cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -1px; text-transform: uppercase; transition: all 0.15s; white-space: nowrap; }
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* TOOLBAR */
+.toolbar { padding: 10px 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--border); background: var(--paper2); }
+.seg { display: flex; background: var(--paper3); border: 1.5px solid var(--border2); border-radius: var(--r8); padding: 3px; gap: 2px; }
+.seg-btn { padding: 4px 12px; border-radius: 5px; border: none; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; font-family: var(--sans); cursor: pointer; background: transparent; color: var(--muted); transition: all 0.12s; }
+.seg-btn.active { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.seg-btn.f-crit.active  { color: var(--red); }
+.seg-btn.f-over.active  { color: var(--amber); }
+.seg-btn.f-ok.active    { color: var(--green); }
+.rc { margin-left: auto; font-family: var(--mono); font-size: 10px; color: var(--muted2); }
+
+/* TABLE */
+.tbl-wrap { overflow-x: auto; max-height: 480px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead { position: sticky; top: 0; z-index: 10; }
+th { padding: 9px 14px; font-size: 9px; font-weight: 700; letter-spacing: 0.7px; color: var(--muted); text-transform: uppercase; background: var(--paper2); border-bottom: 1.5px solid var(--border2); white-space: nowrap; cursor: pointer; user-select: none; transition: color 0.12s; text-align: left; }
+th.r { text-align: right; }
+th:hover { color: var(--ink); }
+th.sorted { color: var(--blue); }
+th .si { margin-left: 4px; opacity: 0.35; font-size: 9px; }
+th.sorted .si { opacity: 1; }
+td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; }
+td.r { text-align: right; font-family: var(--mono); font-size: 11px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(26,95,200,0.025); }
+.r-crit td { background: rgba(214,48,48,0.025); }
+.r-over td { background: rgba(196,122,0,0.025); }
+.n-red    { color: var(--red) !important; font-weight: 600; }
+.n-amber  { color: var(--amber) !important; }
+.n-green  { color: var(--green) !important; }
+.n-blue   { color: var(--blue) !important; }
+.n-muted  { color: var(--muted2) !important; }
+.n-gold   { color: var(--gold) !important; font-weight: 700; }
+
+/* BADGES */
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 9px; font-weight: 700; letter-spacing: 0.5px; }
+.b-crit  { background:var(--red-bg);  border:1px solid var(--red-border);  color:var(--red); }
+.b-over  { background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber); }
+.b-ok    { background:var(--green-bg);border:1px solid var(--green-border);color:var(--green); }
+.b-p1    { background:rgba(214,48,48,0.12); border:1px solid rgba(214,48,48,0.3); color:var(--red); }
+.b-p2    { background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber); }
+.b-p3    { background:var(--blue-bg); border:1px solid var(--blue-border); color:var(--blue); }
+.b-ok2   { background:var(--green-bg);border:1px solid var(--green-border);color:var(--green); }
+.b-gold  { background:var(--gold-bg); border:1px solid rgba(184,134,11,0.3); color:var(--gold); font-weight:800; }
+
+/* SKU CODE CHIP */
+.sku-chip { font-family: var(--mono); font-size: 10px; background: var(--paper2); border: 1px solid var(--border2); padding: 2px 7px; border-radius: 4px; color: var(--ink2); }
+
+/* MINI BAR */
+.mini-bar { display: flex; align-items: center; gap: 6px; width: 90px; }
+.mini-bar-bg { flex: 1; height: 3px; background: var(--paper3); border-radius: 2px; overflow: hidden; }
+.mini-bar-fg { height: 100%; border-radius: 2px; }
+.mini-bar-lbl { font-family: var(--mono); font-size: 9px; color: var(--muted2); width: 28px; text-align: right; flex-shrink: 0; }
+
+/* EMPTY STATE */
+.empty { padding: 40px; text-align: center; }
+.empty-icon { font-size: 32px; margin-bottom: 10px; }
+.empty-txt { font-size: 12px; color: var(--muted2); }
+
+/* TOP 15 */
+.rank-badge { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 10px; font-weight: 600; flex-shrink: 0; }
+.rank-1 { background: linear-gradient(135deg,#FFD700,#B8860B); color: #2a1a00; }
+.rank-2 { background: linear-gradient(135deg,#E8E8E8,#B0B0B0); color: #1a1a1a; }
+.rank-3 { background: linear-gradient(135deg,#D4915A,#A05A2C); color: #fff; }
+.rank-n { background: var(--paper3); color: var(--muted); }
+.phase-wrap { display: flex; gap: 4px; align-items: center; width: 120px; }
+.phase-seg { height: 6px; border-radius: 2px; }
+
+/* PLAN FOOTER */
+.plan-foot { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1.5px solid var(--border2); }
+.plan-foot-cell { padding: 14px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 3px; }
+.plan-foot-cell:last-child { border-right: none; }
+.plan-foot-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; color: var(--muted); text-transform: uppercase; }
+.plan-foot-val { font-family: var(--mono); font-size: 18px; font-weight: 600; }
+
+/* WARN BLOCKS */
+.warn-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.warn-block { border-radius: var(--r8); overflow: hidden; }
+.warn-block-head { padding: 10px 14px; font-size: 11px; font-weight: 800; letter-spacing: 0.3px; display: flex; align-items: center; gap: 8px; }
+.warn-block-body { padding: 10px 14px; font-size: 11px; line-height: 1.9; font-family: var(--mono); }
+.wb-red  .warn-block-head { background:rgba(214,48,48,0.10); color:var(--red); border-bottom:1px solid var(--red-border); }
+.wb-red  .warn-block-body { background:var(--red-bg); color:var(--ink2); border:1px solid var(--red-border); border-top:none; }
+.wb-amb  .warn-block-head { background:rgba(196,122,0,0.10); color:var(--amber); border-bottom:1px solid var(--amber-border); }
+.wb-amb  .warn-block-body { background:var(--amber-bg); color:var(--ink2); border:1px solid var(--amber-border); border-top:none; }
+.wb-blue .warn-block-head { background:rgba(26,95,200,0.10); color:var(--blue); border-bottom:1px solid var(--blue-border); }
+.wb-blue .warn-block-body { background:var(--blue-bg); color:var(--ink2); border:1px solid var(--blue-border); border-top:none; }
+
+/* ═══════════════════════════════════════════════════
+   LỆNH SẢN XUẤT — PRODUCTION ORDER PANEL
+═══════════════════════════════════════════════════ */
+.po-header-bar {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #0A0A0F 0%, #1A1A2E 100%);
+  border-radius: var(--r12) var(--r12) 0 0;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.po-title-main {
+  color: #FFD700;
+  font-size: 13px; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.po-title-sub { color: var(--muted2); font-size: 10px; font-family: var(--mono); }
+.po-badge { background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); color: #FFD700; font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; }
+
+/* INFO FIELDS */
+.po-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-bottom: 1px solid var(--border2);
+  background: var(--card2);
+}
+.po-info-cell {
+  padding: 12px 16px;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.po-info-cell:last-child { border-right: none; }
+.po-info-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; color: var(--muted); text-transform: uppercase; }
+.po-info-input {
+  width: 100%; padding: 5px 0;
+  background: transparent;
+  border: none; border-bottom: 1.5px dashed var(--border2);
+  color: var(--ink);
+  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  outline: none; transition: border-color 0.15s;
+}
+.po-info-input:focus { border-bottom-color: var(--blue); }
+.po-info-input::placeholder { color: var(--muted3); font-weight: 400; }
+
+/* PRODUCTION ORDER TABLE */
+.po-tbl-wrap { overflow-x: auto; }
+.po-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.po-tbl thead tr th {
+  padding: 10px 12px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.6px;
+  color: var(--card);
+  text-transform: uppercase;
+  background: var(--ink2);
+  border: 1px solid var(--ink3);
+  white-space: nowrap;
+  text-align: center;
+}
+.po-tbl thead tr:first-child th { background: var(--ink); border-color: var(--ink2); }
+.po-tbl tbody tr td {
+  padding: 9px 12px;
+  border: 1px solid var(--border2);
+  vertical-align: middle;
+  font-size: 11px;
+}
+.po-tbl tbody tr:nth-child(even) td { background: var(--paper); }
+.po-tbl tbody tr:hover td { background: var(--blue-bg); }
+.po-tbl .td-center { text-align: center; }
+.po-tbl .td-right { text-align: right; font-family: var(--mono); }
+.po-tbl .td-code { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--ink2); }
+.po-tbl .td-name { font-weight: 600; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+.po-tbl .td-urgent { color: var(--red); font-weight: 700; }
+.po-tbl .td-normal { color: var(--blue); font-weight: 600; }
+.po-tbl .td-qty { font-family: var(--mono); font-weight: 700; font-size: 12px; }
+
+/* Tier label in table */
+.po-tier-1 { color: var(--red); font-weight: 800; font-size: 10px; }
+.po-tier-2 { color: var(--amber); font-weight: 700; font-size: 10px; }
+.po-tier-3 { color: var(--blue); font-weight: 600; font-size: 10px; }
+
+/* SIGNATURE BLOCK */
+.sig-section {
+  padding: 20px;
+  border-top: 2px solid var(--border2);
+  background: var(--card2);
+}
+.sig-title {
+  font-size: 9px; font-weight: 700; letter-spacing: 1.2px;
+  color: var(--muted); text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.sig-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.sig-box {
+  border: 1.5px solid var(--border2);
+  border-radius: var(--r8);
+  overflow: hidden;
+}
+.sig-box-head {
+  padding: 10px 14px;
+  background: var(--paper2);
+  border-bottom: 1px solid var(--border2);
+  display: flex; align-items: center; gap: 8px;
+}
+.sig-role {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--ink);
+}
+.sig-role-icon { font-size: 14px; }
+.sig-box-head.head-proposer { border-left: 3px solid var(--blue); }
+.sig-box-head.head-reviewer { border-left: 3px solid var(--amber); }
+.sig-box-head.head-approver { border-left: 3px solid var(--green); }
+.sig-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.sig-field { display: flex; flex-direction: column; gap: 3px; }
+.sig-field-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; color: var(--muted); text-transform: uppercase; }
+.sig-field-input {
+  width: 100%; padding: 6px 8px;
+  background: var(--paper);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--r4);
+  color: var(--ink);
+  font-family: var(--sans); font-size: 12px;
+  outline: none; transition: border-color 0.15s;
+}
+.sig-field-input:focus { border-color: var(--blue); background: #fff; }
+.sig-sign-area {
+  margin-top: 8px;
+  height: 56px;
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--r4);
+  background: var(--paper);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted3); font-size: 10px; font-style: italic;
+  transition: border-color 0.15s;
+}
+.sig-sign-area:hover { border-color: var(--muted2); }
+
+/* PO SUMMARY BAR */
+.po-summary {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 0; border-top: 1.5px solid var(--border2);
+  border-bottom: 1.5px solid var(--border2);
+  background: linear-gradient(180deg, var(--paper2) 0%, var(--card) 100%);
+}
+.po-sum-cell { padding: 14px 16px; border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 3px; }
+.po-sum-cell:last-child { border-right: none; }
+.po-sum-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; color: var(--muted); text-transform: uppercase; }
+.po-sum-val { font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--ink); }
+.po-sum-val.c-red   { color: var(--red); }
+.po-sum-val.c-blue  { color: var(--blue); }
+.po-sum-val.c-amber { color: var(--amber); }
+.po-sum-val.c-green { color: var(--green); }
+
+/* PO TOOLBAR */
+.po-toolbar {
+  padding: 12px 20px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  background: var(--paper2);
+}
+.po-note { font-size: 10px; color: var(--muted); font-family: var(--mono); }
+
+/* NOTES AREA */
+.po-notes-section {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--card2);
+}
+.po-notes-title { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.po-notes-input {
+  width: 100%; padding: 10px 14px;
+  background: var(--paper);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--r8);
+  font-family: var(--sans); font-size: 12px;
+  color: var(--ink); resize: vertical; min-height: 60px;
+  outline: none;
+}
+.po-notes-input:focus { border-color: var(--blue); background: #fff; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--paper2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted3); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .input-grid { grid-template-columns: 1fr; }
+  .sig-grid { grid-template-columns: 1fr; }
+  .po-info-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .wrap { padding: 14px 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-gem">⚡</div>
+    <div>
+      <div>SẢN XUẤT — COMMAND CENTER</div>
+      <div class="logo-sub">LIFESFOOD — LỆNH SẢN XUẤT v9</div>
+    </div>
+  </div>
+  <div class="header-r">
+    <div class="live-chip"><div class="live-dot"></div>TRỰC TUYẾN</div>
+    <span id="hdr-time">13:02:54</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- PANEL NHẬP LIỆU -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-num">01</div>
+      <span class="card-title">Nhập Dữ Liệu Sản Xuất</span>
+    </div>
+    <div class="input-grid">
+      <div class="field">
+        <label>Dán Dữ Liệu Excel — Tab · ; · dấu phẩy đều nhận — Số 1.000 / 1,000 / 1000</label>
+        <textarea id="data-input" placeholder="ProductCode	ProductName	CurrentStock	InTransit	ForecastStock	MinStock	MaxStock
+SKU001	Tên Sản Phẩm A	500	100	600	200	900"></textarea>
+        <span class="hint">✅ Chấp nhận tên cột EN hoặc VI · Upload .xlsx trực tiếp · Ctrl+Enter = chạy</span>
+      </div>
+      <div class="right-col">
+        <div class="field">
+          <label>Doanh Số / Ngày (units)</label>
+          <input type="number" id="daily-sales" class="num-input" value="10" min="1" step="1">
+        </div>
+        <div class="field">
+          <label>Công Suất Nhà Máy (units/ngày)</label>
+          <input type="number" id="plant-cap" class="num-input" value="2000" min="1" step="1">
+        </div>
+        <div class="field">
+          <label>Chân Trời Kế Hoạch (ngày)</label>
+          <input type="number" id="horizon" class="num-input" value="30" min="1" step="1">
+        </div>
+        <button class="btn btn-primary" onclick="runAll()">
+          <svg width="11" height="11" viewBox="0 0 11 11"><path d="M2 1.5l7.5 4-7.5 4V1.5z" fill="currentColor"></path></svg>
+          Tính Toán Ngay
+        </button>
+        <label class="btn btn-gold" style="cursor:pointer" title="Upload .xlsx từ Excel">
+          <svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v7M3 4.5l3-3 3 3M1 10h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+          Upload Excel (.xlsx)
+          <input type="file" accept=".xlsx" onchange="handleExcel(event)" style="display:none">
+        </label>
+        <button class="btn btn-danger" onclick="clearAll()">Xóa Tất Cả</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTS -->
+  <div id="alert-zone"></div>
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid" id="kpi-grid" style="display:none">
+    <div class="kpi c-ink">
+      <div class="kpi-lbl">Tổng SKU</div>
+      <div class="kpi-val" id="k-total">—</div>
+      <div class="kpi-sub">sản phẩm đã tải</div>
+    </div>
+    <div class="kpi c-red">
+      <div class="kpi-lbl">🔴 Khẩn Cấp</div>
+      <div class="kpi-val" id="k-crit">—</div>
+      <div class="kpi-sub">dưới tồn kho tối thiểu</div>
+    </div>
+    <div class="kpi c-amber">
+      <div class="kpi-lbl">🟡 Tồn Thừa</div>
+      <div class="kpi-val" id="k-over">—</div>
+      <div class="kpi-sub">vượt tồn kho tối đa</div>
+    </div>
+    <div class="kpi c-blue">
+      <div class="kpi-lbl">Cần SX Hôm Nay</div>
+      <div class="kpi-val" id="k-prod">—</div>
+      <div class="kpi-sub">units yêu cầu</div>
+    </div>
+    <div class="kpi c-gold">
+      <div class="kpi-lbl">Mức Sử Dụng Công Suất</div>
+      <div class="kpi-val" id="k-cap">—</div>
+      <div class="kpi-sub">so với công suất nhà máy</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" id="cap-bar" style="width:0%"></div></div>
+    </div>
+    <div class="kpi c-green">
+      <div class="kpi-lbl">SKU Ổn Định</div>
+      <div class="kpi-val" id="k-ok">—</div>
+      <div class="kpi-sub">trong ngưỡng an toàn</div>
+    </div>
+  </div>
+
+  <!-- MAIN TABLE PANEL -->
+  <div class="card" id="main-panel" style="display:none">
+    <div class="tabs">
+      <div class="tab active" id="tab-sku" onclick="switchTab('sku')">Trạng Thái SKU</div>
+      <div class="tab" id="tab-top" onclick="switchTab('top')">⭐ Top 15 Ưu Tiên</div>
+      <div class="tab" id="tab-order" onclick="switchTab('order')">📋 Lệnh Sản Xuất</div>
+      <div class="tab" id="tab-warn" onclick="switchTab('warn')">🚨 Cảnh Báo</div>
+    </div>
+
+    <!-- TAB: SKU STATUS -->
+    <div id="pane-sku">
+      <div class="toolbar">
+        <div class="seg">
+          <button class="seg-btn active" data-f="all" onclick="setFilter('all')">Tất Cả</button>
+          <button class="seg-btn f-crit" data-f="CRITICAL" onclick="setFilter('CRITICAL')">Khẩn Cấp</button>
+          <button class="seg-btn f-over" data-f="OVERSTOCK" onclick="setFilter('OVERSTOCK')">Tồn Thừa</button>
+          <button class="seg-btn f-ok" data-f="NORMAL" onclick="setFilter('NORMAL')">Ổn Định</button>
+        </div>
+        <span class="rc" id="rc-sku"></span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortBy('ProductCode')">Mã SP <span class="si" data-col="ProductCode">↕</span></th>
+              <th onclick="sortBy('ProductName')">Tên Sản Phẩm <span class="si" data-col="ProductName">↕</span></th>
+              <th class="r" onclick="sortBy('FinalStock')">Tồn Cuối <span class="si" data-col="FinalStock">↕</span></th>
+              <th class="r">Min / Max</th>
+              <th class="r" onclick="sortBy('StockGap')">Chênh Lệch <span class="si" data-col="StockGap">↕</span></th>
+              <th>Trạng Thái</th>
+              <th>Tier</th>
+              <th class="r" onclick="sortBy('ProdNeeded')">Cần SX <span class="si" data-col="ProdNeeded">↕</span></th>
+              <th class="r" onclick="sortBy('MaxW')">Trọng Số Max <span class="si" data-col="MaxW">↕</span></th>
+              <th class="r" onclick="sortBy('DaysCov')">Ngày Tồn <span class="si" data-col="DaysCov">↕</span></th>
+            </tr>
+          </thead>
+          <tbody id="sku-body"></tbody>
+        </table>
+      </div>
+      <div style="padding:8px 20px;border-top:1px solid var(--border);font-size:10px;color:var(--muted2);font-family:var(--mono)" id="rc-sku2"></div>
+    </div>
+
+    <!-- TAB: TOP 15 -->
+    <div id="pane-top" style="display:none">
+      <div class="toolbar">
+        <span style="font-size:10px;font-weight:700;letter-spacing:0.8px;color:var(--gold);text-transform:uppercase">CompositeScore = 40% MaxStock + 35% Thiếu Hụt% + 15% Âm HN Stock + 10% Khẩn Cấp</span>
+        <span class="rc" id="rc-top"></span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40px">#</th>
+              <th>Mã SP</th>
+              <th>Tên Sản Phẩm</th>
+              <th class="r">Tồn Cuối</th>
+              <th class="r">Min</th>
+              <th class="r">Max</th>
+              <th class="r">Thiếu</th>
+              <th class="r">SX→Min</th>
+              <th class="r">SX→Max</th>
+              <th class="r">Score</th>
+              <th>Phân Bổ SX</th>
+              <th>Tier</th>
+            </tr>
+          </thead>
+          <tbody id="top-body"></tbody>
+        </table>
+      </div>
+      <div class="plan-foot" id="top-foot"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         TAB: LỆNH SẢN XUẤT (PRODUCTION ORDER)
+    ═══════════════════════════════════════ -->
+    <div id="pane-order" style="display:none">
+
+      <!-- HEADER LỆNH -->
+      <div class="po-header-bar">
+        <div>
+          <div class="po-title-main">📋 Lệnh Sản Xuất</div>
+          <div class="po-title-sub">PRODUCTION ORDER — Số: <span id="po-number-display">LSX-<span id="po-num-show"></span></span></div>
+        </div>
+        <div class="po-badge" id="po-date-badge"></div>
+        <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-green" onclick="exportOrderExcel()" title="Xuất file Excel để in">
+            <svg width="13" height="13" viewBox="0 0 13 13"><path d="M2 9.5h9M6.5 2v6M4 5.5l2.5 2.5 2.5-2.5M1 11.5h11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"></path></svg>
+            Xuất Excel Lệnh SX
+          </button>
+          <button class="btn btn-ghost" onclick="window.print()" title="In lệnh sản xuất">
+            🖨️ In Lệnh
+          </button>
+        </div>
+      </div>
+
+      <!-- THÔNG TIN LỆNH -->
+      <div class="po-info-grid">
+        <div class="po-info-cell">
+          <div class="po-info-lbl">Số Lệnh Sản Xuất</div>
+          <input type="text" class="po-info-input" id="po-number" placeholder="VD: LSX-2025-001" oninput="updatePODisplay()">
+        </div>
+        <div class="po-info-cell">
+          <div class="po-info-lbl">Tên Nhà Máy / Xưởng</div>
+          <input type="text" class="po-info-input" id="po-factory" placeholder="NHÀ MÁY LIFESFOOD">
+        </div>
+        <div class="po-info-cell">
+          <div class="po-info-lbl">Ngày Lập Lệnh</div>
+          <input type="text" class="po-info-input" id="po-created-date" placeholder="">
+        </div>
+        <div class="po-info-cell">
+          <div class="po-info-lbl">Ngày Cần Hoàn Thành</div>
+          <input type="text" class="po-info-input" id="po-due-date" placeholder="VD: 31/12/2025">
+        </div>
+        <div class="po-info-cell">
+          <div class="po-info-lbl">Chân Trời SX (ngày)</div>
+          <input type="text" class="po-info-input" id="po-horizon-disp" readonly="" style="color:var(--muted2)">
+        </div>
+        <div class="po-info-cell">
+          <div class="po-info-lbl">Công Suất/Ngày (units)</div>
+          <input type="text" class="po-info-input" id="po-cap-disp" readonly="" style="color:var(--muted2)">
+        </div>
+        <div class="po-info-cell">
+          <div class="po-info-lbl">Doanh Số/Ngày (units)</div>
+          <input type="text" class="po-info-input" id="po-sales-disp" readonly="" style="color:var(--muted2)">
+        </div>
+        <div class="po-info-cell">
+          <div class="po-info-lbl">Ghi Chú Ưu Tiên</div>
+          <input type="text" class="po-info-input" id="po-priority-note" placeholder="VD: Ưu tiên P1 trước">
+        </div>
+      </div>
+
+      <!-- SUMMARY BAR -->
+      <div class="po-summary">
+        <div class="po-sum-cell">
+          <div class="po-sum-lbl">SKU Trong Lệnh</div>
+          <div class="po-sum-val" id="pos-sku">—</div>
+        </div>
+        <div class="po-sum-cell">
+          <div class="po-sum-lbl">🔴 Ưu Tiên 1 (P1)</div>
+          <div class="po-sum-val c-red" id="pos-p1">—</div>
+        </div>
+        <div class="po-sum-cell">
+          <div class="po-sum-lbl">🟡 Ưu Tiên 2 (P2)</div>
+          <div class="po-sum-val c-amber" id="pos-p2">—</div>
+        </div>
+        <div class="po-sum-cell">
+          <div class="po-sum-lbl">Tổng SX→Min (Khẩn)</div>
+          <div class="po-sum-val c-amber" id="pos-min">—</div>
+        </div>
+        <div class="po-sum-cell">
+          <div class="po-sum-lbl">Tổng SX→Max (Đủ)</div>
+          <div class="po-sum-val c-blue" id="pos-max">—</div>
+        </div>
+      </div>
+
+      <!-- TOOLBAR -->
+      <div class="po-toolbar">
+        <span class="po-note">📌 Danh sách SKU cần sản xuất — Sắp xếp theo Ưu Tiên (P1 → P3) · MaxStock cao → Score cao</span>
+        <span class="rc" id="rc-order"></span>
+      </div>
+
+      <!-- BẢNG LỆNH SẢN XUẤT -->
+      <div class="po-tbl-wrap">
+        <table class="po-tbl">
+          <thead>
+            <tr>
+              <th colspan="12" style="background:var(--ink);font-size:11px;letter-spacing:1px;padding:10px 14px;text-align:left">
+                DANH SÁCH SẢN PHẨM CẦN SẢN XUẤT
+              </th>
+            </tr>
+            <tr>
+              <th style="width:36px">STT</th>
+              <th>Mã SP</th>
+              <th>Tên Sản Phẩm</th>
+              <th>Ưu Tiên</th>
+              <th>Tồn Hiện Tại</th>
+              <th>Tồn Min</th>
+              <th>Tồn Max</th>
+              <th>Thiếu Hụt</th>
+              <th style="background:#1a3050">SL SX→Min<br><span style="font-size:8px;font-weight:400">(tối thiểu)</span></th>
+              <th style="background:#0a2040">SL SX→Max<br><span style="font-size:8px;font-weight:400">(đề xuất)</span></th>
+              <th>Ngày Còn Lại</th>
+              <th>Ghi Chú</th>
+            </tr>
+          </thead>
+          <tbody id="order-body"></tbody>
+        </table>
+      </div>
+
+      <!-- NOTES -->
+      <div class="po-notes-section">
+        <div class="po-notes-title">📝 Ghi Chú / Hướng Dẫn Sản Xuất</div>
+        <textarea class="po-notes-input" id="po-notes" placeholder="Nhập ghi chú chung cho lệnh sản xuất này (yêu cầu chất lượng, công thức đặc biệt, lưu ý an toàn, ...)"></textarea>
+      </div>
+
+      <!-- KHU VỰC CHỮ KÝ -->
+      <div class="sig-section">
+        <div class="sig-title">✍️ Xác Nhận &amp; Phê Duyệt Lệnh Sản Xuất</div>
+        <div class="sig-grid">
+
+          <!-- NGƯỜI ĐỀ XUẤT -->
+          <div class="sig-box">
+            <div class="sig-box-head head-proposer">
+              <span class="sig-role-icon">👤</span>
+              <span class="sig-role" style="color:var(--blue)">Người Đề Xuất</span>
+            </div>
+            <div class="sig-body">
+              <div class="sig-field">
+                <div class="sig-field-lbl">Họ &amp; Tên</div>
+                <input type="text" class="sig-field-input" id="sig1-name" placeholder="Nguyễn Văn A">
+              </div>
+              <div class="sig-field">
+                <div class="sig-field-lbl">Chức Vụ</div>
+                <input type="text" class="sig-field-input" id="sig1-title" placeholder="Trưởng Phòng Kế Hoạch">
+              </div>
+              <div class="sig-field">
+                <div class="sig-field-lbl">Ngày Ký</div>
+                <input type="text" class="sig-field-input" id="sig1-date" placeholder="">
+              </div>
+              <div class="sig-sign-area">Chữ ký</div>
+            </div>
+          </div>
+
+          <!-- NGƯỜI KIỂM TRA -->
+          <div class="sig-box">
+            <div class="sig-box-head head-reviewer">
+              <span class="sig-role-icon">🔍</span>
+              <span class="sig-role" style="color:var(--amber)">Người Kiểm Tra</span>
+            </div>
+            <div class="sig-body">
+              <div class="sig-field">
+                <div class="sig-field-lbl">Họ &amp; Tên</div>
+                <input type="text" class="sig-field-input" id="sig2-name" placeholder="Trần Thị B">
+              </div>
+              <div class="sig-field">
+                <div class="sig-field-lbl">Chức Vụ</div>
+                <input type="text" class="sig-field-input" id="sig2-title" placeholder="Trưởng Phòng QC / Giám Sát SX">
+              </div>
+              <div class="sig-field">
+                <div class="sig-field-lbl">Ngày Ký</div>
+                <input type="text" class="sig-field-input" id="sig2-date" placeholder="">
+              </div>
+              <div class="sig-sign-area">Chữ ký</div>
+            </div>
+          </div>
+
+          <!-- GIÁM ĐỐC NHÀ MÁY PHÊ DUYỆT -->
+          <div class="sig-box">
+            <div class="sig-box-head head-approver">
+              <span class="sig-role-icon">🏭</span>
+              <span class="sig-role" style="color:var(--green)">Giám Đốc Nhà Máy Phê Duyệt</span>
+            </div>
+            <div class="sig-body">
+              <div class="sig-field">
+                <div class="sig-field-lbl">Họ &amp; Tên</div>
+                <input type="text" class="sig-field-input" id="sig3-name" placeholder="Lê Văn C">
+              </div>
+              <div class="sig-field">
+                <div class="sig-field-lbl">Chức Vụ</div>
+                <input type="text" class="sig-field-input" id="sig3-title" placeholder="Giám Đốc Nhà Máy">
+              </div>
+              <div class="sig-field">
+                <div class="sig-field-lbl">Ngày Phê Duyệt</div>
+                <input type="text" class="sig-field-input" id="sig3-date" placeholder="">
+              </div>
+              <div class="sig-sign-area" style="border-color:rgba(26,122,74,0.3);background:var(--green-bg)">Chữ ký &amp; Đóng dấu</div>
+            </div>
+          </div>
+
+        </div><!-- end sig-grid -->
+      </div><!-- end sig-section -->
+
+    </div><!-- end pane-order -->
+
+    <!-- TAB: CẢNH BÁO -->
+    <div id="pane-warn" style="display:none">
+      <div class="warn-body" id="warn-body">
+        <div class="empty"><div class="empty-icon">📊</div><div class="empty-txt">Chạy tính toán để xem cảnh báo</div></div>
+      </div>
+    </div>
+
+  </div><!-- end main-panel -->
+
+</div><!-- end wrap -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
+let G = {
+  rows: [],
+  filter: 'all',
+  sort: { col: 'PriorityScore', dir: -1 },
+  tab: 'sku',
+  capacity: 2000,
+  dailySales: 10,
+  horizon: 30,
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   COLUMN ALIASES
+═══════════════════════════════════════════════════════════════ */
+const COL_MAP = {
+  productcode:   ['productcode','masp','masanpham','sku','skucode','itemcode','mahang','ma','code'],
+  productname:   ['productname','tensanpham','tensp','ten','sanpham','itemname','tenhanghoa','name'],
+  currentstock:  ['currentstock','tondauky','tonhientai','tonkho','ton','stockcurrent','soluongton','tondaukj','stock'],
+  intransit:     ['intransit','hangduong','hangtrenvanchuyen','transit','incoming','hangve','duong'],
+  forecaststock: ['forecaststock','tondukien','forecast','toncuoiky','tondukiencuoiky'],
+  minstock:      ['minstock','tonmin','tontoithieu','min','toithieu','minimumstock'],
+  maxstock:      ['maxstock','tonmax','tontoidatoi','max','toidatoi','maximumstock'],
+};
+const COLS = Object.keys(COL_MAP);
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════════════════════ */
+function nk(s) {
+  return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function clean(s) {
+  if (s === null || s === undefined) return '';
+  let t = String(s).normalize('NFC');
+  t = t.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+    .replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&nbsp;/g,' ')
+    .replace(/&#x([0-9A-Fa-f]+);/g, (_,h) => String.fromCharCode(parseInt(h,16)))
+    .replace(/&#([0-9]+);/g, (_,d) => String.fromCharCode(parseInt(d,10)))
+    .replace(/[ \t]+/g, ' ').trim();
+  return t;
+}
+
+function parseNum(raw) {
+  if (raw === null || raw === undefined || raw === '') return NaN;
+  let s = String(raw).trim();
+  s = s.replace(/[^\d.,()\-]/g, '');
+  if (/^\([\d.,]+\)$/.test(s)) s = '-' + s.slice(1,-1);
+  if (!s || s === '-') return NaN;
+  const hasDot = s.includes('.');
+  const hasComma = s.includes(',');
+  if (hasDot && hasComma) {
+    if (s.lastIndexOf(',') > s.lastIndexOf('.')) s = s.replace(/\./g,'').replace(',','.');
+    else s = s.replace(/,/g,'');
+  } else if (hasComma) {
+    const parts = s.split(',');
+    if (parts.length === 2 && parts[1].length === 3 && !parts[1].includes('.')) s = s.replace(/,/g,'');
+    else s = s.replace(',','.');
+  } else if (hasDot) {
+    const parts = s.split('.');
+    if (parts.length === 2 && parts[1].length === 3) s = s.replace(/\./g,'');
+  }
+  const n = parseFloat(s);
+  return isNaN(n) ? NaN : n;
+}
+
+function fmt(n) { return Math.round(n).toLocaleString('vi-VN'); }
+function fmtSigned(n) {
+  if (n < 0) return '−' + fmt(Math.abs(n));
+  if (n > 0) return '+' + fmt(n);
+  return '0';
+}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function show(id) { const el = document.getElementById(id); if(el) el.style.display = ''; }
+function hide(id) { const el = document.getElementById(id); if(el) el.style.display = 'none'; }
+
+function todayVN() {
+  return new Date().toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function tickClock() {
+  document.getElementById('hdr-time').textContent = new Date().toLocaleTimeString('vi-VN');
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+/* ═══════════════════════════════════════════════════════════════
+   PO NUMBER & DISPLAY
+═══════════════════════════════════════════════════════════════ */
+function initPOFields() {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth()+1).padStart(2,'0');
+  const d = String(today.getDate()).padStart(2,'0');
+  const rand = String(Math.floor(Math.random()*900)+100);
+  const poNum = `LSX-${y}${m}-${rand}`;
+  document.getElementById('po-number').value = poNum;
+  document.getElementById('po-num-show').textContent = poNum;
+  document.getElementById('po-created-date').value = `${d}/${m}/${y}`;
+  document.getElementById('sig1-date').value = `${d}/${m}/${y}`;
+  document.getElementById('po-date-badge').textContent = `Ngày: ${d}/${m}/${y}`;
+
+  // Due date: today + horizon
+  const due = new Date(today);
+  due.setDate(due.getDate() + G.horizon);
+  const dd = String(due.getDate()).padStart(2,'0');
+  const dm = String(due.getMonth()+1).padStart(2,'0');
+  document.getElementById('po-due-date').value = `${dd}/${dm}/${due.getFullYear()}`;
+}
+
+function updatePODisplay() {
+  const v = document.getElementById('po-number').value;
+  document.getElementById('po-num-show').textContent = v || '—';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ALERTS
+═══════════════════════════════════════════════════════════════ */
+function addAlert(type, msg) {
+  const d = document.createElement('div');
+  const icon = type === 'err' ? '🔴' : type === 'warn' ? '🟡' : '🔵';
+  d.className = `alert a-${type}`;
+  d.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  document.getElementById('alert-zone').appendChild(d);
+}
+function clearAlerts() { document.getElementById('alert-zone').innerHTML = ''; }
+
+/* ═══════════════════════════════════════════════════════════════
+   PARSE TEXT
+═══════════════════════════════════════════════════════════════ */
+function parseText(raw) {
+  if (!raw.trim()) return { error: 'Chưa có dữ liệu. Hãy dán Excel vào ô nhập liệu hoặc upload file .xlsx.' };
+  const text = raw.normalize('NFC').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const lines = text.split('\n').map(l => l.trimEnd()).filter(l => l.length > 0);
+  if (lines.length < 2) return { error: 'Cần ít nhất 1 dòng tiêu đề + 1 dòng dữ liệu.' };
+  const hdr = lines[0];
+  let delim = '\t';
+  if (!hdr.includes('\t')) { if (hdr.includes(';')) delim = ';'; else if (hdr.includes(',')) delim = ','; }
+  const rawHeaders = hdr.split(delim).map(h => nk(h));
+  const idx = {};
+  for (const col of COLS) { const found = rawHeaders.findIndex(h => COL_MAP[col].includes(h)); idx[col] = found; }
+  const required = ['productcode','productname','minstock','maxstock'];
+  const missing = required.filter(c => idx[c] === -1);
+  if (missing.length) { const hint = missing.map(c => `"${COL_MAP[c][0]}"`).join(', '); return { error: `Thiếu cột bắt buộc: ${hint}. Tên cột EN hoặc VI đều được.` }; }
+  const rows = [], warnings = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cells = lines[i].split(delim);
+    const code = clean(cells[idx.productcode] || '');
+    const name = clean(cells[idx.productname] || '');
+    if (!code && !name) continue;
+    const numFields = {
+      currentstock:  idx.currentstock  >= 0 ? parseNum(cells[idx.currentstock])  : NaN,
+      intransit:     idx.intransit     >= 0 ? parseNum(cells[idx.intransit])     : NaN,
+      forecaststock: idx.forecaststock >= 0 ? parseNum(cells[idx.forecaststock]) : NaN,
+      minstock:      parseNum(cells[idx.minstock]),
+      maxstock:      parseNum(cells[idx.maxstock]),
+    };
+    if (isNaN(numFields.currentstock)) numFields.currentstock = 0;
+    if (isNaN(numFields.intransit))    numFields.intransit    = 0;
+    if (isNaN(numFields.forecaststock)) numFields.forecaststock = numFields.currentstock + numFields.intransit;
+    let rowOk = true;
+    for (const col of ['minstock','maxstock']) {
+      if (isNaN(numFields[col])) { warnings.push(`Hàng ${i+1} (${code||name}): cột "${COL_MAP[col][0]}" không hợp lệ → bỏ qua`); rowOk = false; break; }
+    }
+    if (!rowOk) continue;
+    rows.push({ ProductCode: code || String(i), ProductName: name || code || `SKU-${i}`, CurrentStock: numFields.currentstock, InTransit: numFields.intransit, ForecastStock: numFields.forecaststock, MinStock: numFields.minstock, MaxStock: numFields.maxstock });
+  }
+  if (!rows.length) return { error: 'Không có dòng dữ liệu hợp lệ. ' + (warnings[0] || '') };
+  return { rows, warnings };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPUTE METRICS
+═══════════════════════════════════════════════════════════════ */
+function computeMetrics(rawRows) {
+  const ds = Math.max(1, parseFloat(document.getElementById('daily-sales').value) || 10);
+  const maxMaxStock = Math.max(...rawRows.map(r => r.MaxStock), 1);
+  return rawRows.map(r => {
+    const AvailableStock = r.CurrentStock + r.InTransit;
+    const FinalStock     = r.ForecastStock;
+    const MinStock       = r.MinStock;
+    const MaxStock       = r.MaxStock;
+    let Status;
+    if (FinalStock < MinStock) Status = 'CRITICAL';
+    else if (FinalStock > MaxStock) Status = 'OVERSTOCK';
+    else Status = 'NORMAL';
+    const StockGap    = FinalStock - MinStock;
+    const ProdToMin   = Status === 'CRITICAL' ? Math.max(0, MinStock - FinalStock) : 0;
+    const ProdToMax   = Status === 'CRITICAL' ? Math.max(0, MaxStock - FinalStock) : 0;
+    const ProdNeeded  = ProdToMax;
+    const MaxW        = MaxStock / maxMaxStock;
+    const ShortfallPct = MinStock > 0 ? Math.max(0, (MinStock - FinalStock) / MinStock) : (FinalStock < 0 ? 1 : 0);
+    const NegBonus    = FinalStock < 0 ? 1 : 0;
+    const DaysCov     = ds > 0 ? AvailableStock / ds : 9999;
+    const UrgBonus    = DaysCov < 3 ? 1 : DaysCov < 7 ? 0.5 : 0;
+    const CompositeScore = Status === 'CRITICAL' ? 0.40 * MaxW + 0.35 * ShortfallPct + 0.15 * NegBonus + 0.10 * UrgBonus : 0;
+    const PriorityScore  = CompositeScore;
+    let PriorityTier = 4;
+    if (Status === 'CRITICAL') {
+      if (FinalStock <= 0 || ShortfallPct >= 0.5 || MaxW >= 0.65) PriorityTier = 1;
+      else if (ShortfallPct >= 0.25 || MaxW >= 0.35) PriorityTier = 2;
+      else PriorityTier = 3;
+    } else if (Status === 'OVERSTOCK') PriorityTier = 5;
+    const DaysToMin = ds > 0 && StockGap >= 0 ? StockGap / ds : 0;
+    return { ProductCode: r.ProductCode, ProductName: r.ProductName, AvailableStock, FinalStock, MinStock, MaxStock, Status, StockGap, ProdToMin, ProdToMax, ProdNeeded, MaxW, ShortfallPct, NegBonus, UrgBonus, CompositeScore, PriorityScore, PriorityTier, DaysCov, DaysToMin };
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DECISION ENGINE
+═══════════════════════════════════════════════════════════════ */
+function decisionEngine(computed) {
+  const cap = Math.max(1, parseFloat(document.getElementById('plant-cap').value) || 2000);
+  const criticals = computed.filter(r => r.Status === 'CRITICAL');
+  const planRows = [...criticals].sort((a,b) => {
+    const dw = b.MaxW - a.MaxW;
+    if (Math.abs(dw) > 0.05) return dw;
+    return b.CompositeScore - a.CompositeScore;
+  });
+  const totalNeeded = criticals.reduce((s,r) => s + r.ProdNeeded, 0);
+  const overload = totalNeeded > cap * G.horizon;
+  return { planRows, totalNeeded, cap, overload };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOP 15
+═══════════════════════════════════════════════════════════════ */
+function getTop15(computed) {
+  return computed.filter(r => r.Status === 'CRITICAL').sort((a,b) => b.CompositeScore - a.CompositeScore).slice(0, 15);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN RUN
+═══════════════════════════════════════════════════════════════ */
+function runAll() {
+  clearAlerts();
+  const raw = document.getElementById('data-input').value;
+  const parsed = parseText(raw);
+  if (parsed.error) { addAlert('err', parsed.error); hide('kpi-grid'); hide('main-panel'); return; }
+  (parsed.warnings || []).slice(0, 3).forEach(w => addAlert('warn', w));
+  const computed = computeMetrics(parsed.rows);
+  G.rows = computed;
+  const { planRows, totalNeeded, cap, overload } = decisionEngine(computed);
+  G.capacity   = cap;
+  G.dailySales = Math.max(1, parseFloat(document.getElementById('daily-sales').value) || 10);
+  G.horizon    = Math.max(1, parseFloat(document.getElementById('horizon').value) || 30);
+  renderKPIs(computed, totalNeeded, cap);
+  if (overload) addAlert('warn', `⚠ Quá tải: cần ${fmt(totalNeeded)} units > công suất ${G.horizon} ngày = ${fmt(cap * G.horizon)} units`);
+  G.filter = 'all';
+  G.sort = { col: 'PriorityScore', dir: -1 };
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.f === 'all'));
+  renderSKU();
+  renderTop15(computed);
+  renderOrder(planRows, totalNeeded, cap);
+  renderWarnings(computed, overload, cap, totalNeeded);
+  show('kpi-grid');
+  show('main-panel');
+  document.getElementById('hdr-time').textContent = 'Cập nhật: ' + new Date().toLocaleTimeString('vi-VN');
+  // Update PO display info
+  document.getElementById('po-horizon-disp').value = G.horizon + ' ngày';
+  document.getElementById('po-cap-disp').value = fmt(G.capacity) + ' units/ngày';
+  document.getElementById('po-sales-disp').value = fmt(G.dailySales) + ' units/ngày';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER: KPI CARDS
+═══════════════════════════════════════════════════════════════ */
+function renderKPIs(rows, totalNeeded, cap) {
+  const crit = rows.filter(r => r.Status === 'CRITICAL').length;
+  const over = rows.filter(r => r.Status === 'OVERSTOCK').length;
+  const ok   = rows.filter(r => r.Status === 'NORMAL').length;
+  const pct  = Math.round((totalNeeded / (cap * G.horizon)) * 100);
+  document.getElementById('k-total').textContent = rows.length;
+  document.getElementById('k-crit').textContent  = crit;
+  document.getElementById('k-over').textContent  = over;
+  document.getElementById('k-prod').textContent  = fmt(totalNeeded);
+  document.getElementById('k-cap').textContent   = pct + '%';
+  document.getElementById('k-ok').textContent    = ok;
+  const bar = document.getElementById('cap-bar');
+  bar.style.width      = Math.min(100, pct) + '%';
+  bar.style.background = pct >= 100 ? 'var(--red)' : pct >= 80 ? 'var(--amber)' : '#4ADE80';
+  document.getElementById('kpi-grid').style.display = 'grid';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER: SKU TABLE
+═══════════════════════════════════════════════════════════════ */
+function renderSKU() {
+  const filtered = G.filter === 'all' ? G.rows : G.rows.filter(r => r.Status === G.filter);
+  const sorted = [...filtered].sort((a,b) => {
+    const av = a[G.sort.col], bv = b[G.sort.col];
+    if (typeof av === 'string') return G.sort.dir * av.localeCompare(bv, 'vi');
+    return G.sort.dir * ((bv ?? 0) - (av ?? 0));
+  });
+  const tbody = document.getElementById('sku-body');
+  if (!sorted.length) { tbody.innerHTML = `<tr><td colspan="10"><div class="empty"><div class="empty-icon">🔍</div><div class="empty-txt">Không có SKU phù hợp</div></div></td></tr>`; }
+  else {
+    tbody.innerHTML = sorted.map(r => {
+      const rc = r.Status === 'CRITICAL' ? 'r-crit' : r.Status === 'OVERSTOCK' ? 'r-over' : 'r-ok';
+      const statBadge = r.Status === 'CRITICAL' ? `<span class="badge b-crit">Khẩn Cấp</span>` : r.Status === 'OVERSTOCK' ? `<span class="badge b-over">Tồn Thừa</span>` : `<span class="badge b-ok">Ổn Định</span>`;
+      const gapClass = r.StockGap < 0 ? 'n-red' : 'n-green';
+      const mwPct = Math.round(r.MaxW * 100);
+      const mwColor = mwPct >= 70 ? 'var(--gold)' : mwPct >= 40 ? 'var(--blue)' : 'var(--muted3)';
+      const finalClass = r.FinalStock < 0 ? 'n-red' : '';
+      const dayClass = r.DaysCov < 3 ? 'n-red' : r.DaysCov < 7 ? 'n-amber' : r.DaysCov > 60 ? 'n-blue' : '';
+      return `<tr class="${rc}">
+        <td><span class="sku-chip">${esc(r.ProductCode)}</span></td>
+        <td style="font-weight:600;max-width:240px;overflow:hidden;text-overflow:ellipsis" title="${esc(r.ProductName)}">${esc(r.ProductName)}</td>
+        <td class="r ${finalClass}">${fmt(r.FinalStock)}</td>
+        <td class="r n-muted">${fmt(r.MinStock)} / ${fmt(r.MaxStock)}</td>
+        <td class="r ${gapClass}">${fmtSigned(r.StockGap)}</td>
+        <td>${statBadge}</td>
+        <td>${tierBadge(r.PriorityTier, r.Status)}</td>
+        <td class="r">${r.ProdNeeded > 0 ? `<span class="n-red">${fmt(r.ProdNeeded)}</span>` : `<span class="n-muted">—</span>`}</td>
+        <td class="r">
+          <div class="mini-bar">
+            <div class="mini-bar-bg"><div class="mini-bar-fg" style="width:${mwPct}%;background:${mwColor}"></div></div>
+            <span class="mini-bar-lbl">${mwPct}%</span>
+          </div>
+        </td>
+        <td class="r ${dayClass}">${r.DaysCov.toFixed(1)}</td>
+      </tr>`;
+    }).join('');
+  }
+  document.getElementById('rc-sku').textContent  = `${sorted.length} / ${G.rows.length} SKU`;
+  document.getElementById('rc-sku2').textContent = `Hiển thị ${sorted.length} / ${G.rows.length} SKU`;
+  document.querySelectorAll('th .si').forEach(el => {
+    const col = el.dataset.col;
+    if (!col) return;
+    el.parentElement.classList.toggle('sorted', col === G.sort.col);
+    el.textContent = col === G.sort.col ? (G.sort.dir === -1 ? '↓' : '↑') : '↕';
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER: TOP 15
+═══════════════════════════════════════════════════════════════ */
+function renderTop15(computed) {
+  const top = getTop15(computed);
+  document.getElementById('rc-top').textContent = `${top.length} SKU ưu tiên cao nhất`;
+  const tbody = document.getElementById('top-body');
+  if (!top.length) { tbody.innerHTML = `<tr><td colspan="12"><div class="empty"><div class="empty-icon">✅</div><div class="empty-txt">Không có SKU khẩn cấp</div></div></td></tr>`; document.getElementById('top-foot').innerHTML = ''; return; }
+  tbody.innerHTML = top.map((r, i) => {
+    const rank = i + 1;
+    const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-n';
+    const ph1 = r.FinalStock < 0 ? Math.abs(r.FinalStock) : 0;
+    const ph2 = r.ProdToMin;
+    const ph3 = r.ProdToMax - r.ProdToMin;
+    const total = r.ProdToMax || 1;
+    const w1 = Math.round((ph1 / total) * 100);
+    const w2 = Math.round((ph2 / total) * 100);
+    const w3 = Math.round((ph3 / total) * 100);
+    const phaseHtml = r.ProdNeeded > 0 ? `
+      <div class="phase-wrap" title="Đỏ: cứu âm · Cam: lên Min · Xanh: lên Max">
+        ${ph1 > 0 ? `<div class="phase-seg" style="flex:${w1};background:var(--red);min-width:3px"></div>` : ''}
+        ${ph2 > 0 ? `<div class="phase-seg" style="flex:${w2};background:var(--amber);min-width:3px"></div>` : ''}
+        ${ph3 > 0 ? `<div class="phase-seg" style="flex:${w3};background:var(--green);min-width:3px"></div>` : ''}
+      </div>` : `<span class="n-muted">—</span>`;
+    const finalClass = r.FinalStock < 0 ? 'n-red' : 'n-amber';
+    const scoreColor = r.CompositeScore >= 0.7 ? 'n-red' : r.CompositeScore >= 0.4 ? 'n-amber' : 'n-blue';
+    return `<tr>
+      <td><div class="rank-badge ${rankClass}">${rank}</div></td>
+      <td><span class="sku-chip">${esc(r.ProductCode)}</span></td>
+      <td style="font-weight:700;max-width:220px;overflow:hidden;text-overflow:ellipsis">${esc(r.ProductName)}</td>
+      <td class="r ${finalClass}">${fmt(r.FinalStock)}</td>
+      <td class="r n-muted">${fmt(r.MinStock)}</td>
+      <td class="r n-blue">${fmt(r.MaxStock)}</td>
+      <td class="r n-red">${fmt(Math.abs(r.StockGap))}</td>
+      <td class="r">${r.ProdToMin > 0 ? fmt(r.ProdToMin) : '<span class="n-muted">—</span>'}</td>
+      <td class="r n-blue">${r.ProdNeeded > 0 ? fmt(r.ProdNeeded) : '<span class="n-muted">—</span>'}</td>
+      <td class="r ${scoreColor}">${(r.CompositeScore * 100).toFixed(1)}</td>
+      <td>${phaseHtml}</td>
+      <td>${tierBadge(r.PriorityTier, r.Status)}</td>
+    </tr>`;
+  }).join('');
+  const totMin = top.reduce((s,r) => s + r.ProdToMin, 0);
+  const totMax = top.reduce((s,r) => s + r.ProdNeeded, 0);
+  const negCnt = top.filter(r => r.FinalStock < 0).length;
+  const capPct = Math.round((totMax / (G.capacity * G.horizon)) * 100);
+  document.getElementById('top-foot').innerHTML = `
+    <div class="plan-foot-cell"><div class="plan-foot-lbl">SKU Tồn Âm</div><div class="plan-foot-val n-red">${negCnt}</div></div>
+    <div class="plan-foot-cell"><div class="plan-foot-lbl">SX Đạt Min (Khẩn)</div><div class="plan-foot-val n-amber">${fmt(totMin)}</div></div>
+    <div class="plan-foot-cell"><div class="plan-foot-lbl">SX Đạt Max (Đầy Đủ)</div><div class="plan-foot-val n-blue">${fmt(totMax)}</div></div>
+    <div class="plan-foot-cell"><div class="plan-foot-lbl">% Công Suất ${G.horizon}N</div><div class="plan-foot-val" style="color:${capPct>=100?'var(--red)':capPct>=80?'var(--amber)':'var(--green)'}">${capPct}%</div></div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER: LỆNH SẢN XUẤT (PRODUCTION ORDER)
+═══════════════════════════════════════════════════════════════ */
+function renderOrder(planRows, totalNeeded, cap) {
+  // Init PO fields on first render
+  initPOFields();
+
+  document.getElementById('rc-order').textContent = `${planRows.length} SKU cần sản xuất`;
+
+  // Summary
+  const p1 = planRows.filter(r => r.PriorityTier === 1).length;
+  const p2 = planRows.filter(r => r.PriorityTier === 2).length;
+  const totMin = planRows.reduce((s,r) => s + r.ProdToMin, 0);
+  const totMax = planRows.reduce((s,r) => s + r.ProdNeeded, 0);
+  document.getElementById('pos-sku').textContent = planRows.length;
+  document.getElementById('pos-p1').textContent  = p1;
+  document.getElementById('pos-p2').textContent  = p2;
+  document.getElementById('pos-min').textContent = fmt(totMin);
+  document.getElementById('pos-max').textContent = fmt(totMax);
+
+  const tbody = document.getElementById('order-body');
+  const ds = G.dailySales;
+
+  if (!planRows.length) {
+    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:40px;color:var(--muted2)">
+      <div style="font-size:28px;margin-bottom:10px">✅</div>
+      <div>Không có SKU cần sản xuất — Tất cả trong ngưỡng an toàn</div>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = planRows.map((r, i) => {
+    const tierLabel = r.PriorityTier === 1 ? `<span class="po-tier-1">🔴 P1 — Khẩn Cấp</span>` : r.PriorityTier === 2 ? `<span class="po-tier-2">🟡 P2 — Cao</span>` : `<span class="po-tier-3">🔵 P3 — Bình Thường</span>`;
+    const finalClass = r.FinalStock < 0 ? 'td-urgent' : 'td-normal';
+    const daysLeft = r.FinalStock > 0 ? (r.FinalStock / ds).toFixed(0) : '0';
+    const dlStyle = parseFloat(daysLeft) < 3 ? 'color:var(--red);font-weight:700' : parseFloat(daysLeft) < 7 ? 'color:var(--amber);font-weight:600' : 'color:var(--green)';
+    const rowBg = r.PriorityTier === 1 ? 'background:rgba(214,48,48,0.03)' : r.PriorityTier === 2 ? 'background:rgba(196,122,0,0.03)' : '';
+    return `<tr style="${rowBg}">
+      <td class="td-center" style="font-family:var(--mono);font-size:10px;color:var(--muted2);font-weight:600">${String(i+1).padStart(2,'0')}</td>
+      <td class="td-code">${esc(r.ProductCode)}</td>
+      <td class="td-name" title="${esc(r.ProductName)}">${esc(r.ProductName)}</td>
+      <td class="td-center">${tierLabel}</td>
+      <td class="td-right ${finalClass}">${fmt(r.FinalStock)}</td>
+      <td class="td-right" style="color:var(--muted)">${fmt(r.MinStock)}</td>
+      <td class="td-right" style="color:var(--blue)">${fmt(r.MaxStock)}</td>
+      <td class="td-right n-red">−${fmt(Math.abs(r.StockGap))}</td>
+      <td class="td-right" style="color:var(--amber);font-weight:700;font-family:var(--mono);background:rgba(196,122,0,0.04)">${fmt(r.ProdToMin)}</td>
+      <td class="td-right" style="color:var(--blue);font-weight:800;font-family:var(--mono);background:rgba(26,95,200,0.04)">${fmt(r.ProdNeeded)}</td>
+      <td class="td-center" style="${dlStyle}">${daysLeft} ngày</td>
+      <td></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER: CẢNH BÁO
+═══════════════════════════════════════════════════════════════ */
+function renderWarnings(rows, overload, cap, totalNeeded) {
+  const wb = document.getElementById('warn-body');
+  const crits    = rows.filter(r => r.Status === 'CRITICAL');
+  const p1       = crits.filter(r => r.PriorityTier === 1);
+  const p2       = crits.filter(r => r.PriorityTier === 2);
+  const p3       = crits.filter(r => r.PriorityTier === 3);
+  const negStock = crits.filter(r => r.FinalStock < 0);
+  const overstock= rows.filter(r => r.Status === 'OVERSTOCK');
+  let html = '';
+  if (overload) html += warnBlock('wb-red', '⚠️ QUÁ TẢI SẢN XUẤT', `Nhu cầu <b>${fmt(totalNeeded)}</b> units vượt công suất ${G.horizon} ngày = <b>${fmt(cap * G.horizon)}</b> units. Cần phân kỳ lệnh hoặc tăng ca.`);
+  if (negStock.length) html += warnBlock('wb-red', `🔴 TỒN KHO ÂM — ${negStock.length} SKU`, negStock.map(r => `• <b>${esc(r.ProductCode)}</b> ${esc(r.ProductName)}: tồn <b style="color:var(--red)">${fmt(r.FinalStock)}</b> · Min ${fmt(r.MinStock)} · SX cần ${fmt(r.ProdNeeded)}`).join('<br>'));
+  if (p1.length) html += warnBlock('wb-red', `🚨 ƯU TIÊN 1 — ${p1.length} SKU`, p1.map(r => `• <b>${esc(r.ProductCode)}</b> ${esc(r.ProductName)}: tồn ${fmt(r.FinalStock)} / min ${fmt(r.MinStock)} · Thiếu ${fmt(Math.abs(r.StockGap))} · Score ${(r.CompositeScore*100).toFixed(0)}`).join('<br>'));
+  if (p2.length) html += warnBlock('wb-amb', `🟡 ƯU TIÊN 2 — ${p2.length} SKU`, p2.map(r => `• <b>${esc(r.ProductCode)}</b> ${esc(r.ProductName)}: tồn ${fmt(r.FinalStock)} / min ${fmt(r.MinStock)} · Thiếu ${fmt(Math.abs(r.StockGap))}`).join('<br>'));
+  if (p3.length) html += warnBlock('wb-amb', `🟠 ƯU TIÊN 3 — ${p3.length} SKU`, p3.map(r => `• <b>${esc(r.ProductCode)}</b> ${esc(r.ProductName)}: tồn ${fmt(r.FinalStock)} / min ${fmt(r.MinStock)}`).join('<br>'));
+  if (overstock.length) html += warnBlock('wb-blue', `📦 ${overstock.length} SKU Tồn Thừa — cân nhắc dừng sản xuất`, overstock.map(r => `• <b>${esc(r.ProductCode)}</b> ${esc(r.ProductName)}: tồn ${fmt(r.FinalStock)} · Max ${fmt(r.MaxStock)} (+${fmt(r.FinalStock - r.MaxStock)})`).join('<br>'));
+  if (!html) html = `<div class="empty"><div class="empty-icon">✅</div><div class="empty-txt">Không có cảnh báo</div></div>`;
+  wb.innerHTML = html;
+  document.getElementById('tab-warn').textContent = `🚨 Cảnh Báo${crits.length ? ` (${crits.length})` : ''}`;
+}
+
+function warnBlock(cls, title, body) {
+  return `<div class="warn-block ${cls}"><div class="warn-block-head">${title}</div><div class="warn-block-body">${body}</div></div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TIER BADGE
+═══════════════════════════════════════════════════════════════ */
+function tierBadge(tier, status) {
+  if (status !== 'CRITICAL') return `<span class="badge b-ok2">Ổn Định</span>`;
+  if (tier === 1) return `<span class="badge b-p1">P1 Khẩn</span>`;
+  if (tier === 2) return `<span class="badge b-p2">P2</span>`;
+  return `<span class="badge b-p3">P3</span>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UI: TAB / FILTER / SORT
+═══════════════════════════════════════════════════════════════ */
+function switchTab(tab) {
+  G.tab = tab;
+  ['sku','top','order','warn'].forEach(t => {
+    document.getElementById('pane-' + t).style.display = t === tab ? '' : 'none';
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+  });
+}
+
+function setFilter(f) {
+  G.filter = f;
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.f === f));
+  renderSKU();
+}
+
+function sortBy(col) {
+  if (G.sort.col === col) G.sort.dir *= -1;
+  else { G.sort.col = col; G.sort.dir = -1; }
+  renderSKU();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CLEAR
+═══════════════════════════════════════════════════════════════ */
+function clearAll() {
+  document.getElementById('data-input').value = '';
+  clearAlerts();
+  G.rows = [];
+  hide('kpi-grid');
+  hide('main-panel');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYBOARD
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('data-input').addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runAll(); }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   EXPORT LỆNH SẢN XUẤT → EXCEL (.xlsx)
+   CEO-Grade Premium Layout — v10
+═══════════════════════════════════════════════════════════════ */
+function exportOrderExcel() {
+  const planRows = G.rows.filter(r => r.Status === 'CRITICAL').sort((a,b) => {
+    const pt = a.PriorityTier - b.PriorityTier;
+    if (pt !== 0) return pt;
+    const dw = b.MaxW - a.MaxW;
+    if (Math.abs(dw) > 0.05) return dw;
+    return b.CompositeScore - a.CompositeScore;
+  });
+
+  const poNum      = document.getElementById('po-number').value || 'LSX-001';
+  const poFactory  = document.getElementById('po-factory').value || 'NHÀ MÁY LIFESFOOD';
+  const poCreated  = document.getElementById('po-created-date').value || todayVN();
+  const poDue      = document.getElementById('po-due-date').value || '___/___/______';
+  const poNotes    = document.getElementById('po-notes').value || '';
+
+  const sig1Name   = document.getElementById('sig1-name').value  || '________________________';
+  const sig1Title  = document.getElementById('sig1-title').value || 'Trưởng Phòng Kế Hoạch';
+  const sig1Date   = document.getElementById('sig1-date').value  || '___/___/______';
+  const sig2Name   = document.getElementById('sig2-name').value  || '________________________';
+  const sig2Title  = document.getElementById('sig2-title').value || 'Trưởng Phòng QC / Giám Sát';
+  const sig2Date   = document.getElementById('sig2-date').value  || '___/___/______';
+  const sig3Name   = document.getElementById('sig3-name').value  || '________________________';
+  const sig3Title  = document.getElementById('sig3-title').value || 'Giám Đốc Nhà Máy';
+  const sig3Date   = document.getElementById('sig3-date').value  || '___/___/______';
+
+  // ── PALETTE ──────────────────────────────────────────────────
+  const C = {
+    // Brand
+    ink:      '0A0A0F',   // near-black
+    ink2:     '1C1C2A',
+    gold:     'B8860B',
+    goldLt:   'FFF3CC',
+    goldMid:  'F5D97A',
+    // Header band
+    hdr1:     '0D1B2A',   // deep navy
+    hdr2:     '1B2838',
+    hdrAccent:'2E4A6B',
+    white:    'FFFFFF',
+    offWhite: 'F9F8F5',
+    // Info block
+    infoBg:   'F2F1EC',
+    infoLbl:  'E8E7E0',
+    // Table header
+    tblHdr:   '0D1B2A',
+    tblHdrSub:'162333',
+    // Priority
+    p1Bg:     'FEF2F2', p1Txt: 'B91C1C', p1Bar: 'EF4444',
+    p2Bg:     'FFFBEB', p2Txt: 'B45309', p2Bar: 'F59E0B',
+    p3Bg:     'EFF6FF', p3Txt: '1D4ED8', p3Bar: '3B82F6',
+    // Deficit col — deep crimson accent
+    defBg:    'FFF1F1', defHdr: '7F1D1D', defTxt: 'DC2626',
+    // Plan col — deep blue accent
+    planBg:   'EEF4FF', planHdr:'0F2D5A', planTxt:'1D4ED8',
+    // Actual col
+    actBg:    'F0FDF4', actHdr: '14532D', actTxt: '166534',
+    // Rows
+    rowOdd:   'FFFFFF',
+    rowEven:  'F7F6F2',
+    rowP1:    'FEF9F9',
+    rowP2:    'FFFDF5',
+    // Totals
+    totBg:    '0D1B2A', totTxt: 'FFFFFF',
+    totDefBg: '7F1D1D', totPlanBg: '0F2D5A',
+    // Footer
+    sigHdr:   'E8E7E0', sigBg: 'F9F8F5',
+    divider:  'D1CFC6',
+  };
+
+  // ── NCOLS = 8 ────────────────────────────────────────────────
+  const NCOLS = 8;
+  const SR = []; // sheetRows
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  BLOCK 1 — MASTHEAD                                      ║
+  // ╚══════════════════════════════════════════════════════════╝
+
+  // Row 1: dark navy banner — company name (tall, impactful)
+  SR.push([{v:'LIFESFOOD CORPORATION', bold:true, sz:16, align:'center', merge:NCOLS, bg:C.hdr1, fc:C.goldMid}]);
+  // Row 2: gold accent stripe — document type
+  SR.push([{v:'LỆNH SẢN XUẤT  ·  PRODUCTION ORDER', bold:true, sz:13, align:'center', merge:NCOLS, bg:C.gold, fc:C.white}]);
+  // Row 3: sub-navy — PO number + date
+  SR.push([{v:`Số lệnh: ${poNum}    ·    Ngày lập: ${poCreated}    ·    Hoàn thành: ${poDue}`, bold:false, sz:10, align:'center', merge:NCOLS, bg:C.hdr2, fc:'C8D8E8'}]);
+
+  // Spacer
+  SR.push([]);
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  BLOCK 2 — INFO GRID (2 rows × 4 pairs)                  ║
+  // ╚══════════════════════════════════════════════════════════╝
+  SR.push([
+    {v:'NHÀ MÁY',        bold:true, sz:8,  bg:C.infoLbl, fc:'666655', align:'center'},
+    {v:poFactory,         bold:true, sz:10, bg:C.infoBg,  fc:C.ink,    align:'center'},
+    {v:'CHÂN TRỜI SX',   bold:true, sz:8,  bg:C.infoLbl, fc:'666655', align:'center'},
+    {v:G.horizon+' ngày', bold:false,sz:10, bg:C.infoBg,  fc:C.ink,    align:'center'},
+    {v:'CÔNG SUẤT/NGÀY', bold:true, sz:8,  bg:C.infoLbl, fc:'666655', align:'center'},
+    {v:fmt(G.capacity)+' units', bold:false, sz:10, bg:C.infoBg, fc:C.ink, align:'center'},
+    {v:'TỔNG SKU',       bold:true, sz:8,  bg:C.infoLbl, fc:'666655', align:'center'},
+    {v:planRows.length+' sản phẩm', bold:true, sz:11, bg:C.goldLt, fc:C.gold, align:'center'},
+  ]);
+  const p1cnt = planRows.filter(r=>r.PriorityTier===1).length;
+  const p2cnt = planRows.filter(r=>r.PriorityTier===2).length;
+  const p3cnt = planRows.filter(r=>r.PriorityTier===3).length;
+  SR.push([
+    {v:'ƯU TIÊN GHI CHÚ', bold:true, sz:8, bg:C.infoLbl, fc:'666655', align:'center'},
+    {v: document.getElementById('po-priority-note').value || '—', bold:false, sz:10, bg:C.infoBg, fc:C.ink, align:'center'},
+    {v:'P1 KHẨN CẤP',    bold:true, sz:8, bg:C.infoLbl, fc:'666655', align:'center'},
+    {v:p1cnt+' SKU',      bold:true, sz:10, bg:'FEF2F2', fc:C.p1Txt,  align:'center'},
+    {v:'P2 ƯU TIÊN CAO', bold:true, sz:8, bg:C.infoLbl, fc:'666655', align:'center'},
+    {v:p2cnt+' SKU',      bold:true, sz:10, bg:'FFFBEB', fc:C.p2Txt,  align:'center'},
+    {v:'P3 BÌNH THƯỜNG', bold:true, sz:8, bg:C.infoLbl, fc:'666655', align:'center'},
+    {v:p3cnt+' SKU',      bold:true, sz:10, bg:'EFF6FF', fc:C.p3Txt,  align:'center'},
+  ]);
+
+  // Spacer
+  SR.push([]);
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  BLOCK 3 — TABLE HEADER (2-level)                        ║
+  // ╚══════════════════════════════════════════════════════════╝
+  // Level 1: section labels spanning groups
+  SR.push([
+    {v:'',                             bold:true, bg:C.tblHdr,  fc:C.white, align:'center'},
+    {v:'THÔNG TIN SẢN PHẨM',          bold:true, sz:9, merge:3, bg:C.tblHdr,  fc:C.goldMid, align:'center'},
+    {},{},
+    {v:'SỐ LƯỢNG SẢN XUẤT',           bold:true, sz:9, merge:3, bg:C.tblHdrSub, fc:'B8D0FF', align:'center'},
+    {},{},
+    {v:'THEO DÕI THỰC TẾ',            bold:true, sz:9, bg:C.hdrAccent, fc:C.white, align:'center'},
+  ]);
+  // Level 2: individual column headers
+  SR.push([
+    {v:'STT',            bold:true, sz:9, bg:C.tblHdr,  fc:C.goldMid, align:'center'},
+    {v:'MÃ SP',          bold:true, sz:9, bg:C.tblHdr,  fc:C.white,   align:'center'},
+    {v:'TÊN SẢN PHẨM',  bold:true, sz:9, bg:C.tblHdr,  fc:C.white,   align:'center'},
+    {v:'ƯU TIÊN',        bold:true, sz:9, bg:C.tblHdr,  fc:C.white,   align:'center'},
+    {v:'LƯỢNG THIẾU HỤT',bold:true, sz:9, bg:C.defHdr,  fc:C.white,   align:'center'},
+    {v:'PLAN',           bold:true, sz:9, bg:C.planHdr, fc:C.white,   align:'center'},
+    {v:'ACTUAL',         bold:true, sz:9, bg:C.actHdr,  fc:C.white,   align:'center'},
+    {v:'NOTE',           bold:true, sz:9, bg:C.hdrAccent,fc:C.white,  align:'center'},
+  ]);
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  BLOCK 4 — DATA ROWS                                     ║
+  // ╚══════════════════════════════════════════════════════════╝
+  planRows.forEach((r, i) => {
+    const tier1 = r.PriorityTier === 1;
+    const tier2 = r.PriorityTier === 2;
+    const tierLabel = tier1 ? 'P1 — Khẩn Cấp' : tier2 ? 'P2 — Cao' : 'P3 — Bình Thường';
+    const tierTxt   = tier1 ? C.p1Txt : tier2 ? C.p2Txt : C.p3Txt;
+    const tierBg    = tier1 ? C.p1Bg  : tier2 ? C.p2Bg  : C.p3Bg;
+    const rowBg     = tier1 ? C.rowP1 : tier2 ? C.rowP2 : (i % 2 === 0 ? C.rowOdd : C.rowEven);
+    const deficit   = Math.abs(r.StockGap);
+
+    SR.push([
+      {v:i+1,              align:'center', sz:10, bold:true, bg:rowBg,    fc:'888877'},
+      {v:r.ProductCode,    align:'left',   sz:10, bold:true, bg:rowBg,    fc:C.ink},
+      {v:r.ProductName,    align:'left',   sz:10,            bg:rowBg,    fc:C.ink2},
+      {v:tierLabel,        align:'center', sz:9,  bold:true, bg:tierBg,   fc:tierTxt, color:tierTxt},
+      {v:deficit, num:true,align:'center', sz:11, bold:true, bg:C.defBg,  fc:C.defTxt, color:C.defTxt},
+      {v:r.ProdNeeded, num:true, align:'right', sz:11, bold:true, bg:C.planBg, fc:C.planTxt, color:C.planTxt},
+      {v:'',               align:'center',        bg:C.actBg,  fc:C.actTxt},
+      {v:'',                                       bg:rowBg},
+    ]);
+  });
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  BLOCK 5 — TOTALS BAR                                    ║
+  // ╚══════════════════════════════════════════════════════════╝
+  const totDeficit = planRows.reduce((s,r) => s + Math.abs(r.StockGap), 0);
+  const totPlan    = planRows.reduce((s,r) => s + r.ProdNeeded, 0);
+
+  SR.push([
+    {v:'TỔNG CỘNG', bold:true, sz:10, merge:4, bg:C.totBg, fc:C.goldMid, align:'right'},
+    {},{},{},
+    {v:totDeficit, num:true, bold:true, sz:12, bg:C.totDefBg,  fc:C.white,  color:C.white, align:'center'},
+    {v:totPlan,    num:true, bold:true, sz:12, bg:C.totPlanBg, fc:C.white,  color:C.white, align:'right'},
+    {v:'',                              bg:C.totBg},
+    {v:'',                              bg:C.totBg},
+  ]);
+
+  // Spacer
+  SR.push([]);
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  BLOCK 6 — NOTES (if any)                                ║
+  // ╚══════════════════════════════════════════════════════════╝
+  if (poNotes) {
+    SR.push([{v:'GHI CHÚ / HƯỚNG DẪN SẢN XUẤT', bold:true, sz:9, bg:C.infoLbl, fc:'555544', merge:NCOLS, align:'left'}]);
+    SR.push([{v:poNotes, sz:10, bg:C.infoBg, fc:C.ink2, merge:NCOLS}]);
+    SR.push([]);
+  }
+
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  BLOCK 7 — APPROVAL SIGNATURES                           ║
+  // ╚══════════════════════════════════════════════════════════╝
+  // Section title
+  SR.push([{v:'XÁC NHẬN & PHÊ DUYỆT LỆNH SẢN XUẤT', bold:true, sz:10, merge:NCOLS, bg:C.hdr1, fc:C.goldMid, align:'center'}]);
+  SR.push([]);
+
+  // Role headers
+  SR.push([
+    {v:'NGƯỜI ĐỀ XUẤT',              bold:true, sz:9,  merge:2, align:'center', bg:'EBF0FA', fc:'1A5FC8'},  {},
+    {v:''},
+    {v:'NGƯỜI KIỂM TRA',             bold:true, sz:9,  merge:2, align:'center', bg:'FFF8EB', fc:'C47A00'}, {},
+    {v:''},
+    {v:'GIÁM ĐỐC NHÀ MÁY PHÊ DUYỆT',bold:true, sz:9,  merge:2, align:'center', bg:'EDFAF2', fc:'1A7A4A'}, {},
+  ]);
+
+  // Name
+  SR.push([
+    {v:sig1Name,  bold:true, sz:11, merge:2, align:'center', bg:C.sigBg, fc:C.ink},  {},
+    {v:''},
+    {v:sig2Name,  bold:true, sz:11, merge:2, align:'center', bg:C.sigBg, fc:C.ink},  {},
+    {v:''},
+    {v:sig3Name,  bold:true, sz:11, merge:2, align:'center', bg:C.sigBg, fc:C.ink},  {},
+  ]);
+  // Title
+  SR.push([
+    {v:sig1Title, sz:9, merge:2, align:'center', bg:C.sigBg, fc:'777766'}, {},
+    {v:''},
+    {v:sig2Title, sz:9, merge:2, align:'center', bg:C.sigBg, fc:'777766'}, {},
+    {v:''},
+    {v:sig3Title, sz:9, merge:2, align:'center', bg:C.sigBg, fc:'777766'}, {},
+  ]);
+  // Date
+  SR.push([
+    {v:'Ngày: '+sig1Date, sz:9, merge:2, align:'center', bg:C.sigBg, fc:'999988'}, {},
+    {v:''},
+    {v:'Ngày: '+sig2Date, sz:9, merge:2, align:'center', bg:C.sigBg, fc:'999988'}, {},
+    {v:''},
+    {v:'Ngày: '+sig3Date, sz:9, merge:2, align:'center', bg:C.sigBg, fc:'999988'}, {},
+  ]);
+  // Signature placeholder
+  SR.push([
+    {v:'[ Chữ ký ]',          sz:9, merge:2, align:'center', bg:'F0F0EC', fc:C.divider}, {},
+    {v:''},
+    {v:'[ Chữ ký ]',          sz:9, merge:2, align:'center', bg:'F0F0EC', fc:C.divider}, {},
+    {v:''},
+    {v:'[ Chữ ký & Đóng dấu ]',sz:9, merge:2, align:'center', bg:'EDFAF2', fc:'AADDC0'}, {},
+  ]);
+
+  // ── COLUMN WIDTHS: [STT, MaSP, TenSP, UuTien, ThieuHut, Plan, Actual, Note]
+  buildAndDownloadXLSX(SR, `Lenh_San_Xuat_LIFESFOOD_${poNum.replace(/[^a-zA-Z0-9]/g,'_')}.xlsx`, [5, 16, 38, 17, 18, 16, 16, 26]);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   XLSX BUILDER (Pure JS — no library needed)
+   Creates a valid .xlsx file with basic formatting
+═══════════════════════════════════════════════════════════════ */
+function buildAndDownloadXLSX(rows, filename, customColWidths) {
+  // Shared strings
+  const strings = [];
+  const strMap  = {};
+  function addStr(s) {
+    const key = String(s ?? '');
+    if (strMap[key] === undefined) { strMap[key] = strings.length; strings.push(key); }
+    return strMap[key];
+  }
+
+  // Style registry
+  const fonts   = [];
+  const fills   = [];
+  const borders = [];
+  const cellXfs = [];
+
+  function addFont(bold, sz, color) {
+    const k = `${bold}|${sz||11}|${color||'000000'}`;
+    const found = fonts.findIndex(f => f._k === k);
+    if (found >= 0) return found;
+    fonts.push({_k:k, bold, sz: sz||11, color: color||'000000'});
+    return fonts.length - 1;
+  }
+
+  function addFill(bg) {
+    if (!bg) { const f = fills.findIndex(f => f.type === 'none'); if(f>=0) return f; fills.push({type:'none'}); return fills.length-1; }
+    const k = bg;
+    const found = fills.findIndex(f => f.bg === k);
+    if (found >= 0) return found;
+    fills.push({bg});
+    return fills.length - 1;
+  }
+
+  // Pre-add required fills (OpenXML requires at least 2)
+  fills.push({type:'none'});  // 0: none
+  fills.push({type:'gray125'}); // 1: gray125 (required)
+  addFont(false, 11, '000000'); // 0: default
+
+  function addBorder() {
+    if (!borders.length) borders.push({thin:true});
+    return 0;
+  }
+  addBorder();
+
+  function getXf(bold, sz, color, bg, align) {
+    const fId = addFont(bold, sz, color);
+    const bgId = addFill(bg);
+    const bId = 0;
+    const k = `${fId}|${bgId}|${align||'left'}`;
+    const found = cellXfs.findIndex(x => x._k === k);
+    if (found >= 0) return found;
+    cellXfs.push({_k:k, fId, bgId, bId, align: align||'left'});
+    return cellXfs.length - 1;
+  }
+  getXf(false,11,'000000',null,'left'); // 0: default
+
+  // Build cell XML
+  function cellXml(r, c, cell) {
+    if (!cell || cell.v === null || cell.v === undefined || cell.v === '') return '';
+    const isNum  = cell.num && typeof cell.v === 'number';
+    const xfIdx  = getXf(cell.bold||false, cell.sz||11, (cell.fc||cell.color||'000000'), cell.bg||null, cell.align||'left');
+    const colLetter = numToCol(c);
+    const addr = `${colLetter}${r}`;
+    if (isNum) {
+      return `<c r="${addr}" s="${xfIdx}" t="n"><v>${cell.v}</v></c>`;
+    } else {
+      const si = addStr(String(cell.v));
+      return `<c r="${addr}" s="${xfIdx}" t="s"><v>${si}</v></c>`;
+    }
+  }
+
+  function numToCol(n) {
+    let s = '';
+    n++;
+    while (n > 0) { const m = (n-1) % 26; s = String.fromCharCode(65+m) + s; n = Math.floor((n-1)/26); }
+    return s;
+  }
+
+  // Build sheet data & collect merges
+  let sheetXml = '<sheetData>';
+  const merges = [];
+  let rIdx = 1;
+  for (const row of rows) {
+    if (!row || !row.length) { rIdx++; continue; }
+    sheetXml += `<row r="${rIdx}">`;
+    let cIdx = 0;
+    for (const cell of row) {
+      if (!cell) { cIdx++; continue; }
+      if (cell.merge && cell.merge > 0) {
+        const startCol = numToCol(cIdx);
+        const endCol   = numToCol(cIdx + cell.merge - 1);
+        merges.push(`<mergeCell ref="${startCol}${rIdx}:${endCol}${rIdx}"/>`);
+      }
+      sheetXml += cellXml(rIdx, cIdx, cell);
+      cIdx++;
+    }
+    sheetXml += '</row>';
+    rIdx++;
+  }
+  sheetXml += '</sheetData>';
+
+  if (merges.length) sheetXml += `<mergeCells count="${merges.length}">${merges.join('')}</mergeCells>`;
+
+  // Column widths
+  const colWidths = customColWidths || [5,14,36,18,12,12,12,12,18,18,14,20];
+  const colXml = '<cols>' + colWidths.map((w,i) => `<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('') + '</cols>';
+
+  // Build style XML
+  function xmlFonts() {
+    return '<fonts count="' + fonts.length + '">' + fonts.map(f => `<font><sz val="${f.sz}"/><color rgb="FF${f.color}"/><name val="Arial"/>${f.bold?'<b/>':''}</font>`).join('') + '</fonts>';
+  }
+  function xmlFills() {
+    return '<fills count="' + fills.length + '">' + fills.map(f => {
+      if (f.type === 'none') return '<fill><patternFill patternType="none"/></fill>';
+      if (f.type === 'gray125') return '<fill><patternFill patternType="gray125"/></fill>';
+      return `<fill><patternFill patternType="solid"><fgColor rgb="FF${f.bg}"/></patternFill></fill>`;
+    }).join('') + '</fills>';
+  }
+  function xmlBorders() {
+    return '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>';
+  }
+  function xmlCellXfs() {
+    return '<cellXfs>' + cellXfs.map(x => `<xf numFmtId="0" fontId="${x.fId}" fillId="${x.bgId}" borderId="0" xfId="0"${x.align && x.align !== 'left' ? ` applyAlignment="1"` : ''}>${x.align && x.align !== 'left' ? `<alignment horizontal="${x.align}"/>` : ''}</xf>`).join('') + '</cellXfs>';
+  }
+
+  const styleXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+${xmlFonts()}
+${xmlFills()}
+${xmlBorders()}
+<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
+${xmlCellXfs()}
+</styleSheet>`;
+
+  // Shared strings XML
+  const ssXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${strings.length}" uniqueCount="${strings.length}">
+${strings.map(s => `<si><t xml:space="preserve">${xmlEsc(s)}</t></si>`).join('')}
+</sst>`;
+
+  // Worksheet XML
+  const wsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+<sheetView workbookViewId="0"><selection activeCell="A1" sqref="A1"/></sheetView>
+${colXml}
+${sheetXml}
+</worksheet>`;
+
+  // Workbook
+  const wbXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<sheets><sheet name="Lenh San Xuat" sheetId="1" r:id="rId1"/></sheets>
+</workbook>`;
+
+  const wbRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>
+<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`;
+
+  const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>
+<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+</Types>`;
+
+  const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`;
+
+  // Build ZIP
+  const zip = new ZipBuilder();
+  zip.addFile('[Content_Types].xml',  str2ab(contentTypes));
+  zip.addFile('_rels/.rels',          str2ab(rootRels));
+  zip.addFile('xl/workbook.xml',      str2ab(wbXml));
+  zip.addFile('xl/_rels/workbook.xml.rels', str2ab(wbRels));
+  zip.addFile('xl/worksheets/sheet1.xml',   str2ab(wsXml));
+  zip.addFile('xl/sharedStrings.xml', str2ab(ssXml));
+  zip.addFile('xl/styles.xml',        str2ab(styleXml));
+
+  const blob = zip.build();
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
+function xmlEsc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+}
+
+function str2ab(str) {
+  const enc = new TextEncoder();
+  return enc.encode(str);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ZIP BUILDER — pure JS, no compression (stored)
+═══════════════════════════════════════════════════════════════ */
+class ZipBuilder {
+  constructor() { this.files = []; }
+
+  addFile(name, data) {
+    const nameBytes = new TextEncoder().encode(name);
+    const crc = crc32(data);
+    this.files.push({ name, nameBytes, data, crc });
+  }
+
+  build() {
+    const parts = [];
+    const centralDir = [];
+    let offset = 0;
+
+    for (const f of this.files) {
+      const lhSize = 30 + f.nameBytes.length;
+      const lh = new Uint8Array(lhSize);
+      const lv = new DataView(lh.buffer);
+      lv.setUint32(0,  0x04034b50, true); // sig
+      lv.setUint16(4,  20, true);          // version needed
+      lv.setUint16(6,  0, true);           // flags
+      lv.setUint16(8,  0, true);           // method: stored
+      lv.setUint16(10, 0, true);           // mod time
+      lv.setUint16(12, 0, true);           // mod date
+      lv.setUint32(14, f.crc, true);
+      lv.setUint32(18, f.data.length, true);
+      lv.setUint32(22, f.data.length, true);
+      lv.setUint16(26, f.nameBytes.length, true);
+      lv.setUint16(28, 0, true);
+      lh.set(f.nameBytes, 30);
+      parts.push(lh);
+      parts.push(f.data);
+
+      // Central directory entry
+      const cdSize = 46 + f.nameBytes.length;
+      const cd = new Uint8Array(cdSize);
+      const cv = new DataView(cd.buffer);
+      cv.setUint32(0,  0x02014b50, true);
+      cv.setUint16(4,  20, true);
+      cv.setUint16(6,  20, true);
+      cv.setUint16(8,  0, true);
+      cv.setUint16(10, 0, true);
+      cv.setUint16(12, 0, true);
+      cv.setUint16(14, 0, true);
+      cv.setUint32(16, f.crc, true);
+      cv.setUint32(20, f.data.length, true);
+      cv.setUint32(24, f.data.length, true);
+      cv.setUint16(28, f.nameBytes.length, true);
+      cv.setUint16(30, 0, true);
+      cv.setUint16(32, 0, true);
+      cv.setUint16(34, 0, true);
+      cv.setUint16(36, 0, true);
+      cv.setUint32(38, 0, true);
+      cv.setUint32(42, offset, true);
+      cd.set(f.nameBytes, 46);
+      centralDir.push(cd);
+
+      offset += lhSize + f.data.length;
+    }
+
+    const cdBytes = concat(centralDir);
+    const eocd = new Uint8Array(22);
+    const ev   = new DataView(eocd.buffer);
+    ev.setUint32(0, 0x06054b50, true);
+    ev.setUint16(4, 0, true);
+    ev.setUint16(6, 0, true);
+    ev.setUint16(8, this.files.length, true);
+    ev.setUint16(10, this.files.length, true);
+    ev.setUint32(12, cdBytes.length, true);
+    ev.setUint32(16, offset, true);
+    ev.setUint16(20, 0, true);
+
+    return new Blob([...parts, cdBytes, eocd], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+}
+
+function concat(arrays) {
+  const total = arrays.reduce((s,a) => s + a.length, 0);
+  const out = new Uint8Array(total);
+  let off = 0;
+  for (const a of arrays) { out.set(a, off); off += a.length; }
+  return out;
+}
+
+// CRC32 lookup table
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    let c = i;
+    for (let j = 0; j < 8; j++) c = (c & 1) ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+    t[i] = c;
+  }
+  return t;
+})();
+
+function crc32(data) {
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < data.length; i++) crc = CRC_TABLE[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   XLSX PARSER (từ v7 — giữ nguyên)
+═══════════════════════════════════════════════════════════════ */
+async function handleExcel(evt) {
+  const file = evt.target.files[0];
+  evt.target.value = '';
+  if (!file) return;
+  if (!/\.xlsx$/i.test(file.name)) { clearAlerts(); addAlert('err', 'Chỉ hỗ trợ file .xlsx. Hãy Save As → Excel Workbook (.xlsx) từ Excel.'); return; }
+  addAlert('info', `Đang đọc file: ${esc(file.name)} …`);
+  try {
+    const ab    = await readFileAsArrayBuffer(file);
+    const files = await decompressZip(new Uint8Array(ab));
+    const ss    = getSharedStrings(files);
+    const rows  = extractXlsxData(files, ss);
+    if (!rows.length) { clearAlerts(); addAlert('err', 'Không đọc được dữ liệu. Thử: File → Save As → CSV UTF-8 rồi paste vào ô nhập liệu.'); return; }
+    const lines = ['ProductCode\tProductName\tCurrentStock\tInTransit\tForecastStock\tMinStock\tMaxStock', ...rows.map(r => [r.code, r.name, r.current, r.transit, r.forecast, r.min, r.max].join('\t'))];
+    document.getElementById('data-input').value = lines.join('\n');
+    clearAlerts();
+    addAlert('info', `✅ Đã import ${rows.length} sản phẩm từ "${esc(file.name)}"`);
+    runAll();
+  } catch (err) {
+    clearAlerts();
+    addAlert('err', `Lỗi đọc xlsx: ${esc(err.message)}. Thử export CSV từ Excel.`);
+  }
+}
+
+function readFileAsArrayBuffer(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = e => resolve(e.target.result);
+    reader.onerror = () => reject(new Error('Không đọc được file'));
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function scanZipEntries(bytes) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const entries = [];
+  let i = 0;
+  while (i <= bytes.length - 30) {
+    if (view.getUint32(i, true) !== 0x04034b50) { i++; continue; }
+    const method   = view.getUint16(i + 8,  true);
+    const compSize = view.getUint32(i + 18, true);
+    const fnLen    = view.getUint16(i + 26, true);
+    const exLen    = view.getUint16(i + 28, true);
+    const fnBytes  = bytes.subarray(i + 30, i + 30 + fnLen);
+    let fname = '';
+    for (let fi = 0; fi < fnBytes.length; fi++) fname += String.fromCharCode(fnBytes[fi]);
+    const dataStart = i + 30 + fnLen + exLen;
+    const data      = bytes.subarray(dataStart, dataStart + compSize);
+    if (/\.(xml|rels)$/i.test(fname)) entries.push({ fname, method, data: data.slice() });
+    i = dataStart + compSize;
+  }
+  return entries;
+}
+
+async function inflateRaw(data) {
+  const ds = new DecompressionStream('deflate-raw');
+  const writer = ds.writable.getWriter();
+  const reader = ds.readable.getReader();
+  const writePromise = (async () => { await writer.write(data); await writer.close(); })();
+  const chunks = [];
+  while (true) { const { value, done } = await reader.read(); if (done) break; chunks.push(value); }
+  await writePromise;
+  const totalLen = chunks.reduce((s,c) => s + c.length, 0);
+  const out = new Uint8Array(totalLen);
+  let offset = 0;
+  for (const chunk of chunks) { out.set(chunk, offset); offset += chunk.length; }
+  return out;
+}
+
+async function decompressZip(bytes) {
+  const entries = scanZipEntries(bytes);
+  const files   = {};
+  for (const entry of entries) {
+    try {
+      if (entry.method === 0) files[entry.fname] = entry.data;
+      else if (entry.method === 8) files[entry.fname] = await inflateRaw(entry.data);
+    } catch (_) {}
+  }
+  return files;
+}
+
+function getSharedStrings(files) {
+  const key = Object.keys(files).find(k => /sharedStrings\.xml$/i.test(k));
+  if (!key) return [];
+  const xml    = decodeUTF8(files[key]);
+  const blocks = xml.match(/<si>[\s\S]*?<\/si>/g) || [];
+  return blocks.map(si => {
+    const texts = si.match(/<t(?:\s[^>]*)?>([^<]*)<\/t>/g) || [];
+    return xmlUnesc(texts.map(t => t.replace(/<t(?:\s[^>]*)?>/, '').replace(/<\/t>/, '')).join(''));
+  });
+}
+
+function decodeUTF8(bytes) {
+  try { return new TextDecoder('utf-8').decode(bytes); }
+  catch (_) { let s = ''; for (let i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); try { return decodeURIComponent(escape(s)); } catch (_) { return s; } }
+}
+
+function xmlUnesc(s) {
+  return String(s || '').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&#x([0-9A-Fa-f]+);/g,(_,h)=>String.fromCharCode(parseInt(h,16))).replace(/&#([0-9]+);/g,(_,d)=>String.fromCharCode(parseInt(d,10)));
+}
+
+function colToIdx(col) { let n = 0; for (let i = 0; i < col.length; i++) n = n * 26 + col.charCodeAt(i) - 64; return n - 1; }
+
+function parseSheetMatrix(xml, sharedStrings) {
+  const rowMatches = xml.match(/<row\b[^>]*>[\s\S]*?<\/row>/g) || [];
+  return rowMatches.map(rowXml => {
+    const cells = {};
+    const cMatches = rowXml.match(/<c\b[^>]*>[\s\S]*?<\/c>/g) || [];
+    for (const cXml of cMatches) {
+      const refM = cXml.match(/\br="([A-Z]+)\d+"/);
+      if (!refM) continue;
+      const colIdx  = colToIdx(refM[1]);
+      const isStr    = /\bt="s"/.test(cXml);
+      const isInline = /\bt="inlineStr"/.test(cXml);
+      let val = '';
+      if (isInline) { const im = cXml.match(/<t[^>]*>([^<]*)<\/t>/); val = im ? xmlUnesc(im[1]) : ''; }
+      else {
+        const vm = cXml.match(/<v>([^<]*)<\/v>/);
+        if (vm) { if (isStr) { const idx = parseInt(vm[1],10); val = (Number.isFinite(idx) && sharedStrings[idx] !== undefined) ? sharedStrings[idx] : ''; } else val = vm[1]; }
+      }
+      cells[colIdx] = val;
+    }
+    return cells;
+  });
+}
+
+function detectHeader(matrix) {
+  const CODE_K  = ['masp','ma','productcode','sku','code','itemcode','mã','mahang'];
+  const NAME_K  = ['tensp','ten','tensanpham','productname','name','itemname'];
+  const STOCK_K = ['tonkho','currentstock','tonhientai','ton','stock','tondauky'];
+  const TRAN_K  = ['hangduong','intransit','transit','hangtrenvanchuyen','hangdi'];
+  const FORE_K  = ['tondukien','forecaststock','forecast','toncuoiky'];
+  const MIN_K   = ['tonmin','minstock','min','toithieu','minimumstock'];
+  const MAX_K   = ['tonmax','maxstock','max','toidatoi','maximumstock'];
+  for (let ri = 0; ri < Math.min(10, matrix.length); ri++) {
+    const row = matrix[ri];
+    const cols = Object.keys(row).map(Number).sort((a,b)=>a-b);
+    let codeC=-1,nameC=-1,stockC=-1,tranC=-1,foreC=-1,minC=-1,maxC=-1;
+    for (const c of cols) {
+      const k = nk(row[c]);
+      if (codeC<0 && CODE_K.includes(k))  codeC=c;
+      if (nameC<0 && NAME_K.includes(k))  nameC=c;
+      if (stockC<0 && STOCK_K.includes(k)) stockC=c;
+      if (tranC<0 && TRAN_K.includes(k))  tranC=c;
+      if (foreC<0 && FORE_K.includes(k))  foreC=c;
+      if (minC<0 && MIN_K.includes(k))   minC=c;
+      if (maxC<0 && MAX_K.includes(k))   maxC=c;
+    }
+    if (codeC>=0 && nameC>=0 && minC>=0 && maxC>=0) return { headerRowIdx:ri, colIdx:{code:codeC,name:nameC,stock:stockC,transit:tranC,forecast:foreC,min:minC,max:maxC} };
+  }
+  return null;
+}
+
+function extractRowsFromMatrix(matrix, headerRowIdx, colIdx) {
+  const result = [];
+  for (let ri = headerRowIdx+1; ri < matrix.length; ri++) {
+    const row = matrix[ri];
+    const code = clean(String(row[colIdx.code] || ''));
+    const name = clean(String(row[colIdx.name] || ''));
+    if (!code || code.length < 1) continue;
+    const pn = (v) => { const n = parseNum(String(v ?? '')); return Number.isFinite(n) ? n : NaN; };
+    const stock    = colIdx.stock    >= 0 ? pn(row[colIdx.stock])    : 0;
+    const transit  = colIdx.transit  >= 0 ? pn(row[colIdx.transit])  : 0;
+    const forecast = colIdx.forecast >= 0 ? pn(row[colIdx.forecast]) : NaN;
+    const min      = pn(row[colIdx.min]);
+    const max      = pn(row[colIdx.max]);
+    if (!Number.isFinite(min) || !Number.isFinite(max)) continue;
+    if (min === 0 && max === 0) continue;
+    result.push({ code, name: name||code, current: Number.isFinite(stock)?stock:0, transit: Number.isFinite(transit)?transit:0, forecast: Number.isFinite(forecast)?forecast:(stock||0)+(transit||0), min, max });
+  }
+  return result;
+}
+
+function extractXlsxData(files, sharedStrings) {
+  const sheetKeys = Object.keys(files).filter(k => /xl\/worksheets\/sheet\d*\.xml$/i.test(k)).sort();
+  let bestRows = [];
+  for (const key of sheetKeys) {
+    const xml    = decodeUTF8(files[key]);
+    const matrix = parseSheetMatrix(xml, sharedStrings);
+    if (matrix.length < 3) continue;
+    const hdr = detectHeader(matrix);
+    if (!hdr) continue;
+    const rows = extractRowsFromMatrix(matrix, hdr.headerRowIdx, hdr.colIdx);
+    if (rows.length > bestRows.length) bestRows = rows;
+  }
+  return bestRows;
+}
+</script>
+
+
+</body></html>
